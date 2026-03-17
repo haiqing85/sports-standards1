@@ -1,1 +1,39 @@
+name: 更新标准数据库
 
+on:
+  schedule:
+    # 每周一凌晨 2 点自动运行（UTC时间）
+    - cron: '0 18 * * 0'
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  update-standards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Run standards updater
+        run: python scripts/update_standards.py
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet data/standards.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push if changed
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --global user.name 'Standards Bot'
+          git config --global user.email 'bot@github.com'
+          git add data/standards.json
+          git commit -m "🔄 自动更新标准数据 $(date '+%Y-%m-%d')"
+          git push
