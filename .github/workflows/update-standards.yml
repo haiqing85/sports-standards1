@@ -1,39 +1,75 @@
-name: 更新标准数据库
+name: 自动抓取更新体育标准数据库
 
 on:
   schedule:
-    # 每周一凌晨 2 点自动运行（UTC时间）
-    - cron: '0 18 * * 0'
-  workflow_dispatch: # 支持手动触发
+    # 每周三 UTC 03:00（北京时间 11:00）自动运行
+    - cron: '0 3 * * 3'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '运行模式'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full    # 完整抓取 + 状态核查 + 补全链接
+          - check   # 仅核查现有标准状态
+          - enrich  # 仅补全国家标准阅读/下载链接
 
 jobs:
-  update-standards:
+  update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - name: Checkout repository
+      - name: 检出仓库
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: 配置 Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
 
-      - name: Install dependencies
-        run: pip install requests beautifulsoup4 lxml
+      - name: 安装依赖
+        run: pip install requests urllib3 --quiet
 
-      - name: Run standards updater
-        run: python scripts/update_standards.py
-
-      - name: Check for changes
-        id: changes
+      - name: 运行（完整模式）
+        if: ${{ github.event.inputs.mode != 'check' && github.event.inputs.mode != 'enrich' }}
         run: |
-          git diff --quiet data/standards.json || echo "changed=true" >> $GITHUB_OUTPUT
+          python scripts/update_standards.py
+          python scripts/update_standards.py --enrich
+        timeout-minutes: 45
 
-      - name: Commit and push if changed
-        if: steps.changes.outputs.changed == 'true'
+      - name: 运行（仅核查模式）
+        if: ${{ github.event.inputs.mode == 'check' }}
+        run: python scripts/update_standards.py --check
+        timeout-minutes: 15
+
+      - name: 运行（仅补链接模式）
+        if: ${{ github.event.inputs.mode == 'enrich' }}
+        run: python scripts/update_standards.py --enrich
+        timeout-minutes: 20
+
+      - name: 检查数据变化
+        id: diff
         run: |
-          git config --global user.name 'Standards Bot'
-          git config --global user.email 'bot@github.com'
+          git diff --quiet data/standards.json \
+            && echo "changed=false" >> $GITHUB_OUTPUT \
+            || echo "changed=true"  >> $GITHUB_OUTPUT
+
+      - name: 提交并推送
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "Standards Bot"
+          git config user.email "bot@github-actions.com"
+          TOTAL=$(python -c "import json; d=json.load(open('data/standards.json')); print(d['total'])")
           git add data/standards.json
-          git commit -m "🔄 自动更新标准数据 $(date '+%Y-%m-%d')"
+          git add data/update_log.txt 2>/dev/null || true
+          git commit -m "🔄 自动更新标准数据库 $(date '+%Y-%m-%d') | 共 ${TOTAL} 条"
           git push
+
+      - name: 无变化提示
+        if: steps.diff.outputs.changed == 'false'
+        run: echo "✅ 数据无变化，无需提交"
