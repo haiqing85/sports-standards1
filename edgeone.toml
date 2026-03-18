@@ -1,6 +1,8 @@
 # 腾讯 EdgeOne Pages 部署配置
+# 文档：https://edgeone.ai/document/162227731369361408
 
 [build]
+  # 纯静态站点，无需构建命令
   command = ""
   publish = "."
 
@@ -16,4 +18,8 @@
     Cache-Control = "public, max-age=600"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/standards/:code"
+  to = "/?code=:code"
+  status = 301
