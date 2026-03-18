@@ -16,6 +16,18 @@ import time
 import requests
 from datetime import datetime
 from pathlib import Path
+import logging
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('data/update_log.txt', encoding='utf-8'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 DATA_FILE = Path(__file__).parent.parent / 'data' / 'standards.json'
 
@@ -37,24 +49,31 @@ def check_std_status(std_code: str) -> dict:
             # 注意：实际API需要根据平台文档调整
             return resp.json()
     except Exception as e:
-        print(f"  ⚠️  查询 {std_code} 失败: {e}")
+        logger.warning(f"查询 {std_code} 失败: {e}")
     return {}
 
 def update_standards():
     """主更新函数"""
-    print(f"\n{'='*50}")
-    print(f"体育标准数据库更新工具")
-    print(f"运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"{'='*50}\n")
+    logger.info("="*50)
+    logger.info("体育标准数据库更新工具")
+    logger.info(f"运行时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    logger.info("="*50)
 
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        data = json.load(f)
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except FileNotFoundError:
+        logger.error(f"数据文件不存在: {DATA_FILE}")
+        return
+    except json.JSONDecodeError as e:
+        logger.error(f"数据文件格式错误: {e}")
+        return
 
     standards = data['standards']
     updated_count = 0
 
-    print(f"📊 当前收录标准数: {len(standards)}")
-    print("🔄 开始核查标准状态...\n")
+    logger.info(f"当前收录标准数: {len(standards)}")
+    logger.info("开始核查标准状态...")
 
     for std in standards:
         code = std.get('code', '')
@@ -63,14 +82,17 @@ def update_standards():
 
         # 仅对国标进行在线核查（避免频繁请求被封）
         if std.get('type') == '国家标准':
-            print(f"  检查: {code}... ", end='')
-            # 实际查询逻辑（需根据官方API文档实现）
-            # result = check_std_status(code)
-            # if result.get('status') != std.get('status'):
-            #     std['status'] = result['status']
-            #     updated_count += 1
-            print("OK")
-            time.sleep(0.5)  # 避免请求过快
+            logger.info(f"检查: {code}...", end='')
+            try:
+                # 实际查询逻辑（需根据官方API文档实现）
+                # result = check_std_status(code)
+                # if result.get('status') != std.get('status'):
+                #     std['status'] = result['status']
+                #     updated_count += 1
+                logger.info("OK")
+                time.sleep(0.5)  # 避免请求过快
+            except Exception as e:
+                logger.warning(f"处理 {code} 时出错: {e}")
 
     # 更新时间戳
     today = datetime.now().strftime('%Y-%m-%d')
@@ -78,13 +100,15 @@ def update_standards():
     data['version'] = today.replace('-', '.')
     data['total'] = len(standards)
 
-    with open(DATA_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-    print(f"\n✅ 更新完成！")
-    print(f"   - 核查标准数: {len(standards)}")
-    print(f"   - 状态变更数: {updated_count}")
-    print(f"   - 更新时间戳: {today}")
+    try:
+        with open(DATA_FILE, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        logger.info("更新完成！")
+        logger.info(f"  - 核查标准数: {len(standards)}")
+        logger.info(f"  - 状态变更数: {updated_count}")
+        logger.info(f"  - 更新时间戳: {today}")
+    except Exception as e:
+        logger.error(f"保存数据失败: {e}")
 
     # ==========================================
     # 手动添加新标准说明（注释模板）

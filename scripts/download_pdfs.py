@@ -25,11 +25,11 @@ import re
 import os
 from pathlib import Path
 from datetime import datetime
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 try:
     import requests
-    from requests.adapters import HTTPAdapter
-    from urllib3.util.retry import Retry
 except ImportError:
     print("请先安装依赖: pip install requests")
     raise
@@ -59,9 +59,14 @@ HEADERS = {
 }
 
 def make_session() -> requests.Session:
+    """创建带重试机制的会话"""
     s = requests.Session()
-    retry = Retry(total=3, backoff_factor=2,
-                  status_forcelist=[429, 500, 502, 503, 504])
+    retry = Retry(
+        total=3,
+        backoff_factor=1,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["GET", "POST"]
+    )
     s.mount('https://', HTTPAdapter(max_retries=retry))
     s.mount('http://',  HTTPAdapter(max_retries=retry))
     s.headers.update(HEADERS)
@@ -73,6 +78,7 @@ SESSION = make_session()
 #  工具
 # ============================================================
 def log(msg: str):
+    """记录日志"""
     ts = datetime.now().strftime('%H:%M:%S')
     line = f"[{ts}] {msg}"
     print(line)
@@ -303,11 +309,19 @@ def download_standard_pdf(std: dict) -> bytes:
 def run(force_all: bool = False, target_id: str = '', dry_run: bool = False):
     log("=" * 55)
     log("体育标准 PDF 自动下载工具")
-    log(f"模式: {'强制全部' if force_all else '目标:'+target_id if target_id else '补充缺失'} {'[预览]' if dry_run else ''}")
+    mode = '强制全部' if force_all else f'目标:{target_id}' if target_id else '补充缺失'
+    log(f"模式: {mode} {'[预览]' if dry_run else ''}")
     log("=" * 55)
 
-    with open(DATA_FILE, 'r', encoding='utf-8') as f:
-        db = json.load(f)
+    try:
+        with open(DATA_FILE, 'r', encoding='utf-8') as f:
+            db = json.load(f)
+    except FileNotFoundError:
+        log(f"❌ 数据文件不存在: {DATA_FILE}")
+        return
+    except json.JSONDecodeError as e:
+        log(f"❌ 数据文件格式错误: {e}")
+        return
 
     standards = db.get('standards', [])
     stats = {'success': 0, 'skip': 0, 'fail': 0}
