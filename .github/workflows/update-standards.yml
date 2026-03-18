@@ -24,7 +24,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: 运行爬虫脚本
-        run: python auto_scraper.py
+        run: python scripts/update_standards.py  # 注意：这里要加上文件夹路径和正确的文件名
 
       - name: 提交更新
         run: |
