@@ -121,7 +121,7 @@
     <label>GitHub &#29992;&#25143;&#21517;</label>
     <input type="text" id="ghUser" placeholder="your-github-username" autocomplete="username">
     <label>&#20861;&#24211;&#21517;&#31216;</label>
-    <input type="text" id="ghRepo" placeholder="sports-standards" value="sports-standards">
+    <input type="text" id="ghRepo" placeholder="如 sports-standards1">
     <label>Personal Access Token</label>
     <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxx" autocomplete="current-password">
     <div class="hint">
@@ -236,6 +236,7 @@
 
 <script>
 
+let GH={user:"",token:"",repo:""};
 let DB=[],FT=[],pg=1;
 const PS=25;
 let editId=null,delId=null,pdfFile=null,fileSha="";
