@@ -1,149 +1,55 @@
-# 体育建设标准查询平台
+# 标准文件存放目录
 
-> 全国最全体育行业标准数据库，覆盖国标、行标、地标、团标，完全免费部署。
+本目录存放所有体育建设标准的 PDF 文件，供网站用户免费下载。
 
----
+## 文件命名规则
 
-## 🌐 技术架构（零成本方案）
+文件名 = 对应标准的 `id` 字段 + `.pdf`
 
-```
-GitHub 仓库（数据存储 + 自动更新）
-      ↓  GitHub Actions 每周抓取最新状态
-data/standards.json（标准数据）
-      ↓  腾讯 EdgeOne Pages 托管
-用户浏览器（前端渲染 + Fuse.js 搜索）
-```
+例如：
+- `GB36246-2018.pdf`        → GB 36246-2018 中小学合成材料面层运动场地
+- `GBT14833-2011.pdf`       → GB/T 14833-2011 合成材料跑道
+- `JGJ153-2016.pdf`         → JGJ 153-2016 体育场馆照明设计及检测标准
+- `TSGTAS001-2019.pdf`      → T/SGTAS 001-2019 合成材料运动场地面层施工与验收规范
 
-**完全免费清单：**
-| 服务 | 用途 | 免费额度 |
-|------|------|---------|
-| GitHub Pages / EdgeOne Pages | 静态网站托管 | 永久免费 |
-| GitHub Actions | 自动更新脚本 | 2000分钟/月 |
-| GitHub 仓库 | 数据存储 | 1GB 免费 |
-| Fuse.js CDN | 全文模糊搜索 | 完全免费 |
-| Google AdSense | 广告变现 | 按点击收费 |
+## 完整文件列表
 
----
+| 文件名 | 标准编号 | 标准名称 |
+|--------|---------|---------|
+| GB36246-2018.pdf | GB 36246-2018 | 中小学合成材料面层运动场地 |
+| GBT14833-2011.pdf | GB/T 14833-2011 | 合成材料跑道 |
+| JGT477-2015.pdf | JG/T 477-2015 | 运动场地合成材料面层 |
+| GB19272-2011.pdf | GB 19272-2011 | 室外健身器材的安全 通用要求 |
+| GBT36536-2018.pdf | GB/T 36536-2018 | 体育场馆照明设计及检测标准 |
+| JGJ153-2016.pdf | JGJ 153-2016 | 体育场馆照明设计及检测标准（行业标准）|
+| JGT388-2012.pdf | JG/T 388-2012 | 运动场人造草 |
+| GBT36527-2018.pdf | GB/T 36527-2018 | 运动场地人造草坪系统 |
+| GBT22517.2-2017.pdf | GB/T 22517.2-2017 | 体育场地使用要求及检验方法 第2部分：足球场地 |
+| GBT28231-2011.pdf | GB/T 28231-2011 | 体育围网 |
+| GBT32085-2015.pdf | GB/T 32085-2015 | 人造草填充材料 橡胶颗粒 |
+| JGT354-2012.pdf | JG/T 354-2012 | 体育用木质地板 |
+| JGT449-2014.pdf | JG/T 449-2014 | 弹性地板 |
+| JGJ31-2003.pdf | JGJ 31-2003 | 体育建筑设计规范 |
+| GBT37546-2019.pdf | GB/T 37546-2019 | 公共体育场地设施建设技术要求 |
+| GBT40115-2021.pdf | GB/T 40115-2021 | 体育公园建设指南 |
+| TSGTAS001-2019.pdf | T/SGTAS 001-2019 | 合成材料运动场地面层施工与验收规范 |
+| TSGTAS002-2019.pdf | T/SGTAS 002-2019 | 人造草坪运动场地系统施工与验收规范 |
+| DBJL2021001.pdf | DB11/T 1827-2021 | 学校操场合成材料面层有害物质限量 |
+| DBSH2019001.pdf | DB31/T 1150-2019 | 中小学运动场地合成材料面层技术要求 |
+| GBT14960-2009.pdf | GB/T 14960-2009 | 体育用人造草皮（已废止）|
+| GBT22517.3-2011.pdf | GB/T 22517.3-2011 | 体育场地使用要求及检验方法 第3部分：篮球场地 |
+| GBT22517.6-2011.pdf | GB/T 22517.6-2011 | 体育场地使用要求及检验方法 第6部分：田径场地 |
+| GBT22517.7-2011.pdf | GB/T 22517.7-2011 | 体育场地使用要求及检验方法 第7部分：健身房地面 |
+| GBT3976-2014.pdf | GB/T 3976-2014 | 学校体育器材 配备目录 |
+| GBT51048-2014.pdf | GB/T 51048-2014 | 体育建筑电气设计规范 |
+| TSGTAS005-2020.pdf | T/SGTAS 005-2020 | 运动场地LED照明系统技术规范 |
+| DBGD2021001.pdf | DB44/T 2321-2021 | 广东省学校运动场地合成材料面层技术规范 |
+| GBT22517.1-2016.pdf | GB/T 22517.1-2016 | 体育场地使用要求及检验方法 第1部分：通用要求 |
+| GBT22517.5-2011.pdf | GB/T 22517.5-2011 | 体育场地使用要求及检验方法 第5部分：网球场地 |
 
-## 🚀 部署到腾讯 EdgeOne Pages（推荐）
+## 上传方法
 
-### 步骤一：Fork 本仓库
-点击右上角 **Fork** 按钮，创建你自己的仓库副本。
-
-### 步骤二：开通 EdgeOne Pages
-1. 登录 [腾讯云控制台](https://console.cloud.tencent.com/)
-2. 搜索 **EdgeOne** → 进入 **Pages** 功能
-3. 点击 **创建项目** → 选择 **连接 GitHub**
-4. 授权 GitHub 后，选择你 Fork 的仓库
-5. 构建配置：
-   - 构建命令：`（留空，纯静态无需构建）`
-   - 输出目录：`/`（根目录）
-   - 框架：`其他`
-6. 点击 **部署** → 等待 1~2 分钟完成
-
-### 步骤三：配置自定义域名（可选）
-在 EdgeOne Pages 控制台绑定你的域名，自动开启 HTTPS。
-
----
-
-## 📊 数据管理
-
-### 手动添加新标准
-编辑 `data/standards.json`，按模板格式添加：
-```json
-{
-  "id": "GBT12345-2024",
-  "code": "GB/T 12345-2024",
-  "title": "标准名称",
-  "type": "国家标准",
-  "status": "现行",
-  "issueDate": "2024-01-01",
-  "implementDate": "2024-07-01",
-  "abolishDate": null,
-  "issuedBy": "发布机构",
-  "category": "合成材料面层",
-  "tags": ["关键词"],
-  "summary": "标准简介",
-  "isMandatory": false,
-  "scope": "适用范围",
-  "isFree": true,
-  "downloadUrl": "https://openstd.samr.gov.cn/"
-}
-```
-
-### 标记废止标准
-将对应标准的 `status` 改为 `"废止"`，并填写：
-```json
-"abolishDate": "2025-01-01",
-"replacedBy": "GB/T XXXXX-XXXX"
-```
-
-### 数据来源（官方渠道）
-- 🇨🇳 国家标准：[openstd.samr.gov.cn](https://openstd.samr.gov.cn/)
-- 📋 全品类检索：[std.samr.gov.cn](https://std.samr.gov.cn/)
-- 🤝 团体标准：[ttbz.org.cn](https://www.ttbz.org.cn/)
-- 🏗️ 建工行标：[mohurd.gov.cn](https://www.mohurd.gov.cn/)
-
----
-
-## 💰 接入 Google AdSense
-
-1. 申请 [Google AdSense](https://adsense.google.com/) 账号
-2. 验证域名所有权（在 `index.html` 的 `<head>` 中插入验证代码）
-3. 等待审核通过（通常 1-4 周）
-4. 替换 `index.html` 中的广告占位符：
-
-```html
-<!-- 将 hero 下方的占位符替换为 -->
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-client="ca-pub-你的ID"
-     data-ad-slot="你的广告单元ID"
-     data-ad-format="auto"
-     data-full-width-responsive="true"></ins>
-<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-```
-
-5. 取消 `index.html` 头部 AdSense 脚本的注释
-
----
-
-## 📁 项目结构
-
-```
-sports-standards/
-├── index.html              # 主页面（单文件，包含所有逻辑）
-├── data/
-│   └── standards.json      # 标准数据库（JSON格式）
-├── scripts/
-│   └── update_standards.py # 自动更新脚本
-├── .github/
-│   └── workflows/
-│       └── update-standards.yml  # GitHub Actions 配置
-└── README.md
-```
-
----
-
-## 🔧 故障排查
-
-### GitHub Actions 运行失败
-1. 检查 Python 版本是否为 3.11
-2. 查看日志文件 `data/update_log.txt` 获取详细错误信息
-3. 确认 `requirements.txt` 中的依赖已正确安装
-
-### EdgeOne 部署失败
-1. 确认构建命令为空（纯静态站点）
-2. 检查输出目录是否设置为根目录 `/`
-3. 确认 GitHub 仓库已正确连接到 EdgeOne
-
-### PDF 下载失败
-1. 查看日志文件 `data/download_log.txt`
-2. 确认网络连接正常
-3. 部分标准可能需要购买，无法免费下载
-
----
-
-## 📞 数据贡献
-
-发现标准数据有误？新标准未收录？欢迎提交 Issue 或 Pull Request。
+1. 在 GitHub 仓库找到 `downloads/` 文件夹
+2. 点击 **Add file → Upload files**
+3. 按上表文件名上传对应 PDF
+4. 提交后网站自动部署，用户即可下载
