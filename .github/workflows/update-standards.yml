@@ -1,39 +1,42 @@
 name: 自动抓取更新体育标准数据库
 
 on:
+  push:             # 只要你保存代码，就会立刻触发一次运行，方便测试
+    branches: [ main ]
   schedule:
     - cron: '0 0 * * *' 
-  workflow_dispatch:
+  workflow_dispatch: # 允许你手动点击运行
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: 检出代码
-        uses: actions/checkout@v4 # 升级到 v4
+      - name: 1. 检出代码
+        uses: actions/checkout@v4
 
-      - name: 配置 Python 环境
-        uses: actions/setup-python@v5 # 升级到 v5
+      - name: 2. 配置 Python 环境
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          # 注意：这里去掉了 cache 选项，避免它因为找不到文件而报错
+          python-version: '3.11'
+          # 注意：这里我们去掉了 cache 选项，彻底根治“找不到文件”的报错
 
-      - name: 安装依赖
+      - name: 3. 安装依赖工具
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: 运行爬虫脚本
-        run: python scripts/update_standards.py  # 注意：这里要加上文件夹路径和正确的文件名
+      - name: 4. 运行爬虫脚本
+        # 核心修改：指向你现在的 scripts 文件夹和正确的脚本名
+        run: python scripts/update_standards.py
 
-      - name: 提交更新
+      - name: 5. 提交并同步数据
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action Bot"
+          git add .
           if [[ -n $(git status -s) ]]; then
-            git add data.json
-            git commit -m "🤖 自动更新标准库状态"
+            git commit -m "🤖 自动更新标准库数据"
             git push
           else
-            echo "没有发现新变动"
+            echo "数据没有变化，无需更新"
           fi
