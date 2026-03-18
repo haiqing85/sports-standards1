@@ -3,646 +3,398 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>后台管理 · 体育建设标准平台</title>
+  <title>体育标准管理后台</title>
   <style>
-    :root{--blue:#2563eb;--blue-dim:rgba(37,99,235,.08);--red:#dc2626;--red-dim:rgba(220,38,38,.07);--green:#16a34a;--amber:#d97706;--bg:#f3f4f6;--bg-white:#fff;--bg-subtle:#f9fafb;--border:#e5e7eb;--text:#111827;--text-2:#374151;--text-3:#6b7280;--shadow:0 1px 3px rgba(0,0,0,.10);--radius:8px;--font:"PingFang SC","Microsoft YaHei",sans-serif}
+    :root{--bg:#f4f6f9;--white:#fff;--subtle:#f0f4f8;--border:#dde3ec;--border-l:#eaeff5;--blue:#2563eb;--blue-d:#1a56c4;--blue-dim:rgba(37,99,235,.08);--red:#dc2626;--red-dim:rgba(220,38,38,.08);--green:#16a34a;--green-dim:rgba(22,163,74,.09);--amber:#d97706;--amber-dim:rgba(217,119,6,.10);--text:#1e2a3b;--text2:#475569;--muted:#94a3b8;--sh:0 1px 4px rgba(30,42,59,.08);--sh-md:0 4px 16px rgba(30,42,59,.12);--r:8px;--font:"PingFang SC","Microsoft YaHei",sans-serif}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
-    input,select,textarea,button{font-family:inherit;font-size:14px}
-    button{cursor:pointer}
-    .layout{display:flex;min-height:100vh}
-    .sidebar{width:220px;background:#1e293b;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:50;display:flex;flex-direction:column;overflow-y:auto}
-    .main{margin-left:220px;flex:1;display:flex;flex-direction:column}
-    .topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:40;box-shadow:var(--shadow)}
-    .content{padding:24px;flex:1}
-    .sb-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
-    .sb-logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#3b82f6,#2563eb);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:8px}
-    .sb-logo-text{color:#fff;font-size:14px;font-weight:700}
-    .sb-logo-sub{color:#94a3b8;font-size:11px;margin-top:2px}
-    .sb-nav{padding:12px 8px;flex:1}
-    .sb-section{color:#64748b;font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 8px 4px}
-    .sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:#94a3b8;cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-size:13.5px}
-    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
-    .sb-item.active{background:rgba(59,130,246,.2);color:#93c5fd}
-    .sb-item .ic{font-size:16px;width:20px;text-align:center;flex-shrink:0}
-    .sb-badge{margin-left:auto;background:rgba(59,130,246,.3);color:#93c5fd;border-radius:10px;padding:1px 6px;font-size:11px}
-    .sb-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);color:#64748b;font-size:11.5px}
-    .topbar-title{font-size:15px;font-weight:700}
-    .topbar-actions{display:flex;gap:8px;margin-left:auto;align-items:center}
-    .conn-status{display:flex;align-items:center;gap:6px;font-size:12.5px;padding:5px 12px;border-radius:20px;background:var(--bg-subtle);border:1px solid var(--border)}
-    .conn-dot{width:7px;height:7px;border-radius:50%;background:#d1d5db}
-    .conn-dot.ok{background:#22c55e}
-    .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius);font-size:13.5px;font-weight:500;border:1px solid transparent;transition:all .15s;white-space:nowrap}
-    .btn-primary{background:var(--blue);color:#fff}
-    .btn-primary:hover{background:#1d4ed8}
-    .btn-success{background:var(--green);color:#fff}
-    .btn-danger{background:var(--red);color:#fff}
-    .btn-ghost{background:transparent;color:var(--text-2);border-color:var(--border)}
-    .btn-ghost:hover{background:var(--bg-subtle)}
-    .btn-sm{padding:5px 10px;font-size:12.5px}
-    .btn:disabled{opacity:.5;cursor:default}
-    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
-    .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
-    .stat-label{font-size:12px;color:var(--text-3);font-weight:500;margin-bottom:4px}
-    .stat-val{font-size:26px;font-weight:700;line-height:1}
-    .stat-val.blue{color:var(--blue)} .stat-val.green{color:var(--green)} .stat-val.red{color:var(--red)} .stat-val.amber{color:var(--amber)}
-    .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .card-title{font-size:15px;font-weight:700}
-    .card-body{padding:18px 20px}
-    .filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-    .filter-bar input,.filter-bar select{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--text);outline:none}
-    .filter-bar input:focus,.filter-bar select:focus{border-color:#93c5fd}
-    .filter-bar input{min-width:200px}
-    .filter-cnt{font-size:13px;color:var(--text-3);margin-left:auto}
-    .tbl-wrap{overflow-x:auto}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+    .lw{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+    .lb{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:40px;width:100%;max-width:440px;box-shadow:var(--sh-md)}
+    .lb-logo{font-size:36px;text-align:center;margin-bottom:8px}
+    .lb-title{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}
+    .lb-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+    .lb label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:5px;letter-spacing:.5px;text-transform:uppercase}
+    .lb input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:var(--r);font-size:14px;outline:none;font-family:var(--font);color:var(--text);background:var(--subtle);margin-bottom:14px}
+    .lb input:focus{border-color:var(--blue);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .lb .hint{font-size:12px;color:var(--muted);background:var(--subtle);border-radius:6px;padding:10px 13px;margin-bottom:16px;line-height:1.7}
+    .lb .hint a{color:var(--blue);text-decoration:none}
+    .lb .hint code{background:var(--border);border-radius:3px;padding:1px 5px;font-family:monospace}
+    .btn-login{width:100%;padding:12px;background:linear-gradient(135deg,var(--blue-d),var(--blue));color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font)}
+    .btn-login:hover{opacity:.9}
+    .lerr{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+    .app{display:none;flex-direction:column;min-height:100vh}
+    .app.visible{display:flex}
+    .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:50;box-shadow:var(--sh)}
+    .tbar-logo{font-size:17px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+    .tbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+    .sync-st{font-size:12px;padding:4px 11px;border-radius:20px;background:var(--subtle);color:var(--muted)}
+    .sync-st.ok{background:var(--green-dim);color:var(--green)}
+    .sync-st.err{background:var(--red-dim);color:var(--red)}
+    .sync-st.saving{background:var(--amber-dim);color:var(--amber)}
+    .btn-logout{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:none;color:var(--text2);font-size:13px;cursor:pointer}
+    .btn-logout:hover{border-color:var(--red);color:var(--red)}
+    .content{flex:1;padding:24px;max-width:1400px;margin:0 auto;width:100%}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:22px}
+    .sc{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;box-shadow:var(--sh)}
+    .sc-n{font-size:28px;font-weight:700;line-height:1}
+    .sc-l{font-size:11.5px;color:var(--muted);margin-top:4px}
+    .sc.blue .sc-n{color:var(--blue)}.sc.green .sc-n{color:var(--green)}.sc.red .sc-n{color:var(--red)}.sc.amber .sc-n{color:var(--amber)}
+    .toolbar{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+    .sbox{flex:1;min-width:200px;max-width:340px;position:relative}
+    .sbox input{width:100%;padding:8px 14px 8px 34px;border:1px solid var(--border);border-radius:6px;font-size:13.5px;outline:none;font-family:var(--font);background:var(--white)}
+    .sbox input:focus{border-color:var(--blue)}
+    .sbox .si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
+    .fsel{padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;outline:none;background:var(--white);color:var(--text);font-family:var(--font);cursor:pointer}
+    .btn{padding:8px 16px;border-radius:6px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+    .bp{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(37,99,235,.3)}.bp:hover{background:var(--blue-d)}
+    .bs{background:var(--white);color:var(--text2);border:1px solid var(--border)}.bs:hover{border-color:var(--blue);color:var(--blue)}
+    .bd{background:var(--red-dim);color:var(--red);border:1px solid #fecaca}.bd:hover{background:#fee2e2}
+    .sm{padding:5px 10px;font-size:12px}
+    .tw{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
     table{width:100%;border-collapse:collapse}
-    th{background:var(--bg-subtle);padding:10px 14px;text-align:left;font-size:11.5px;font-weight:700;color:var(--text-3);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap}
-    td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13.5px;color:var(--text-2);vertical-align:middle}
+    th{background:var(--subtle);padding:10px 13px;text-align:left;font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+    td{padding:10px 13px;border-bottom:1px solid var(--border-l);vertical-align:middle;font-size:13px}
     tr:last-child td{border-bottom:none}
-    tr:hover td{background:var(--bg-subtle)}
-    .tc{font-family:"Courier New",monospace;font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap}
-    .tt{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .ta{display:flex;gap:6px;white-space:nowrap}
-    .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;white-space:nowrap}
-    .b-blue{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
-    .b-purple{background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff}
-    .b-green{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
-    .b-orange{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
-    .b-teal{background:#f0fdfa;color:#0f766e;border:1px solid #99f6e4}
-    .b-act{background:#f0fdf4;color:var(--green);border:1px solid #bbf7d0}
-    .b-abol{background:#fef2f2;color:var(--red);border:1px solid #fecaca}
-    .b-mand{background:#fffbeb;color:var(--amber);border:1px solid #fde68a}
-    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
-    .modal-bg.open{display:flex}
-    .modal{background:#fff;border-radius:12px;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .2s ease}
-    @keyframes mIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-    .mh{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-    .mh h2{font-size:16px;font-weight:700}
-    .mc-btn{width:28px;height:28px;border:none;background:var(--bg-subtle);border-radius:50%;font-size:15px;color:var(--text-3);display:flex;align-items:center;justify-content:center}
-    .mc-btn:hover{background:var(--red);color:#fff}
-    .mb{padding:18px 22px}
-    .mf{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
-    .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    tr:hover td{background:#fafbfc}
+    .tc{font-family:"Courier New",monospace;font-weight:700;color:var(--blue);font-size:11.5px;white-space:nowrap}
+    .tt{font-weight:600;line-height:1.4;max-width:260px}
+    .tt small{display:block;font-weight:400;color:var(--muted);font-size:11px;margin-top:1px}
+    .tact{display:flex;gap:6px;white-space:nowrap}
+    .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+    .b\u56fd\u5bb6\u6807\u51c6{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+    .b\u884c\u4e1a\u6807\u51c6{background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff}
+    .b\u5730\u65b9\u6807\u51c6{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}
+    .b\u56e2\u6807{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+    .b\u4f01\u4e1a\u6807\u51c6{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+    .b\u73b0\u884c{background:rgba(22,163,74,.09);color:#16a34a;border:1px solid #bbf7d0}
+    .b\u5e9f\u6b62{background:rgba(220,38,38,.08);color:#dc2626;border:1px solid #fecaca}
+    .b\u5373\u5c06\u5b9e\u65bd{background:var(--amber-dim);color:var(--amber);border:1px solid #fde68a}
+    .pdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+    .py{background:var(--green)}.pn{background:#cbd5e1}
+    .pager{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-top:1px solid var(--border-l);font-size:12.5px;color:var(--muted)}
+    .pbtns{display:flex;gap:5px}
+    .pb{width:32px;height:32px;border:1px solid var(--border);border-radius:5px;background:var(--white);color:var(--text2);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font)}
+    .pb:hover,.pb.active{border-color:var(--blue);color:var(--blue);background:var(--blue-dim)}
+    .pb.active{font-weight:700}
+    .mo{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:100;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+    .mo.open{display:flex}
+    .mbox{background:var(--white);border-radius:14px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:mIn .18s ease}
+    @keyframes mIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .mhead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border-l);position:sticky;top:0;background:var(--white);z-index:1}
+    .mhead h2{font-size:16px;font-weight:700}
+    .mcl{width:30px;height:30px;border:1px solid var(--border);border-radius:50%;background:var(--subtle);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
+    .mcl:hover{background:var(--red);border-color:var(--red);color:#fff}
+    .mbody{padding:20px}
+    .mfoot{padding:12px 20px;border-top:1px solid var(--border-l);display:flex;justify-content:flex-end;gap:10px;position:sticky;bottom:0;background:var(--white)}
+    .fg{display:grid;grid-template-columns:1fr 1fr;gap:13px}
     .ff{grid-column:1/-1}
-    .fl{display:flex;flex-direction:column;gap:5px}
-    .fl label{font-size:12.5px;font-weight:600;color:var(--text-2)}
-    .fl label span{color:var(--red)}
-    .fi,.fs,.fta{padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);color:var(--text);outline:none;background:#fff;width:100%}
-    .fi:focus,.fs:focus,.fta:focus{border-color:#93c5fd;box-shadow:0 0 0 3px rgba(147,197,253,.3)}
-    .fta{resize:vertical;min-height:80px;line-height:1.6}
-    .frow{display:flex;gap:8px;align-items:center}
-    .fcb{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
-    .toast-c{position:fixed;bottom:24px;right:24px;z-index:300;display:flex;flex-direction:column;gap:8px;max-width:340px}
-    .toast-i{padding:11px 15px;border-radius:var(--radius);box-shadow:0 4px 6px rgba(0,0,0,.07);font-size:13.5px;display:flex;align-items:center;gap:9px;animation:tIn .2s ease}
-    @keyframes tIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
-    .t-ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
-    .t-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c}
-    .t-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
-    .t-warn{background:#fffbeb;border:1px solid #fde68a;color:#d97706}
-    #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1e3a8a,#1d4ed8,#0369a1)}
-    .lc{background:#fff;border-radius:16px;padding:36px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-    .li{width:52px;height:52px;background:linear-gradient(135deg,#2563eb,#3b82f6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px}
-    .lt{text-align:center;font-size:19px;font-weight:700;margin-bottom:5px}
-    .ls{text-align:center;color:var(--text-3);font-size:13px;margin-bottom:22px}
-    .lg{margin-bottom:14px}
-    .ll{display:block;font-size:13px;font-weight:600;color:var(--text-2);margin-bottom:5px}
-    .lin{width:100%;padding:9px 13px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;outline:none}
-    .lin:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-    .lhint{font-size:12px;color:var(--text-3);margin-top:7px;line-height:1.6;background:var(--bg-subtle);padding:9px;border-radius:var(--radius)}
-    .lbtn{width:100%;padding:11px;background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;cursor:pointer;margin-top:6px}
-    .lbtn:hover{opacity:.9}
-    .page{display:none}.page.active{display:block}
-    .empty{text-align:center;padding:44px 20px;color:var(--text-3)}
-    .empty .ei{font-size:38px;margin-bottom:10px}
-    .empty h3{font-size:16px;color:var(--text-2);margin-bottom:5px}
-    .ti{display:flex;flex-wrap:wrap;gap:6px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);min-height:40px;cursor:text;align-items:flex-start}
-    .tag{background:var(--blue-dim);color:var(--blue);border-radius:12px;padding:2px 10px;font-size:12.5px;display:flex;align-items:center;gap:4px}
-    .tag button{background:none;border:none;color:var(--blue);font-size:14px;padding:0 1px;opacity:.7}
-    .tag button:hover{opacity:1}
-    .tif{border:none;outline:none;font-size:13px;background:transparent;min-width:80px;flex:1}
-    .uz{border:2px dashed var(--border);border-radius:var(--radius);padding:22px;text-align:center;cursor:pointer;transition:all .2s;color:var(--text-3)}
-    .uz:hover,.uz.drag{border-color:var(--blue);background:var(--blue-dim);color:var(--blue)}
-    .pdf-st{display:flex;align-items:center;gap:5px;font-size:12px}
-    .pdot{width:7px;height:7px;border-radius:50%}
-    .pdot.has{background:var(--green)} .pdot.none{background:#d1d5db} .pdot.chk{background:var(--amber);animation:p 1s infinite}
-    @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-    .wf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
-    .wf-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
-    .wf-icon{font-size:22px;margin-bottom:8px}
-    .wf-title{font-weight:700;margin-bottom:4px}
-    .wf-desc{font-size:12.5px;color:var(--text-3);margin-bottom:14px;line-height:1.5}
-    pre{background:var(--bg-subtle);padding:14px;border-radius:var(--radius);font-size:11.5px;overflow-x:auto;line-height:1.7;color:var(--text-2)}
-    code{background:var(--bg-subtle);padding:1px 5px;border-radius:4px;font-size:12px}
-  </style>
+    .fgrp{display:flex;flex-direction:column;gap:5px}
+    .fgrp label{font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:.4px}
+    .fgrp .req{color:var(--red)}
+    .fgrp input,.fgrp select,.fgrp textarea{padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13.5px;outline:none;font-family:var(--font);color:var(--text);background:var(--white)}
+    .fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.08)}
+    .fgrp textarea{resize:vertical;min-height:78px}
+    .rrow{display:flex;gap:18px;align-items:center;padding:7px 0}
+    .rrow label{font-weight:400;font-size:13.5px;display:flex;align-items:center;gap:5px;cursor:pointer;letter-spacing:0}
+    .dzone{border:2px dashed var(--border);border-radius:8px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
+    .dzone:hover,.dzone.drag{border-color:var(--blue);background:var(--blue-dim)}
+    .dzone p{font-size:12.5px;color:var(--muted);margin-top:6px}
+    .pinfo{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--green-dim);border:1px solid #bbf7d0;border-radius:7px;margin-top:10px;font-size:13px;color:var(--green)}
+    .dconf{background:var(--red-dim);border:1px solid #fecaca;border-radius:8px;padding:13px;margin-bottom:14px;font-size:13px;color:#b91c1c}
+    .toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:10px;font-size:13.5px;font-weight:600;box-shadow:var(--sh-md);z-index:999;display:none;animation:tIn .2s ease}
+    .toast.ok{background:#16a34a}.toast.err{background:var(--red)}.toast.show{display:block}
+    @keyframes tIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .empty{text-align:center;padding:48px 20px;color:var(--muted)}
+    .empty-i{font-size:38px;margin-bottom:12px}
+    .empty h3{font-size:15px;color:var(--text2);margin-bottom:6px}
+
+</style>
 </head>
 <body>
 
-<div id="loginScreen">
-  <div class="lc">
-    <div class="li">&#x1F3DF;</div>
-    <div class="lt">体育建设标准 · 后台管理</div>
-    <div class="ls">输入 GitHub 信息连接数据库</div>
-    <div class="lg"><label class="ll">GitHub 用户名</label><input class="lin" id="lgU" placeholder="your-username"></div>
-    <div class="lg"><label class="ll">仓库名称</label><input class="lin" id="lgR" value="sports-standards"></div>
-    <div class="lg">
-      <label class="ll">Personal Access Token</label>
-      <input class="lin" id="lgT" type="password" placeholder="ghp_xxxxxxxxxxxx">
-      <div class="lhint">&#x1F4CB; GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)<br>需勾选权限：<strong>repo</strong>（读写）和 <strong>workflow</strong>（触发Actions）</div>
+<div class="lw" id="lw">
+  <div class="lb">
+    <div class="lb-logo">&#127967;</div>
+    <div class="lb-title">&#20307;&#32946;&#26631;&#20934;&#31649;&#29702;&#21518;&#21488;</div>
+    <div class="lb-sub">Sports Standards Admin Panel</div>
+    <label>GitHub &#29992;&#25143;&#21517;</label>
+    <input type="text" id="ghUser" placeholder="your-github-username" autocomplete="username">
+    <label>&#20861;&#24211;&#21517;&#31216;</label>
+    <input type="text" id="ghRepo" placeholder="sports-standards" value="sports-standards">
+    <label>Personal Access Token</label>
+    <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxx" autocomplete="current-password">
+    <div class="hint">
+      &#128204; &#38656;&#35201; <code>repo</code> &#26435;&#38480;&#30340; Token&#12290;<br>
+      &#33719;&#21462;&#65306;GitHub &#8594; Settings &#8594; Developer settings &#8594; <a href="https://github.com/settings/tokens/new" target="_blank">Personal access tokens</a> &#8594; &#21201;&#36873; <code>repo</code> &#8594; Generate&#12290;<br>
+      <strong>&#36134;&#21495;&#20449;&#24687;&#20165;&#22312;&#28219;&#35272;&#22120;&#20869;&#23384;&#20013;&#20351;&#29992;&#65292;&#19981;&#20250;&#22806;&#20256;&#12290;</strong>
     </div>
-    <button class="lbtn" onclick="doLogin()">&#x1F510; 连接仓库</button>
+    <button class="btn-login" onclick="doLogin()">&#30331; &#24405;</button>
+    <div class="lerr" id="lerr"></div>
   </div>
 </div>
 
-<div class="layout" id="app" style="display:none">
-  <nav class="sidebar">
-    <div class="sb-logo">
-      <div class="sb-logo-icon">&#x1F3DF;</div>
-      <div class="sb-logo-text">体育建设标准库</div>
-      <div class="sb-logo-sub">后台管理系统</div>
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="tbar-logo">&#127967; &#20307;&#32946;&#26631;&#20934;&#31649;&#29702;&#21518;&#21488;</div>
+    <div class="tbar-right">
+      <span class="sync-st" id="syncSt">&#26410;&#21516;&#27493;</span>
+      <button class="btn bs sm" onclick="loadData()">&#128260; &#21047;&#26032;</button>
+      <button class="btn bp sm" onclick="openAdd()">&#65291; &#26032;&#22686;&#26631;&#20934;</button>
+      <button class="btn-logout" onclick="doLogout()">&#36864;&#20986;</button>
     </div>
-    <div class="sb-nav">
-      <div class="sb-section">数据管理</div>
-      <button class="sb-item active" onclick="showPage('dash')" id="nav-dash"><span class="ic">&#x1F4CA;</span>数据概览</button>
-      <button class="sb-item" onclick="showPage('stds')" id="nav-stds"><span class="ic">&#x1F4CB;</span>标准管理<span class="sb-badge" id="navBadge">0</span></button>
-      <button class="sb-item" onclick="showPage('pdfs')" id="nav-pdfs"><span class="ic">&#x1F4C4;</span>PDF 文件</button>
-      <div class="sb-section" style="margin-top:8px">工具</div>
-      <button class="sb-item" onclick="showPage('sync')" id="nav-sync"><span class="ic">&#x1F504;</span>同步与抓取</button>
-      <button class="sb-item" onclick="showPage('imp')" id="nav-imp"><span class="ic">&#x1F4E5;</span>批量导入</button>
+  </header>
+  <div class="content">
+    <div class="stats" id="stats"></div>
+    <div class="toolbar">
+      <div class="sbox">
+        <span class="si">&#128269;</span>
+        <input type="text" id="q" placeholder="&#25628;&#32034;&#32534;&#21495;&#12289;&#21517;&#31216;&#12289;&#20851;&#38190;&#35789;&#8230;" oninput="renderTable()">
+      </div>
+      <select class="fsel" id="fType" onchange="renderTable()">
+        <option value="">&#20840;&#37096;&#31867;&#22411;</option>
+        <option>&#22269;&#23478;&#26631;&#20934;</option><option>&#34892;&#19994;&#26631;&#20934;</option>
+        <option>&#22320;&#26041;&#26631;&#20934;</option><option>&#22242;&#26631;</option><option>&#20225;&#19994;&#26631;&#20934;</option>
+      </select>
+      <select class="fsel" id="fCat" onchange="renderTable()"><option value="">&#20840;&#37096;&#20998;&#31867;</option></select>
+      <select class="fsel" id="fStat" onchange="renderTable()">
+        <option value="">&#20840;&#37096;&#29366;&#24577;</option>
+        <option>&#29616;&#34892;</option><option>&#24320;&#27490;</option><option>&#21363;&#23558;&#23454;&#26施;</option>
+      </select>
+      <select class="fsel" id="fPdf" onchange="renderTable()">
+        <option value="">PDF&#29366;&#24577;</option>
+        <option value="yes">&#26377;PDF</option><option value="no">&#32570;PDF</option>
+      </select>
+      <button class="btn bs sm" onclick="exportJson()">&#11015; &#23548;&#20986;JSON</button>
     </div>
-    <div class="sb-footer">
-      <div id="sbRepo" style="color:#94a3b8;margin-bottom:4px">未连接</div>
-      <button onclick="doLogout()" style="background:none;border:none;color:#64748b;font-size:12px;cursor:pointer">退出登录</button>
-    </div>
-  </nav>
-
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-title" id="tbTitle">数据概览</div>
-      <div class="topbar-actions">
-        <div class="conn-status"><div class="conn-dot ok"></div><span>已连接</span></div>
-        <button class="btn btn-primary" onclick="saveToGH()" id="saveBtn" disabled>&#x1F4BE; 保存到 GitHub</button>
-      </div>
-    </div>
-    <div class="content">
-
-      <!-- DASH -->
-      <div class="page active" id="page-dash">
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-label">收录标准</div><div class="stat-val blue" id="s0">—</div></div>
-          <div class="stat-card"><div class="stat-label">现行有效</div><div class="stat-val green" id="s1">—</div></div>
-          <div class="stat-card"><div class="stat-label">已废止</div><div class="stat-val red" id="s2">—</div></div>
-          <div class="stat-card"><div class="stat-label">PDF已备</div><div class="stat-val amber" id="s3">—</div></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-          <div class="card"><div class="card-header"><div class="card-title">标准类型分布</div></div><div class="card-body" id="typeChart"></div></div>
-          <div class="card"><div class="card-header"><div class="card-title">标准分类分布</div></div><div class="card-body" id="catChart"></div></div>
-        </div>
-      </div>
-
-      <!-- STANDARDS -->
-      <div class="page" id="page-stds">
-        <div class="filter-bar">
-          <input id="sq" placeholder="&#x1F50D; 搜索编号或名称…" oninput="filt()">
-          <select id="ftype" onchange="filt()"><option value="">全部类型</option><option>国家标准</option><option>行业标准</option><option>地方标准</option><option>团标</option><option>企业标准</option></select>
-          <select id="fcat" onchange="filt()"><option value="">全部分类</option></select>
-          <select id="fstat" onchange="filt()"><option value="">全部状态</option><option>现行</option><option>废止</option><option>即将实施</option></select>
-          <span class="filter-cnt" id="fcnt"></span>
-          <button class="btn btn-primary" onclick="openAdd()">＋ 新增标准</button>
-        </div>
-        <div class="card">
-          <div class="tbl-wrap">
-            <table><thead><tr><th>编号</th><th>名称</th><th>类型</th><th>分类</th><th>状态</th><th>强制</th><th>发布</th><th>PDF</th><th>操作</th></tr></thead>
-            <tbody id="stb"></tbody></table>
-          </div>
-          <div class="empty" id="stEmpty" style="display:none"><div class="ei">&#x1F4CB;</div><h3>暂无数据</h3></div>
-        </div>
-      </div>
-
-      <!-- PDFS -->
-      <div class="page" id="page-pdfs">
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header">
-            <div class="card-title">PDF 文件管理</div>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-ghost btn-sm" onclick="chkPdfs()">&#x1F504; 刷新状态</button>
-              <button class="btn btn-primary btn-sm" onclick="trigWF('pdf')">&#x2B07;&#xFE0F; 触发自动下载</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <p style="color:var(--text-3);font-size:13px;margin-bottom:14px">PDF 文件存放在仓库 <code>downloads/</code> 目录，命名格式：<code>{id}.pdf</code></p>
-          </div>
-        </div>
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header"><div class="card-title">手动上传 PDF</div></div>
-          <div class="card-body">
-            <div style="margin-bottom:12px">
-              <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">选择对应标准</label>
-              <select class="fs" id="psel" style="width:100%"><option value="">— 选择标准 —</option></select>
-            </div>
-            <div class="uz" id="uz" onclick="document.getElementById('pfi').click()"
-                 ondragover="event.preventDefault();this.classList.add('drag')"
-                 ondragleave="this.classList.remove('drag')"
-                 ondrop="hdrop(event)">
-              <div style="font-size:28px;margin-bottom:6px">&#x1F4C4;</div>
-              <div style="font-size:13.5px;font-weight:600">点击或拖拽 PDF 文件到此处</div>
-              <div style="font-size:12px;margin-top:4px">支持 .pdf 格式</div>
-            </div>
-            <input type="file" id="pfi" accept=".pdf" style="display:none" onchange="hfile(event)">
-            <div id="upSt" style="margin-top:10px;display:none"></div>
-            <button class="btn btn-primary" style="margin-top:10px;width:100%" id="upBtn" onclick="upPdf()" disabled>&#x2B06;&#xFE0F; 上传 PDF 到仓库</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">PDF 状态总览</div></div>
-          <div class="tbl-wrap"><table><thead><tr><th>编号</th><th>名称</th><th>状态</th><th>操作</th></tr></thead><tbody id="ptb"></tbody></table></div>
-        </div>
-      </div>
-
-      <!-- SYNC -->
-      <div class="page" id="page-sync">
-        <div class="card" style="margin-bottom:16px">
-          <div class="card-header"><div class="card-title">&#x1F504; 触发 GitHub Actions 任务</div></div>
-          <div class="card-body">
-            <p style="color:var(--text-3);font-size:13px;margin-bottom:18px">点击按钮将在 GitHub 云端服务器上自动运行对应任务。</p>
-            <div class="wf-grid">
-              <div class="wf-card" style="border-color:#93c5fd">
-                <div class="wf-icon">&#x1F310;</div><div class="wf-title">完整抓取</div>
-                <div class="wf-desc">抓取新标准 + 核查状态 + 下载PDF</div>
-                <button class="btn btn-primary" style="width:100%" onclick="trigWF('full')">立即运行</button>
-              </div>
-              <div class="wf-card">
-                <div class="wf-icon">&#x1F50D;</div><div class="wf-title">仅核查状态</div>
-                <div class="wf-desc">检查现有标准是否已废止</div>
-                <button class="btn btn-ghost" style="width:100%" onclick="trigWF('check')">立即运行</button>
-              </div>
-              <div class="wf-card">
-                <div class="wf-icon">&#x2B07;&#xFE0F;</div><div class="wf-title">补充 PDF</div>
-                <div class="wf-desc">自动下载缺失的 PDF 文件</div>
-                <button class="btn btn-ghost" style="width:100%" onclick="trigWF('pdf')">立即运行</button>
-              </div>
-              <div class="wf-card">
-                <div class="wf-icon">&#x1F517;</div><div class="wf-title">补全链接</div>
-                <div class="wf-desc">为国家标准补全精准下载链接</div>
-                <button class="btn btn-ghost" style="width:100%" onclick="trigWF('enrich')">立即运行</button>
-              </div>
-            </div>
-            <div style="margin-top:16px;padding:12px;background:var(--bg-subtle);border-radius:var(--radius);font-size:13px;color:var(--text-3)">
-              触发后可在 <a href="#" onclick="window.open('https://github.com/'+GH_USER+'/'+GH_REPO+'/actions','_blank')" style="color:var(--blue)">GitHub Actions</a> 页面查看实时日志。
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- IMPORT -->
-      <div class="page" id="page-imp">
-        <div class="card">
-          <div class="card-header"><div class="card-title">&#x1F4E5; 批量导入标准（JSON 格式）</div></div>
-          <div class="card-body">
-            <p style="color:var(--text-3);font-size:13px;margin-bottom:14px">粘贴 JSON 数组格式数据，系统将自动与现有数据合并去重。</p>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-              <div>
-                <label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px">粘贴 JSON 数据</label>
-                <textarea class="fta" id="impJ" style="min-height:280px;font-family:monospace;font-size:12px" placeholder='[{
-  "code": "GB/T XXXXX-2024",
-  "title": "标准名称",
-  ...
-}]'></textarea>
-                <div style="display:flex;gap:8px;margin-top:10px">
-                  <button class="btn btn-ghost btn-sm" onclick="valImp()">&#x2713; 验证格式</button>
-                  <button class="btn btn-primary btn-sm" onclick="doImp()">&#x1F4E5; 导入合并</button>
-                </div>
-              </div>
-              <div>
-                <label style="font-size:12.5px;font-weight:700;display:block;margin-bottom:6px">字段说明</label>
-                <pre>&#123;
-  "code":          "GB/T XXXXX-2024",  // 必填
-  "title":         "标准名称",         // 必填
-  "type":          "国家标准",
-  "status":        "现行",
-  "issueDate":     "2024-01-01",
-  "implementDate": "2024-07-01",
-  "abolishDate":   null,
-  "replaces":      null,
-  "replacedBy":    null,
-  "issuedBy":      "发布机构",
-  "category":      "合成材料面层",
-  "tags":          ["标签1","标签2"],
-  "summary":       "摘要内容...",
-  "isMandatory":   false,
-  "scope":         "适用范围"
-&#125;</pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>&#26631;&#20934;&#32534;&#21495;</th><th>&#26631;&#20934;&#21517;&#31216;</th><th>&#31867;&#22411;</th>
+          <th>&#20998;&#31867;</th><th>&#29366;&#24577;</th><th>PDF</th><th>&#21457;&#24067;&#26085;&#26399;</th><th>&#25805;&#20316;</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="pager" id="pager"></div>
     </div>
   </div>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-bg" id="editMdl" onclick="cEM(event)">
-  <div class="modal">
-    <div class="mh"><h2 id="mTitle">新增标准</h2><button class="mc-btn" onclick="cEMD()">&#x2715;</button></div>
-    <div class="mb">
+<div class="mo" id="emo" onclick="closeMoCheck(event,'emo')">
+  <div class="mbox">
+    <div class="mhead"><h2 id="mTitle">&#26032;&#22686;&#26631;&#20934;</h2><button class="mcl" onclick="closeMo('emo')">&#10005;</button></div>
+    <div class="mbody">
       <div class="fg">
-        <div class="fl"><label>标准编号 <span>*</span></label><input class="fi" id="fc" placeholder="如 GB/T 14833-2011"></div>
-        <div class="fl"><label>标准类型 <span>*</span></label><select class="fs" id="ft"><option>国家标准</option><option>行业标准</option><option>地方标准</option><option>团标</option><option>企业标准</option></select></div>
-        <div class="fl ff"><label>标准名称 <span>*</span></label><input class="fi" id="fn" placeholder="标准全称"></div>
-        <div class="fl ff"><label>英文名称</label><input class="fi" id="fe" placeholder="English title"></div>
-        <div class="fl"><label>标准状态 <span>*</span></label><select class="fs" id="fst" onchange="togAb()"><option>现行</option><option>废止</option><option>即将实施</option></select></div>
-        <div class="fl"><label>标准分类 <span>*</span></label><select class="fs" id="fcat2"><option>合成材料面层</option><option>人造草坪</option><option>灯光照明</option><option>木地板</option><option>PVC运动地胶</option><option>围网</option><option>健身路径</option><option>体育器材</option><option>颗粒填充料</option><option>运动地板</option><option>场地设计</option><option>游泳场地</option><option>体育设施</option><option>综合</option></select></div>
-        <div class="fl"><label>发布日期</label><input class="fi" id="fid" type="date"></div>
-        <div class="fl"><label>实施日期</label><input class="fi" id="fimp" type="date"></div>
-        <div class="fl" id="abGrp" style="display:none"><label>废止日期</label><input class="fi" id="fab" type="date"></div>
-        <div class="fl"><label>发布机构</label><input class="fi" id="forg" placeholder="如 国家市场监督管理总局"></div>
-        <div class="fl"><label>替代标准</label><input class="fi" id="frep" placeholder="本标准替代的旧标准编号"></div>
-        <div class="fl"><label>被替代为</label><input class="fi" id="frby" placeholder="废止后由哪个标准代替"></div>
-        <div class="fl ff"><label>标准摘要 <span>*</span></label><textarea class="fta" id="fsum"></textarea></div>
-        <div class="fl ff"><label>适用范围</label><input class="fi" id="fscp" placeholder="适用于…"></div>
-        <div class="fl ff"><label>关键词标签（回车添加）</label><div class="ti" id="tagBox" onclick="document.getElementById('tagF').focus()"><input class="tif" id="tagF" placeholder="输入后按回车…" onkeydown="tkd(event)"></div></div>
-        <div class="fl"><div class="frow"><input type="checkbox" class="fcb" id="fmand"><label for="fmand" style="cursor:pointer">强制性标准</label></div></div>
+        <div class="fgrp"><label>&#26631;&#20934;&#32534;&#21495; <span class="req">*</span></label><input type="text" id="fCode" placeholder="&#22914; GB 36246-2018"></div>
+        <div class="fgrp"><label>&#26631;&#20934;&#31867;&#22411; <span class="req">*</span></label>
+          <select id="fType2"><option>&#22269;&#23478;&#26631;&#20934;</option><option>&#34892;&#19994;&#26631;&#20934;</option><option>&#22320;&#26041;&#26631;&#20934;</option><option>&#22242;&#26631;</option><option>&#20225;&#19994;&#26631;&#20934;</option></select></div>
+        <div class="fgrp ff"><label>&#26631;&#20934;&#21517;&#31216;&#65288;&#20013;&#25991;&#65289;<span class="req">*</span></label><input type="text" id="fTitle" placeholder="&#22914; &#20013;&#23567;&#23398;&#21512;&#25104;&#26448;&#26009;&#38754;&#23618;&#36816;&#21160;&#22330;&#22320;"></div>
+        <div class="fgrp ff"><label>&#26631;&#20934;&#21517;&#31216;&#65288;&#33521;&#25991;&#65289;</label><input type="text" id="fEng" placeholder="English title (optional)"></div>
+        <div class="fgrp"><label>&#26631;&#20934;&#29366;&#24577; <span class="req">*</span></label>
+          <select id="fStat2"><option>&#29616;&#34892;</option><option>&#24320;&#27490;</option><option>&#21363;&#23558;&#23454;&#26施;</option></select></div>
+        <div class="fgrp"><label>&#26631;&#20934;&#20998;&#31867; <span class="req">*</span></label>
+          <select id="fCat2"><option>&#21512;&#25104;&#26448;&#26009;&#38754;&#23618;</option><option>&#20154;&#36896;&#33609;&#22374;</option><option>&#31163;&#20809;&#29031;&#26126;</option><option>&#26408;&#22320;&#26495;</option><option>PVC&#36816;&#21160;&#22320;&#32118;</option><option>&#22260;&#32593;</option><option>&#20581;&#36523;&#36335;&#24452;</option><option>&#20307;&#32946;&#22120;&#26448;</option><option>&#39069;&#31192;&#22635;&#20805;&#26009;</option><option>&#28216;&#27888;&#22330;&#22320;</option><option>&#36816;&#21160;&#22320;&#26495;</option><option>&#22330;&#22320;&#35774;&#35745;</option><option>&#20307;&#32946;&#35774;&#26045;</option><option>&#32508;&#21512;</option></select></div>
+        <div class="fgrp"><label>&#21457;&#24067;&#26085;&#26399;</label><input type="date" id="fIDate"></div>
+        <div class="fgrp"><label>&#23454;&#26045;&#26085;&#26399;</label><input type="date" id="fImDate"></div>
+        <div class="fgrp"><label>&#24320;&#27490;&#26085;&#26399;</label><input type="date" id="fADate"></div>
+        <div class="fgrp"><label>&#21457;&#24067;&#26426;&#26500;</label><input type="text" id="fOrg" placeholder="&#22914; &#22269;&#23478;&#24066;&#22330;&#30418;&#31649;&#29702;&#24635;&#23616;"></div>
+        <div class="fgrp"><label>&#26367;&#20195;&#26631;&#20934;</label><input type="text" id="fRep" placeholder="&#34987;&#26367;&#20195;&#30340;&#26087;&#26631;&#20934;&#32534;&#21495;"></div>
+        <div class="fgrp"><label>&#34987;&#26367;&#20195;&#20026;</label><input type="text" id="fRepBy" placeholder="&#26367;&#20195;&#26412;&#26631;&#20934;&#30340;&#26032;&#26631;&#20934;&#32534;&#21495;"></div>
+        <div class="fgrp ff"><label>&#24378;&#21046;&#31243;&#24230;</label>
+          <div class="rrow"><label><input type="radio" name="mand" value="true"> &#24378;&#21046;&#24615;&#26631;&#20934;</label><label><input type="radio" name="mand" value="false" checked> &#25512;&#33616;&#24615;&#26631;&#20934;</label></div></div>
+        <div class="fgrp ff"><label>&#20851;&#38190;&#35789;&#26631;&#31614;&#65288;&#33521;&#25991;&#36887;&#21495;&#20998;&#38548;&#65289;</label><input type="text" id="fTags" placeholder="&#36305;&#36947;, &#25805;&#22330;, &#20013;&#23567;&#23398;, &#5267;&#26053;"></div>
+        <div class="fgrp ff"><label>&#36866;&#29992;&#33539;&#22260;</label><input type="text" id="fScope" placeholder="&#36866;&#29992;&#20110;&#8230;"></div>
+        <div class="fgrp ff"><label>&#26631;&#20934;&#25688;&#35201; <span class="req">*</span></label><textarea id="fSum" rows="4" placeholder="&#35268;&#23450;&#20102;&#8230;&#30340;&#25216;&#26415;&#35201;&#27714;&#12289;&#35797;&#39564;&#26041;&#27861;&#12289;&#26816;&#39564;&#35268;&#21017;&#8230;"></textarea></div>
+        <div class="fgrp ff">
+          <label>&#19978;&#20256; PDF &#25991;&#20214;&#65288;&#21487;&#36873;&#65289;</label>
+          <div class="dzone" id="dz" onclick="document.getElementById('pfi').click()" ondragover="event.preventDefault()" ondrop="handleDrop(event)">
+            <div style="font-size:28px">&#128196;</div>
+            <div style="font-weight:600;font-size:14px;margin-top:6px">&#28857;&#20987;&#36873;&#25321; PDF&#65292;&#25110;&#25320;&#30333;&#21040;&#27492;&#22788;</div>
+            <p>&#25991;&#20214;&#23558;&#33258;&#21160;&#19978;&#20256;&#33267;&#20179;&#24211; downloads/ &#30446;&#24405;&#65292;&#20379;&#29992;&#25143;&#19979;&#36733;</p>
+          </div>
+          <input type="file" id="pfi" accept=".pdf" style="display:none" onchange="handlePdfSel(event)">
+          <div class="pinfo" id="pinfo" style="display:none"></div>
+        </div>
       </div>
     </div>
-    <div class="mf">
-      <button class="btn btn-ghost" onclick="cEMD()">取消</button>
-      <button class="btn btn-primary" onclick="saveSt()">&#x1F4BE; 保存标准</button>
+    <div class="mfoot"><button class="btn bs" onclick="closeMo('emo')">&#21462;&#28040;</button><button class="btn bp" id="saveBtn" onclick="saveStd()">&#128190; &#20445;&#23384;&#26631;&#20934;</button></div>
+  </div>
+</div>
+
+<div class="mo" id="dmo" onclick="closeMoCheck(event,'dmo')">
+  <div class="mbox" style="max-width:440px">
+    <div class="mhead"><h2>&#30830;&#35748;&#21024;&#38500;</h2><button class="mcl" onclick="closeMo('dmo')">&#10005;</button></div>
+    <div class="mbody">
+      <div class="dconf">&#9888;&#65039; &#27492;&#25805;&#20316;&#19981;&#21487;&#25764;&#37323;&#65281;&#30830;&#23450;&#35201;&#21024;&#38500;&#20197;&#19979;&#26631;&#20934;&#21543;&#65311;</div>
+      <p style="font-size:14px;line-height:1.7"><strong id="dCode"></strong><br><span id="dTitle" style="color:var(--text2)"></span></p>
     </div>
+    <div class="mfoot"><button class="btn bs" onclick="closeMo('dmo')">&#21462;&#28040;</button><button class="btn bd" onclick="doDelete()">&#128465; &#30830;&#35748;&#21024;&#38500;</button></div>
   </div>
 </div>
 
-<!-- DELETE MODAL -->
-<div class="modal-bg" id="delMdl" onclick="cDM(event)">
-  <div class="modal" style="max-width:400px">
-    <div class="mh"><h2>&#x26A0;&#xFE0F; 确认删除</h2><button class="mc-btn" onclick="cDMD()">&#x2715;</button></div>
-    <div class="mb"><p style="color:var(--text-2);line-height:1.7">确定要删除 <strong id="delName"></strong> 吗？<br>此操作保存后不可撤销。</p></div>
-    <div class="mf"><button class="btn btn-ghost" onclick="cDMD()">取消</button><button class="btn btn-danger" onclick="confDel()">&#x1F5D1; 确认删除</button></div>
-  </div>
-</div>
-
-<div class="toast-c" id="tc"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-let GH_USER='',GH_REPO='',GH_TOKEN='',GH_SHA='';
-let stds=[],filtd=[];
-let editId='',delId='',pendUp=null,changed=false;
-const TYPE_CLS={'国家标准':'b-blue','行业标准':'b-purple','地方标准':'b-green','团标':'b-orange','企业标准':'b-teal'};
-const PAGES={'dash':'数据概览','stds':'标准管理','pdfs':'PDF文件','sync':'同步与抓取','imp':'批量导入'};
 
-// LOGIN
-async function doLogin(){
-  const u=v('lgU'),r=v('lgR'),t=v('lgT');
-  if(!u||!r||!t){toast('请填写完整','warn');return}
-  try{
-    const res=await ghG(`repos/${u}/${r}/contents/data/standards.json`);
-    if(res.message)throw new Error(res.message);
-    GH_USER=u;GH_REPO=r;GH_TOKEN=t;GH_SHA=res.sha;
-    const db=JSON.parse(atob(res.content.replace(/\n/g,'')));
-    stds=db.standards||[];
-    document.getElementById('loginScreen').style.display='none';
-    document.getElementById('app').style.display='flex';
-    document.getElementById('sbRepo').textContent=u+'/'+r;
-    init();toast('连接成功！','ok');
-  }catch(e){toast('连接失败: '+e.message,'err')}
+let DB=[],FT=[],pg=1;
+const PS=25;
+let editId=null,delId=null,pdfFile=null,fileSha="";
+const ge=id=>document.getElementById(id);
+const v=id=>ge(id).value.trim();
+const sv=(id,val)=>ge(id).value=val;
+const ls=(k,v)=>localStorage.setItem("spa_"+k,v);
+const lg=k=>localStorage.getItem("spa_"+k)||"";
+
+function doLogin(){
+  const u=v("ghUser"),r=v("ghRepo"),t=v("ghToken");
+  if(!u||!r||!t){showErr("请填写所有字段");return;}
+  GH={user:u,token:t,repo:r};ls("u",u);ls("r",r);
+  setSt("saving","验证中…");
+  loadData().then(()=>{ge("lw").style.display="none";ge("app").classList.add("visible");ge("lerr").style.display="none";}).catch(e=>{showErr("登录失败："+e.message);setSt("err","验证失败");});
 }
-function doLogout(){GH_USER=GH_REPO=GH_TOKEN=GH_SHA='';stds=[];document.getElementById('loginScreen').style.display='flex';document.getElementById('app').style.display='none'}
+function doLogout(){GH={user:"",token:"",repo:""};ge("lw").style.display="";ge("app").classList.remove("visible");ge("ghToken").value="";}
+function showErr(m){const e=ge("lerr");e.textContent=m;e.style.display="block";}
 
-// GH API
-async function ghG(p){const r=await fetch('https://api.github.com/'+p,{headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json'}});return r.json()}
-async function ghP(p,b){const r=await fetch('https://api.github.com/'+p,{method:'PUT',headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(b)});return r.json()}
-async function ghPost(p,b){const r=await fetch('https://api.github.com/'+p,{method:'POST',headers:{'Authorization':'token '+GH_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(b)});return r.json()}
+document.addEventListener("DOMContentLoaded",()=>{
+  const u=lg("u"),r=lg("r");if(u)ge("ghUser").value=u;if(r)ge("ghRepo").value=r;
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")["emo","dmo"].forEach(id=>{if(ge(id).classList.contains("open"))closeMo(id);});});
+});
 
-// SAVE
+const apiB=()=>"https://api.github.com/repos/"+GH.user+"/"+GH.repo;
+const hdr=()=({"Authorization":"token "+GH.token,"Accept":"application/vnd.github.v3+json","Content-Type":"application/json"});
+
+async function ghGet(p){const r=await fetch(apiB()+p,{headers:hdr()});if(!r.ok)throw new Error("GitHub "+(await r.json()).message);return r.json();}
+async function ghPut(p,body){const r=await fetch(apiB()+p,{method:"PUT",headers:hdr(),body:JSON.stringify(body)});if(!r.ok)throw new Error("GitHub "+(await r.json()).message);return r.json();}
+
+async function loadData(){
+  setSt("saving","加载中…");
+  const f=await ghGet("/contents/data/standards.json");
+  fileSha=f.sha;
+  const raw=f.content.replace(/\n/g,"");
+  const json=JSON.parse(decodeURIComponent(escape(atob(raw))));
+  DB=json.standards||[];
+  buildCatFilter();renderStats();renderTable();
+  setSt("ok","已同步 "+DB.length+" 条");
+}
+
 async function saveToGH(){
-  const btn=document.getElementById('saveBtn');
-  btn.disabled=true;btn.textContent='保存中…';
-  try{
-    const db={version:new Date().toISOString().slice(0,10).replace(/-/g,'.'),updated:new Date().toISOString().slice(0,10),total:stds.length,standards:stds};
-    const c=btoa(unescape(encodeURIComponent(JSON.stringify(db,null,2))));
-    const res=await ghP(`repos/${GH_USER}/${GH_REPO}/contents/data/standards.json`,{message:'✏️ 后台更新 '+db.updated,content:c,sha:GH_SHA});
-    if(res.content){GH_SHA=res.content.sha;changed=false;btn.disabled=true;btn.textContent='💾 保存到 GitHub';toast('✅ 已保存 '+stds.length+' 条标准','ok');updStats()}
-    else throw new Error(res.message||'失败');
-  }catch(e){toast('保存失败: '+e.message,'err');btn.disabled=false;btn.textContent='💾 保存到 GitHub'}
-}
-function mark(){changed=true;document.getElementById('saveBtn').disabled=false}
-
-// INIT
-function init(){updStats();rendStds();rendPdfList();fillCatFilter();fillPsel();showPage('dash')}
-
-function updStats(){
-  const act=stds.filter(s=>s.status==='现行').length;
-  const abl=stds.filter(s=>s.status==='废止').length;
-  sv('s0',stds.length);sv('s1',act);sv('s2',abl);sv('s3','—');
-  document.getElementById('navBadge').textContent=stds.length;
-  const tc={},cc={};
-  stds.forEach(s=>{tc[s.type]=(tc[s.type]||0)+1;cc[s.category]=(cc[s.category]||0)+1});
-  barChart('typeChart',tc);barChart('catChart',cc);
-}
-function barChart(id,data){
-  const el=document.getElementById(id);
-  const max=Math.max(...Object.values(data),1);
-  const cols=['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4','#84cc16','#f97316'];
-  el.innerHTML=Object.entries(data).sort((a,b)=>b[1]-a[1]).map(([k,v],i)=>`
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <div style="width:96px;font-size:12px;color:var(--text-3);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0" title="${k}">${k}</div>
-      <div style="flex:1;height:16px;background:var(--bg-subtle);border-radius:3px;overflow:hidden">
-        <div style="width:${Math.round(v/max*100)}%;height:100%;background:${cols[i%cols.length]};border-radius:3px"></div>
-      </div>
-      <div style="width:22px;font-size:12px;font-weight:700;color:var(--text)">${v}</div>
-    </div>`).join('')
+  setSt("saving","保存中…");
+  const today=new Date().toISOString().slice(0,10);
+  const db={version:today.replace(/-/g,"."),updated:today,total:DB.length,standards:DB};
+  const content=btoa(unescape(encodeURIComponent(JSON.stringify(db,null,2))));
+  const res=await ghPut("/contents/data/standards.json",{message:"✏️ 后台更新 "+today,content,sha:fileSha});
+  fileSha=res.content.sha;
+  setSt("ok","已保存 "+DB.length+" 条");
+  toast("✅ 保存成功，网站约 1 分钟后更新","ok");
 }
 
-// FILTER & RENDER
-function fillCatFilter(){const s=document.getElementById('fcat');const cs=[...new Set(stds.map(x=>x.category))].sort();s.innerHTML='<option value="">全部分类</option>'+cs.map(c=>`<option>${c}</option>`).join('')}
-function filt(){
-  const q=v('sq').toLowerCase(),tp=v('ftype'),ct=v('fcat'),st=v('fstat');
-  filtd=stds.filter(s=>{
-    if(q&&!s.code.toLowerCase().includes(q)&&!s.title.toLowerCase().includes(q))return false;
-    if(tp&&s.type!==tp)return false;
-    if(ct&&s.category!==ct)return false;
-    if(st&&s.status!==st)return false;
-    return true;
+async function uploadPdf(id,file){
+  if(!file)return;setSt("saving","上传PDF…");
+  const content=await new Promise(res=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(",")[1]);r.readAsDataURL(file);});
+  let sha="";try{const ex=await ghGet("/contents/downloads/"+id+".pdf");sha=ex.sha;}catch{}
+  await ghPut("/contents/downloads/"+id+".pdf",{message:"📄 上传PDF: "+id,content,...(sha?{sha}:{})});
+  toast("✅ PDF 已上传: "+id+".pdf","ok");
+}
+
+function setSt(cls,txt){const e=ge("syncSt");e.className="sync-st "+cls;e.textContent=txt;}
+function buildCatFilter(){
+  const cats=[...new Set(DB.map(s=>s.category))].sort();
+  ge("fCat").innerHTML="<option value=''>全部分类</option>"+cats.map(c=>"<option>"+c+"</option>").join("");
+}
+function renderStats(){
+  const t=DB.length,a=DB.filter(s=>s.status==="现行").length,ab=DB.filter(s=>s.status==="废止").length,p=DB.filter(s=>s.localFile).length;
+  ge("stats").innerHTML=\`<div class="sc blue"><div class="sc-n">\${t}</div><div class="sc-l">收录标准</div></div><div class="sc green"><div class="sc-n">\${a}</div><div class="sc-l">现行有效</div></div><div class="sc red"><div class="sc-n">\${ab}</div><div class="sc-l">已废止</div></div><div class="sc amber"><div class="sc-n">\${p}</div><div class="sc-l">有PDF文件</div></div>\`;
+}
+function getFiltered(){
+  const q=v("q").toLowerCase(),tp=v("fType"),cat=v("fCat"),st=v("fStat"),pdf=v("fPdf");
+  return DB.filter(s=>{
+    if(tp&&s.type!==tp)return false;if(cat&&s.category!==cat)return false;
+    if(st&&s.status!==st)return false;if(pdf==="yes"&&!s.localFile)return false;if(pdf==="no"&&s.localFile)return false;
+    if(q&&!(\`\${s.code} \${s.title} \${(s.tags||[]).join(" ")} \${s.summary||""}\`).toLowerCase().includes(q))return false;return true;
   });
-  document.getElementById('fcnt').textContent='共 '+filtd.length+' 条';
-  rendTbl(filtd);
 }
-function rendStds(){filtd=[...stds];document.getElementById('fcnt').textContent='共 '+filtd.length+' 条';rendTbl(filtd)}
-function rendTbl(list){
-  const tb=document.getElementById('stb'),em=document.getElementById('stEmpty');
-  if(!list.length){tb.innerHTML='';em.style.display='block';return}
-  em.style.display='none';
-  tb.innerHTML=list.map(s=>`<tr>
-    <td class="tc">${eh(s.code)}</td>
-    <td class="tt" title="${eh(s.title)}">${eh(s.title)}</td>
-    <td><span class="badge ${TYPE_CLS[s.type]||'b-blue'}">${eh(s.type)}</span></td>
-    <td>${eh(s.category||'—')}</td>
-    <td><span class="badge ${s.status==='废止'?'b-abol':'b-act'}">${s.status==='废止'?'⊗ 废止':'✓ 现行'}</span></td>
-    <td>${s.isMandatory?'<span class="badge b-mand">⚡强制</span>':'<span style="color:var(--text-3)">推荐</span>'}</td>
-    <td style="color:var(--text-3)">${s.issueDate||'—'}</td>
-    <td><div class="pdf-st"><div class="pdot chk" id="pd-${s.id}"></div><span id="ps-${s.id}">…</span></div></td>
-    <td class="ta">
-      <button class="btn btn-ghost btn-sm" onclick="openEd('${s.id}')">✏️</button>
-      <button class="btn btn-sm" style="background:#fef2f2;color:var(--red);border-color:#fecaca" onclick="openDel('${s.id}')">🗑</button>
-    </td>
-  </tr>`).join('');
-  chkPdfsSilent(list);
+function renderTable(){FT=getFiltered();pg=1;renderPage();}
+function renderPage(){
+  const tbody=ge("tbody");const sl=FT.slice((pg-1)*PS,pg*PS);
+  if(!sl.length){tbody.innerHTML=\`<tr><td colspan="8"><div class="empty"><div class="empty-i">🔍</div><h3>未找到匹配的标准</h3></div></td></tr>\`;ge("pager").innerHTML="";return;}
+  tbody.innerHTML=sl.map(s=>\`<tr>
+    <td class="tc">\${eh(s.code)}</td>
+    <td class="tt">\${eh(s.title)}<small>\${eh(s.issuedBy||"")}</small></td>
+    <td><span class="badge b\${eh(s.type)}">\${eh(s.type)}</span></td>
+    <td>\${eh(s.category||"—")}</td>
+    <td><span class="badge b\${eh(s.status)}">\${eh(s.status)}</span></td>
+    <td><span class="pdot \${s.localFile?"py":"pn"}"></span>\${s.localFile?"有":"缺"}</td>
+    <td>\${s.issueDate||"—"}</td>
+    <td class="tact"><button class="btn bs sm" onclick="openEdit('\${eh(s.id)}')">✏️ 编辑</button><button class="btn bd sm" onclick="openDel('\${eh(s.id)}')">🗑</button></td>
+  </tr>\`).join("");
+  const tot=Math.ceil(FT.length/PS);
+  if(tot<=1){ge("pager").innerHTML=\`<span>共 \${FT.length} 条</span><span></span>\`;return;}
+  let btns="";
+  if(pg>1)btns+=\`<button class="pb" onclick="goPage(\${pg-1})">‹</button>\`;
+  for(let i=1;i<=tot;i++){if(i===1||i===tot||Math.abs(i-pg)<=1)btns+=\`<button class="pb\${i===pg?" active":""}" onclick="goPage(\${i})">\${i}</button>\`;else if(Math.abs(i-pg)===2)btns+=\`<span style="padding:0 3px;color:var(--muted)">…</span>\`;}
+  if(pg<tot)btns+=\`<button class="pb" onclick="goPage(\${pg+1})">›</button>\`;
+  ge("pager").innerHTML=\`<span>共 \${FT.length} 条，第 \${pg}/\${tot} 页</span><div class="pbtns">\${btns}</div>\`;
 }
+function goPage(n){pg=n;renderPage();ge("tbody").closest(".tw").scrollIntoView({behavior:"smooth",block:"start"});}
 
-// PDF STATUS
-async function chkPdfsSilent(list){
-  let n=0;
-  for(const s of list.slice(0,30)){
-    try{
-      const r=await ghG(`repos/${GH_USER}/${GH_REPO}/contents/downloads/${s.id}.pdf`);
-      const ok=!r.message;
-      const d=document.getElementById('pd-'+s.id);
-      const t=document.getElementById('ps-'+s.id);
-      if(d){d.className='pdot '+(ok?'has':'none')}
-      if(t){t.textContent=ok?Math.round((r.size||0)/1024)+'KB':'无';t.style.color=ok?'var(--green)':'var(--text-3)'}
-      if(ok)n++;
-    }catch{}
-    await sl(120);
-  }
-  sv('s3',n);
+function openAdd(){editId=null;pdfFile=null;ge("mTitle").textContent="新增标准";ge("saveBtn").textContent="💾 保存标准";clearForm();openMo("emo");}
+function openEdit(id){
+  const s=DB.find(x=>x.id===id);if(!s)return;
+  editId=id;pdfFile=null;ge("mTitle").textContent="编辑标准";ge("saveBtn").textContent="💾 更新标准";
+  sv("fCode",s.code||"");sv("fTitle",s.title||"");sv("fEng",s.english||"");
+  sv("fType2",s.type||"国家标准");sv("fStat2",s.status||"现行");sv("fCat2",s.category||"综合");
+  sv("fIDate",s.issueDate||"");sv("fImDate",s.implementDate||"");sv("fADate",s.abolishDate||"");
+  sv("fOrg",s.issuedBy||"");sv("fRep",s.replaces||"");sv("fRepBy",s.replacedBy||"");
+  sv("fTags",(s.tags||[]).join(", "));sv("fScope",s.scope||"");sv("fSum",s.summary||"");
+  document.querySelectorAll("input[name='mand']").forEach(r=>r.checked=r.value===String(s.isMandatory));
+  const pi=ge("pinfo");if(s.localFile){pi.style.display="flex";pi.textContent="✅ 已有PDF: "+s.localFile;}else pi.style.display="none";
+  openMo("emo");
 }
-async function chkPdfs(){toast('检查中…','info');await chkPdfsSilent(filtd.length?filtd:stds);toast('完成','ok')}
-
-// EDIT
-function openAdd(){editId='';sv2('mTitle','➕ 新增标准');clrF();openMdl('editMdl')}
-function openEd(id){
-  const s=stds.find(x=>x.id===id);if(!s)return;
-  editId=id;sv2('mTitle','✏️ 编辑标准');fillF(s);togAb();openMdl('editMdl');
+function clearForm(){
+  ["fCode","fTitle","fEng","fIDate","fImDate","fADate","fOrg","fRep","fRepBy","fTags","fScope","fSum"].forEach(id=>sv(id,""));
+  sv("fType2","国家标准");sv("fStat2","现行");sv("fCat2","合成材料面层");
+  document.querySelector("input[name='mand'][value='false']").checked=true;
+  ge("pinfo").style.display="none";ge("pfi").value="";
 }
-function fillF(s){
-  sv('fc',s.code||'');sv('fn',s.title||'');sv('fe',s.english||'');sv('ft',s.type||'国家标准');
-  sv('fst',s.status||'现行');sv('fcat2',s.category||'合成材料面层');
-  sv('fid',s.issueDate||'');sv('fimp',s.implementDate||'');sv('fab',s.abolishDate||'');
-  sv('forg',s.issuedBy||'');sv('frep',s.replaces||'');sv('frby',s.replacedBy||'');
-  sv('fsum',s.summary||'');sv('fscp',s.scope||'');
-  document.getElementById('fmand').checked=!!s.isMandatory;
-  setTags(s.tags||[]);
-}
-function clrF(){['fc','fn','fe','fid','fimp','fab','forg','frep','frby','fsum','fscp'].forEach(x=>sv(x,''));sv('ft','国家标准');sv('fst','现行');sv('fcat2','合成材料面层');document.getElementById('fmand').checked=false;setTags([])}
-function togAb(){document.getElementById('abGrp').style.display=v('fst')==='废止'?'':'none'}
-function saveSt(){
-  const code=v('fc').trim(),title=v('fn').trim();
-  if(!code||!title){toast('编号和名称为必填','warn');return}
-  const id=editId||mkId(code);
-  const e={id,code,title,english:v('fe')||'',type:v('ft'),status:v('fst'),
-    issueDate:v('fid')||null,implementDate:v('fimp')||null,abolishDate:v('fab')||null,
-    replaces:v('frep')||null,replacedBy:v('frby')||null,issuedBy:v('forg')||'',
-    category:v('fcat2'),tags:getTags(),summary:v('fsum')||'',isMandatory:document.getElementById('fmand').checked,
-    scope:v('fscp')||'',localFile:`downloads/${id}.pdf`};
-  if(editId){const i=stds.findIndex(s=>s.id===editId);if(i>=0)stds[i]=e;toast('✅ 已更新','ok')}
-  else{if(stds.find(s=>s.id===id||s.code===code)){toast('编号已存在','warn');return}stds.push(e);toast('✅ 已新增','ok')}
-  cEMD();mark();rendStds();updStats();fillCatFilter();fillPsel();
-}
-
-// DELETE
-function openDel(id){const s=stds.find(x=>x.id===id);if(!s)return;delId=id;sv2('delName',s.code+' '+s.title);openMdl('delMdl')}
-function confDel(){stds=stds.filter(s=>s.id!==delId);delId='';cDMD();mark();rendStds();updStats();toast('已删除','ok')}
-
-// PDF UPLOAD
-function rendPdfList(){
-  fillPsel();
-  document.getElementById('ptb').innerHTML=stds.map(s=>`<tr>
-    <td class="tc">${eh(s.code)}</td>
-    <td class="tt">${eh(s.title)}</td>
-    <td><div class="pdf-st"><div class="pdot chk" id="pt-${s.id}"></div><span id="px-${s.id}">…</span></div></td>
-    <td><button class="btn btn-ghost btn-sm" onclick="sv('psel','${s.id}')">选择上传</button></td>
-  </tr>`).join('');
-}
-function fillPsel(){const s=document.getElementById('psel');s.innerHTML='<option value="">— 选择标准 —</option>'+stds.map(x=>`<option value="${x.id}">${x.code} ${x.title}</option>`).join('')}
-function hfile(e){const f=e.target.files[0];if(f)hpdf(f)}
-function hdrop(e){e.preventDefault();document.getElementById('uz').classList.remove('drag');const f=e.dataTransfer.files[0];if(f&&f.type==='application/pdf')hpdf(f);else toast('请上传PDF格式','warn')}
-function hpdf(f){
-  const r=new FileReader();
-  r.onload=e=>{
-    const b64=btoa(new Uint8Array(e.target.result).reduce((d,b)=>d+String.fromCharCode(b),''));
-    pendUp={content:b64,name:f.name,size:f.size};
-    const st=document.getElementById('upSt');st.style.display='block';
-    st.innerHTML=`<div class="toast-i t-info">📄 已选择: ${f.name} (${Math.round(f.size/1024)} KB)</div>`;
-    document.getElementById('upBtn').disabled=false;
-  };r.readAsArrayBuffer(f);
-}
-async function upPdf(){
-  const sid=v('psel');if(!sid){toast('请选择标准','warn');return}
-  if(!pendUp){toast('请选择PDF文件','warn');return}
-  const btn=document.getElementById('upBtn');btn.disabled=true;btn.textContent='上传中…';
+async function saveStd(){
+  const code=v("fCode"),title=v("fTitle"),sum=v("fSum");
+  if(!code||!title||!sum){toast("请填写标准编号、名称和摘要","err");return;}
+  const newId=editId||code.replace(/[^A-Za-z0-9]/g,"").slice(0,30);
+  const entry={id:newId,code,title,english:v("fEng"),type:v("fType2"),status:v("fStat2"),issueDate:v("fIDate")||null,implementDate:v("fImDate")||null,abolishDate:v("fADate")||null,replaces:v("fRep")||null,replacedBy:v("fRepBy")||null,issuedBy:v("fOrg"),category:v("fCat2"),tags:v("fTags").split(",").map(t=>t.trim()).filter(Boolean),summary:sum,isMandatory:document.querySelector("input[name='mand']:checked")?.value==="true",scope:v("fScope"),localFile:pdfFile?"downloads/"+newId+".pdf":(editId?(DB.find(s=>s.id===editId)?.localFile||null):null)};
+  const btn=ge("saveBtn");btn.disabled=true;btn.textContent="保存中…";
   try{
-    let sha='';
-    try{const ex=await ghG(`repos/${GH_USER}/${GH_REPO}/contents/downloads/${sid}.pdf`);if(ex.sha)sha=ex.sha}catch{}
-    const body={message:`📄 上传PDF: ${sid}`,content:pendUp.content};if(sha)body.sha=sha;
-    const res=await ghP(`repos/${GH_USER}/${GH_REPO}/contents/downloads/${sid}.pdf`,body);
-    if(res.content){toast('✅ 上传成功: '+sid+'.pdf','ok');document.getElementById('upSt').innerHTML=`<div class="toast-i t-ok">✅ 成功 downloads/${sid}.pdf</div>`;pendUp=null;document.getElementById('pfi').value=''}
-    else throw new Error(res.message||'失败');
-  }catch(e){toast('上传失败: '+e.message,'err')}
-  btn.disabled=false;btn.textContent='⬆️ 上传 PDF 到仓库';
+    if(pdfFile)await uploadPdf(newId,pdfFile);
+    if(editId){const i=DB.findIndex(s=>s.id===editId);if(i>=0)DB[i]=entry;}
+    else{if(DB.find(s=>s.code.replace(/\s/g,"")===code.replace(/\s/g,""))){toast("❌ 标准编号已存在","err");return;}DB.unshift(entry);}
+    await saveToGH();renderStats();buildCatFilter();renderTable();closeMo("emo");
+    toast(editId?"✅ 标准已更新":"✅ 标准已新增","ok");
+  }catch(e){toast("❌ 保存失败: "+e.message,"err");}
+  finally{btn.disabled=false;btn.textContent=editId?"💾 更新标准":"💾 保存标准";}
 }
 
-// WORKFLOW
-async function trigWF(mode){
-  try{
-    const r=await ghPost(`repos/${GH_USER}/${GH_REPO}/actions/workflows/update-standards.yml/dispatches`,{ref:'main',inputs:{mode}});
-    if(r&&r.message)throw new Error(r.message);
-    toast('✅ 已触发 ['+mode+']，可在 GitHub Actions 查看进度','ok');
-  }catch(e){toast('触发失败: '+e.message,'err')}
+function openDel(id){const s=DB.find(x=>x.id===id);if(!s)return;delId=id;ge("dCode").textContent=s.code;ge("dTitle").textContent=s.title;openMo("dmo");}
+async function doDelete(){
+  if(!delId)return;DB=DB.filter(s=>s.id!==delId);
+  try{await saveToGH();renderStats();buildCatFilter();renderTable();closeMo("dmo");toast("🗑 已删除","ok");}
+  catch(e){toast("❌ 删除失败: "+e.message,"err");}delId=null;
 }
 
-// IMPORT
-function valImp(){try{const a=JSON.parse(v('impJ'));if(!Array.isArray(a))throw new Error('需要数组');toast('✅ 格式正确，'+a.length+' 条','ok')}catch(e){toast('格式错误: '+e.message,'err')}}
-function doImp(){
-  try{
-    const arr=JSON.parse(v('impJ'));if(!Array.isArray(arr))throw new Error('需要数组');
-    let ad=0,up=0;
-    arr.forEach(item=>{
-      if(!item.code||!item.title)return;
-      const id=item.id||mkId(item.code);
-      const e={id,localFile:`downloads/${id}.pdf`,...item,id};
-      const i=stds.findIndex(s=>s.id===id||s.code===item.code);
-      if(i>=0){stds[i]={...stds[i],...e};up++}else{stds.push(e);ad++}
-    });
-    mark();rendStds();updStats();fillCatFilter();sv('impJ','');
-    toast(`✅ 导入完成: 新增${ad}条，更新${up}条`,'ok');
-  }catch(e){toast('导入失败: '+e.message,'err')}
+function handlePdfSel(e){const f=e.target.files[0];if(!f||!f.name.endsWith(".pdf")){toast("请选择 PDF 文件","err");return;}pdfFile=f;const pi=ge("pinfo");pi.style.display="flex";pi.textContent="✅ 已选择: "+f.name+" ("+(f.size/1024).toFixed(0)+" KB)";}
+function handleDrop(e){e.preventDefault();const f=e.dataTransfer.files[0];if(f&&f.name.endsWith(".pdf")){pdfFile=f;const pi=ge("pinfo");pi.style.display="flex";pi.textContent="✅ 已拖入: "+f.name;}}
+
+function exportJson(){
+  const today=new Date().toISOString().slice(0,10);const db={version:today.replace(/-/g,"."),updated:today,total:DB.length,standards:DB};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:"application/json"}));a.download="standards-"+today+".json";a.click();toast("📥 JSON 已导出","ok");
 }
 
-// TAGS
-function tkd(e){if(e.key==='Enter'||e.key===','){e.preventDefault();const t=e.target.value.trim().replace(/,$/,'');if(t)addTag(t);e.target.value=''}else if(e.key==='Backspace'&&!e.target.value){const items=document.querySelectorAll('#tagBox .tag');if(items.length)items[items.length-1].remove()}}
-function addTag(val){const box=document.getElementById('tagBox'),f=document.getElementById('tagF');if(getTags().includes(val))return;const el=document.createElement('div');el.className='tag';el.innerHTML=`${eh(val)}<button onclick="this.parentElement.remove()" type="button">×</button>`;box.insertBefore(el,f)}
-function getTags(){return[...document.querySelectorAll('#tagBox .tag')].map(el=>el.textContent.trim().replace('×','').trim()).filter(Boolean)}
-function setTags(tags){document.querySelectorAll('#tagBox .tag').forEach(el=>el.remove());tags.forEach(t=>addTag(t))}
+function openMo(id){ge(id).classList.add("open");document.body.style.overflow="hidden";}
+function closeMo(id){ge(id).classList.remove("open");document.body.style.overflow="";}
+function closeMoCheck(e,id){if(e.target===ge(id))closeMo(id);}
 
-// NAV
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');document.getElementById('nav-'+id).classList.add('active');document.getElementById('tbTitle').textContent=PAGES[id]||id;if(id==='pdfs')rendPdfList()}
+let tt;
+function toast(msg,cls){const e=ge("toast");e.textContent=msg;e.className="toast show "+(cls||"");clearTimeout(tt);tt=setTimeout(()=>e.classList.remove("show"),3200);}
 
-// MODAL
-function openMdl(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
-function cEM(e){if(e.target.id==='editMdl')cEMD()}
-function cEMD(){document.getElementById('editMdl').classList.remove('open');document.body.style.overflow=''}
-function cDM(e){if(e.target.id==='delMdl')cDMD()}
-function cDMD(){document.getElementById('delMdl').classList.remove('open');document.body.style.overflow=''}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){cEMD();cDMD()}});
-
-// TOAST
-function toast(msg,type='info'){
-  const icons={ok:'✅',err:'❌',info:'ℹ️',warn:'⚠️'};
-  const map={ok:'t-ok',err:'t-err',info:'t-info',warn:'t-warn'};
-  const c=document.getElementById('tc');
-  const el=document.createElement('div');el.className='toast-i '+(map[type]||'t-info');
-  el.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
-  c.appendChild(el);setTimeout(()=>el.remove(),4000);
-}
-
-// UTILS
-const mkId=c=>c.replace(/[^A-Za-z0-9]/g,'').slice(0,30)||Math.random().toString(36).slice(2,10);
-const v=id=>document.getElementById(id)?.value||'';
-const sv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val};
-const sv2=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
-const sl=ms=>new Promise(r=>setTimeout(r,ms));
-const eh=s=>!s?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function eh(s){if(!s)return"";return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 </script>
 </body>
 </html>
