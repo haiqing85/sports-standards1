@@ -4,12 +4,14 @@ on:
   push:             # 只要你保存代码，就会立刻触发一次运行，方便测试
     branches: [ main ]
   schedule:
-    - cron: '0 0 * * *' 
+    - cron: '0 0 * * *'
   workflow_dispatch: # 允许你手动点击运行
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10  # 添加超时控制
+
     steps:
       - name: 1. 检出代码
         uses: actions/checkout@v4
@@ -18,7 +20,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          # 注意：这里我们去掉了 cache 选项，彻底根治“找不到文件”的报错
+          cache: 'pip'  # 恢复 pip 缓存加速依赖安装
 
       - name: 3. 安装依赖工具
         run: |
@@ -40,3 +42,9 @@ jobs:
           else
             echo "数据没有变化，无需更新"
           fi
+
+      - name: 6. 部署到 EdgeOne Pages（可选）
+        if: success()
+        run: |
+          echo "数据已更新，EdgeOne 将自动部署"
+          # EdgeOne 会自动检测到 GitHub 仓库的变更并触发部署
