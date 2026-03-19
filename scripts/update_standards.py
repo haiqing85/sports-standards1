@@ -221,30 +221,31 @@ def make_id(code):
 def norm_code(c):
     return re.sub(r'\s+', '', c).upper()
 
-SPORTS_KW_STRICT = [
-    # 必须包含以下词之一，才算体育相关标准
-    "体育场地","体育场馆","运动场地","运动场","合成材料面层","合成材料跑道",
-    "塑胶跑道","人造草坪","人造草","体育照明","体育木地板","运动木地板",
-    "弹性地板","体育围网","运动场围网","健身路径","室外健身器材","体育器材",
-    "颗粒填充料","橡胶颗粒填充","体育建筑","体育公园","全民健身",
-    "足球场","篮球场","网球场","田径场","游泳场","排球场","羽毛球场",
-    "乒乓球场","学校操场","运动地板","PVC运动","体育设施",
-    # 允许较短词但需要与"体育/运动"组合，通过下面逻辑处理
+# 体育相关关键词（宽松匹配）
+SPORTS_KW = [
+    "体育","运动","健身","竞技","跑道","操场","球场","场馆","场地",
+    "合成材料","人造草","草坪","塑胶","围网","木地板","PVC","地胶",
+    "弹性地板","颗粒填充","游泳","篮球","足球","网球","排球","乒乓",
+    "羽毛球","田径","体操","健身器材","灯光照明","体育建筑","全民健身",
+]
+
+# 明确排除词（与体育无关但可能误匹配）
+EXCLUDE_KW = [
+    "微束分析","比热容","绝热量热","分析电子显微","纳米颗粒","气溶胶颗粒",
+    "粒径分析","粒度分布","生物颗粒","金属颗粒","矿物颗粒",
+    "分散体系","胶体","气泡","泡沫","颗粒形状分析",
 ]
 
 def is_sports(text):
-    """严格判断是否为体育相关标准，避免误收非体育内容"""
+    """判断是否为体育相关标准"""
     if not text:
         return False
-    # 精确词组匹配（优先）
-    for kw in SPORTS_KW_STRICT:
-        if kw in text:
-            return True
-    # 宽松词组匹配：必须同时含"体育"或"运动"＋另一个关键词
-    has_base = any(w in text for w in ['体育','运动','健身'])
-    has_field = any(w in text for w in ['场地','场馆','器材','地板','跑道','草坪',
-                                         '围网','照明','颗粒','建设','设施'])
-    return has_base and has_field
+    # 先排除明确的非体育词
+    for ex in EXCLUDE_KW:
+        if ex in text:
+            return False
+    # 包含任意体育关键词即可
+    return any(kw in text for kw in SPORTS_KW)
 
 def norm_status(raw):
     raw = str(raw or '').strip()
@@ -409,8 +410,10 @@ def fetch_samr_page(keyword, page=1, page_size=50):
         total = int(data.get('total') or data.get('pageNumber') or
                     data.get('data',{}).get('total',0) or 0)
         total_pages = max(1, -(-total // page_size)) if total else (1 if rows else 0)
-        if DEBUG_MODE:
-            log(f"    [DEBUG] p{page} rows:{len(rows)} total:{total} pages:{total_pages}")
+        if rows:  # 只要有数据就显示，不限于debug模式
+            log(f"    API p{page}: {len(rows)} 条原始数据，total={total}")
+        elif DEBUG_MODE:
+            log(f"    [DEBUG] p{page} 返回0条，data keys={list(data.keys())[:5]}")
         return rows, total_pages
     except Exception as e:
         if DEBUG_MODE: log(f"    [DEBUG] samr-p{page}异常: {e}")
