@@ -221,31 +221,42 @@ def make_id(code):
 def norm_code(c):
     return re.sub(r'\s+', '', c).upper()
 
-# 体育相关关键词（宽松匹配）
-SPORTS_KW = [
-    "体育","运动","健身","竞技","跑道","操场","球场","场馆","场地",
-    "合成材料","人造草","草坪","塑胶","围网","木地板","PVC","地胶",
-    "弹性地板","颗粒填充","游泳","篮球","足球","网球","排球","乒乓",
-    "羽毛球","田径","体操","健身器材","灯光照明","体育建筑","全民健身",
-]
-
-# 明确排除词（与体育无关但可能误匹配）
-EXCLUDE_KW = [
-    "微束分析","比热容","绝热量热","分析电子显微","纳米颗粒","气溶胶颗粒",
-    "粒径分析","粒度分布","生物颗粒","金属颗粒","矿物颗粒",
-    "分散体系","胶体","气泡","泡沫","颗粒形状分析",
+# ── 体育标准精确匹配词组（每个词组都明确指向体育建设领域）──
+SPORTS_TERMS = [
+    # 面层/跑道
+    "合成材料面层","合成材料跑道","塑胶跑道","聚氨酯跑道",
+    "运动场地面层","合成跑道","橡胶面层",
+    # 人造草
+    "人造草坪","人造草皮","人工草坪","运动场人造草",
+    # 颗粒填充
+    "颗粒填充料","草坪填充","人造草填充",
+    # 照明
+    "体育场馆照明","体育照明","运动场照明","体育场地照明","体育建筑电气",
+    # 木地板
+    "体育木地板","运动木地板","体育用木质地板","体育馆木地板",
+    # 地胶/弹性地板
+    "运动地胶","PVC运动地板","体育地板","运动地板","弹性运动地板",
+    "聚氯乙烯运动地板","卷材运动地板",
+    # 围网
+    "体育围网","运动场围网","球场围网","体育场围网",
+    # 健身器材
+    "室外健身器材","健身路径","公共健身器材","户外健身",
+    "体育器材","学校体育器材","篮球架","足球门","排球架","乒乓球台",
+    # 场地综合
+    "体育场地","运动场地","体育场馆","体育建筑",
+    "足球场地","篮球场地","网球场地","田径场地",
+    "游泳场地","游泳馆","排球场地","羽毛球场地",
+    "乒乓球场地","手球场","棒球场","冰球场","冰场",
+    "学校操场","体育公园","全民健身","体育设施",
+    # 其他体育专用词
+    "体育用品","运动器材","体育场","体操",
 ]
 
 def is_sports(text):
-    """判断是否为体育相关标准"""
+    """精确判断是否为体育建设行业标准——用复合词组匹配，避免单字误判"""
     if not text:
         return False
-    # 先排除明确的非体育词
-    for ex in EXCLUDE_KW:
-        if ex in text:
-            return False
-    # 包含任意体育关键词即可
-    return any(kw in text for kw in SPORTS_KW)
+    return any(term in text for term in SPORTS_TERMS)
 
 def norm_status(raw):
     raw = str(raw or '').strip()
@@ -428,7 +439,7 @@ def fetch_samr(keyword):
     rows, total_pages = fetch_samr_page(keyword, 1)
     for row in rows:
         code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-        if not code or not title: continue
+        if not code or not title or not is_sports(title): continue
         if code in seen: continue
         seen.add(code)
         results.append({'code':code,'title':title,'status':norm_status(status_raw),
@@ -469,7 +480,7 @@ def fetch_samr(keyword):
                 if data:
                     for row in (data.get('rows') or []):
                         code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-                        if not code or not title: continue
+                        if not code or not title or not is_sports(title): continue
                         if code in seen: continue
                         seen.add(code)
                         results.append({'code':code,'title':title,'status':norm_status(status_raw),
@@ -505,7 +516,7 @@ def fetch_ttbz(keyword):
                 for row in rows:
                     code  = (row.get('StdCode') or row.get('stdCode') or '').strip()
                     title = (row.get('StdName') or row.get('stdName') or '').strip()
-                    if code and title:
+                    if code and title and is_sports(title):
                         results.append({
                             'code':          code,
                             'title':         title,
