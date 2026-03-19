@@ -4,8 +4,8 @@
   "total": 29,
   "standards": [
     {
-      "id": "GBT40115-2021",
-      "code": "GB/T 40115-2021",
+      "id": "GBT11111111111111",
+      "code": "GB/T11111111111111",
       "title": "体育公园建设指南",
       "english": "Guidelines for the construction of sports parks",
       "type": "国家标准",
@@ -25,7 +25,7 @@
       "summary": "规定了体育公园选址、规划、建设和运营管理的技术要求和指南。",
       "isMandatory": false,
       "scope": "适用于体育公园的规划、设计、建设和运营管理",
-      "localFile": "downloads/GBT40115-2021.pdf",
+      "localFile": "downloads/GBT11111111111111.pdf",
       "_origIndex": 0
     },
     {
