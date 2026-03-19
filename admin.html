@@ -82,7 +82,13 @@
 
         /* 统计卡片 */
         .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 14px 16px; text-align: center; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 14px 16px; text-align: center; cursor: pointer; transition: all .15s; user-select: none; }
+        .stat-card:hover { border-color: #2563eb; box-shadow: 0 2px 10px rgba(37,99,235,.12); transform: translateY(-1px); }
+        .stat-card.selected { border-width: 2px; box-shadow: 0 2px 10px rgba(37,99,235,.15); }
+        .stat-card.total.selected  { border-color: #2563eb; background: #eff6ff; }
+        .stat-card.active.selected { border-color: #16a34a; background: #f0fdf4; }
+        .stat-card.abol.selected   { border-color: #dc2626; background: #fef2f2; }
+        .stat-card.coming.selected { border-color: #d97706; background: #fffbeb; }
         .stat-card .s-num { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
         .stat-card .s-lbl { font-size: 12px; color: #94a3b8; }
         .stat-card.total  .s-num { color: #2563eb; }
@@ -141,10 +147,18 @@
 
     <!-- 统计面板 -->
     <div class="stats-bar" id="statsBar">
-        <div class="stat-card total"><div class="s-num" id="st-total">—</div><div class="s-lbl">收录标准</div></div>
-        <div class="stat-card active"><div class="s-num" id="st-active">—</div><div class="s-lbl">现行有效</div></div>
-        <div class="stat-card abol"><div class="s-num" id="st-abol">—</div><div class="s-lbl">已废止</div></div>
-        <div class="stat-card coming"><div class="s-num" id="st-coming">—</div><div class="s-lbl">即将实施</div></div>
+        <div class="stat-card total" onclick="filterByCard('')" title="点击查看全部标准">
+            <div class="s-num" id="st-total">—</div><div class="s-lbl">收录标准（全部）</div>
+        </div>
+        <div class="stat-card active" onclick="filterByCard('现行')" title="点击查看现行标准">
+            <div class="s-num" id="st-active">—</div><div class="s-lbl">现行有效 ↓点击查看</div>
+        </div>
+        <div class="stat-card abol" onclick="filterByCard('废止')" title="点击查看已废止标准">
+            <div class="s-num" id="st-abol">—</div><div class="s-lbl">已废止 ↓点击查看</div>
+        </div>
+        <div class="stat-card coming" onclick="filterByCard('即将实施')" title="点击查看即将实施标准">
+            <div class="s-num" id="st-coming">—</div><div class="s-lbl">即将实施 ↓点击查看</div>
+        </div>
     </div>
 
     <!-- 搜索筛选 -->
@@ -436,6 +450,7 @@
         });
 
         var listEl = document.getElementById('list');
+        renderStats();   // 无论列表是否为空，统计始终更新
         if (!list.length) {
             listEl.innerHTML = '<div class="empty-tip"><div class="ei">🔍</div><p>未找到匹配的标准</p></div>';
             return;
@@ -460,8 +475,6 @@
                 + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
                 + '</div></div>';
         }).join('');
-
-        renderStats();
     }
 
     // ── 自动生成 ID ──
@@ -728,6 +741,27 @@
         document.getElementById('st-active').textContent = stds.filter(function(s){ return s.status === '现行'; }).length;
         document.getElementById('st-abol').textContent   = stds.filter(function(s){ return s.status === '废止'; }).length;
         document.getElementById('st-coming').textContent = stds.filter(function(s){ return s.status === '即将实施'; }).length;
+    }
+
+    // ── 点击统计卡片快速筛选 ──
+    function filterByCard(statusVal) {
+        // 设置筛选下拉
+        document.getElementById('filterStatus').value = statusVal;
+        // 更新卡片选中高亮
+        var cardMap = { '': 'total', '现行': 'active', '废止': 'abol', '即将实施': 'coming' };
+        document.querySelectorAll('.stat-card').forEach(function(card) {
+            card.classList.remove('selected');
+        });
+        var selClass = cardMap[statusVal];
+        if (selClass) {
+            var selCard = document.querySelector('.stat-card.' + selClass);
+            if (selCard) selCard.classList.add('selected');
+        }
+        // 清空搜索框，重新渲染列表
+        document.getElementById('searchInput').value = '';
+        renderList();
+        // 滚动到列表区域
+        document.getElementById('list').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     // ── PDF 上传：文件选择 ──
