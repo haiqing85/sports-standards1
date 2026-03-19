@@ -1,5 +1,5 @@
 {
-  "version": "2026.03.18",
+  "version": "2026.03.19",
   "updated": "2026-03-19",
   "total": 30,
   "standards": [
@@ -26,7 +26,8 @@
       "summary": "广东省地方标准，规定了广东省学校运动场地合成材料面层的技术要求和检验方法。",
       "isMandatory": false,
       "scope": "适用于广东省学校运动场地合成材料面层",
-      "localFile": "downloads/DBGD2021001.pdf"
+      "localFile": "downloads/DBGD2021001.pdf",
+      "_origIndex": 0
     },
     {
       "id": "GBT40115-2021",
@@ -50,7 +51,8 @@
       "summary": "规定了体育公园选址、规划、建设和运营管理的技术要求和指南。",
       "isMandatory": false,
       "scope": "适用于体育公园的规划、设计、建设和运营管理",
-      "localFile": "downloads/GBT40115-2021.pdf"
+      "localFile": "downloads/GBT40115-2021.pdf",
+      "_origIndex": 1
     },
     {
       "id": "DBJL2021001",
@@ -75,7 +77,8 @@
       "summary": "北京市地方标准，严于国家标准，规定了学校操场合成材料面层有害物质的限量要求。",
       "isMandatory": true,
       "scope": "适用于北京市中小学校操场合成材料面层",
-      "localFile": "downloads/DBJL2021001.pdf"
+      "localFile": "downloads/DBJL2021001.pdf",
+      "_origIndex": 2
     },
     {
       "id": "TSGTAS005-2020",
@@ -100,7 +103,8 @@
       "summary": "规定了运动场地LED照明系统的技术要求、设计规范和验收标准。",
       "isMandatory": false,
       "scope": "适用于各类运动场地的LED照明系统",
-      "localFile": "downloads/TSGTAS005-2020.pdf"
+      "localFile": "downloads/TSGTAS005-2020.pdf",
+      "_origIndex": 3
     },
     {
       "id": "GBT37546-2019",
@@ -124,7 +128,8 @@
       "summary": "规定了公共体育场地设施规划、建设和管理的基本技术要求。",
       "isMandatory": false,
       "scope": "适用于公共体育场地设施的建设和管理",
-      "localFile": "downloads/GBT37546-2019.pdf"
+      "localFile": "downloads/GBT37546-2019.pdf",
+      "_origIndex": 4
     },
     {
       "id": "DBSH2019001",
@@ -148,7 +153,8 @@
       "summary": "上海市地方标准，对中小学运动场地合成材料面层提出严格技术要求，优于国家标准。",
       "isMandatory": true,
       "scope": "适用于上海市中小学运动场地合成材料面层",
-      "localFile": "downloads/DBSH2019001.pdf"
+      "localFile": "downloads/DBSH2019001.pdf",
+      "_origIndex": 5
     },
     {
       "id": "TSGTAS001-2019",
@@ -173,7 +179,8 @@
       "summary": "规定了合成材料运动场地面层的施工流程、质量控制要求及验收标准。",
       "isMandatory": false,
       "scope": "适用于合成材料运动场地面层的施工和验收",
-      "localFile": "downloads/TSGTAS001-2019.pdf"
+      "localFile": "downloads/TSGTAS001-2019.pdf",
+      "_origIndex": 6
     },
     {
       "id": "TSGTAS002-2019",
@@ -197,7 +204,8 @@
       "summary": "规定了人造草坪运动场地系统的施工和验收要求，包括基础工程和草坪铺设要求。",
       "isMandatory": false,
       "scope": "适用于人造草坪运动场地的施工和验收",
-      "localFile": "downloads/TSGTAS002-2019.pdf"
+      "localFile": "downloads/TSGTAS002-2019.pdf",
+      "_origIndex": 7
     },
     {
       "id": "GBT36536-2018",
@@ -222,7 +230,8 @@
       "summary": "规定了体育场馆照明设计原则、照度标准值、照明质量、节能要求及检测方法。",
       "isMandatory": false,
       "scope": "适用于各类体育场馆的新建、改建和扩建照明工程",
-      "localFile": "downloads/GBT36536-2018.pdf"
+      "localFile": "downloads/GBT36536-2018.pdf",
+      "_origIndex": 8
     },
     {
       "id": "GBT36527-2018",
@@ -246,7 +255,8 @@
       "summary": "规定了运动场地人造草坪系统的设计、施工、验收和维护保养要求。",
       "isMandatory": false,
       "scope": "适用于各类运动场地使用的人造草坪系统",
-      "localFile": "downloads/GBT36527-2018.pdf"
+      "localFile": "downloads/GBT36527-2018.pdf",
+      "_origIndex": 9
     },
     {
       "id": "GB36246-2018",
@@ -272,7 +282,8 @@
       "summary": "规定了中小学合成材料面层运动场地的技术要求、试验方法、检验规则及标志、包装、运输和贮存等，重点对有害物质限量提出强制性要求。",
       "isMandatory": true,
       "scope": "适用于中小学校操场使用的合成材料面层运动场地",
-      "localFile": "downloads/GB36246-2018.pdf"
+      "localFile": "downloads/GB36246-2018.pdf",
+      "_origIndex": 10
     },
     {
       "id": "GBT22517.2-2017",
@@ -297,7 +308,8 @@
       "summary": "规定了足球场地面层的技术要求、检验方法和使用要求，适用于人造草坪足球场地。",
       "isMandatory": false,
       "scope": "适用于11人制、7人制、5人制足球场地",
-      "localFile": "downloads/GBT22517.2-2017.pdf"
+      "localFile": "downloads/GBT22517.2-2017.pdf",
+      "_origIndex": 11
     },
     {
       "id": "JGJ153-2016",
@@ -322,7 +334,8 @@
       "summary": "规定了体育场馆照明设计参数、照度标准、均匀度、眩光控制和能效要求，及检测评估方法。",
       "isMandatory": true,
       "scope": "适用于各类体育场馆照明工程设计和检测",
-      "localFile": "downloads/JGJ153-2016.pdf"
+      "localFile": "downloads/JGJ153-2016.pdf",
+      "_origIndex": 12
     },
     {
       "id": "GBT22517.1-2016",
@@ -346,7 +359,8 @@
       "summary": "规定了体育场地的通用使用要求和检验方法，是系列标准的基础部分。",
       "isMandatory": false,
       "scope": "适用于各类体育场地",
-      "localFile": "downloads/GBT22517.1-2016.pdf"
+      "localFile": "downloads/GBT22517.1-2016.pdf",
+      "_origIndex": 13
     },
     {
       "id": "GBT32085-2015",
@@ -371,7 +385,8 @@
       "summary": "规定了用于人造草坪填充的橡胶颗粒的分类、技术要求、检验方法和检验规则。",
       "isMandatory": false,
       "scope": "适用于人造草坪填充用橡胶颗粒",
-      "localFile": "downloads/GBT32085-2015.pdf"
+      "localFile": "downloads/GBT32085-2015.pdf",
+      "_origIndex": 14
     },
     {
       "id": "JGT477-2015",
@@ -396,7 +411,8 @@
       "summary": "规定了运动场地合成材料面层的术语和定义、分类、要求、试验方法、检验规则及标识、运输和贮存。",
       "isMandatory": false,
       "scope": "适用于运动场地使用的合成材料面层",
-      "localFile": "downloads/JGT477-2015.pdf"
+      "localFile": "downloads/JGT477-2015.pdf",
+      "_origIndex": 15
     },
     {
       "id": "GBT51048-2014",
@@ -421,7 +437,8 @@
       "summary": "规定了体育建筑电气设计的基本要求，包括供配电、照明、接地等各系统的设计规范。",
       "isMandatory": true,
       "scope": "适用于体育建筑的电气设计",
-      "localFile": "downloads/GBT51048-2014.pdf"
+      "localFile": "downloads/GBT51048-2014.pdf",
+      "_origIndex": 16
     },
     {
       "id": "GBT3976-2014",
@@ -445,7 +462,8 @@
       "summary": "规定了中小学体育器材的配备目录和基本要求，为学校体育设施建设的重要依据。",
       "isMandatory": false,
       "scope": "适用于中小学体育器材的配备和管理",
-      "localFile": "downloads/GBT3976-2014.pdf"
+      "localFile": "downloads/GBT3976-2014.pdf",
+      "_origIndex": 17
     },
     {
       "id": "JGT449-2014",
@@ -470,7 +488,8 @@
       "summary": "规定了弹性地板（包括PVC运动地板）的术语、分类、技术要求、试验方法和检验规则。",
       "isMandatory": false,
       "scope": "适用于体育、娱乐、医疗等场所使用的弹性地板",
-      "localFile": "downloads/JGT449-2014.pdf"
+      "localFile": "downloads/JGT449-2014.pdf",
+      "_origIndex": 18
     },
     {
       "id": "JGT388-2012",
@@ -495,7 +514,8 @@
       "summary": "规定了运动场人造草的术语、分类、技术要求、试验方法、检验规则及标识、运输和贮存。",
       "isMandatory": false,
       "scope": "适用于足球、曲棍球等运动场地使用的人造草",
-      "localFile": "downloads/JGT388-2012.pdf"
+      "localFile": "downloads/JGT388-2012.pdf",
+      "_origIndex": 19
     },
     {
       "id": "JGT354-2012",
@@ -520,7 +540,8 @@
       "summary": "规定了体育用木质地板的分类、技术要求、试验方法、检验规则及标识、运输和贮存。",
       "isMandatory": false,
       "scope": "适用于篮球、排球、羽毛球、乒乓球等室内体育运动场地用木质地板",
-      "localFile": "downloads/JGT354-2012.pdf"
+      "localFile": "downloads/JGT354-2012.pdf",
+      "_origIndex": 20
     },
     {
       "id": "GBT14833-2011",
@@ -545,7 +566,8 @@
       "summary": "规定了合成材料跑道的分类、要求、试验方法、检验规则及标志、运输和贮存。",
       "isMandatory": false,
       "scope": "适用于合成材料跑道",
-      "localFile": "downloads/GBT14833-2011.pdf"
+      "localFile": "downloads/GBT14833-2011.pdf",
+      "_origIndex": 21
     },
     {
       "id": "GB19272-2011",
@@ -570,7 +592,8 @@
       "summary": "规定了室外健身器材的设计和制造安全通用要求、试验方法、标志、使用说明及安装安全要求。",
       "isMandatory": true,
       "scope": "适用于室外公共场所使用的健身器材",
-      "localFile": "downloads/GB19272-2011.pdf"
+      "localFile": "downloads/GB19272-2011.pdf",
+      "_origIndex": 22
     },
     {
       "id": "GBT28231-2011",
@@ -594,7 +617,8 @@
       "summary": "规定了体育围网的术语定义、分类、技术要求、试验方法、检验规则及标识、运输和贮存。",
       "isMandatory": false,
       "scope": "适用于足球、篮球、网球等各类体育场地的围网",
-      "localFile": "downloads/GBT28231-2011.pdf"
+      "localFile": "downloads/GBT28231-2011.pdf",
+      "_origIndex": 23
     },
     {
       "id": "GBT22517.3-2011",
@@ -619,7 +643,8 @@
       "summary": "规定了篮球场地面层材料的技术要求、检验方法，包括木地板和合成材料地板。",
       "isMandatory": false,
       "scope": "适用于室内外篮球比赛和训练场地",
-      "localFile": "downloads/GBT22517.3-2011.pdf"
+      "localFile": "downloads/GBT22517.3-2011.pdf",
+      "_origIndex": 24
     },
     {
       "id": "GBT22517.6-2011",
@@ -644,7 +669,8 @@
       "summary": "规定了田径场地面层材料的技术要求、检验方法和使用要求。",
       "isMandatory": false,
       "scope": "适用于室内外田径比赛及训练场地",
-      "localFile": "downloads/GBT22517.6-2011.pdf"
+      "localFile": "downloads/GBT22517.6-2011.pdf",
+      "_origIndex": 25
     },
     {
       "id": "GBT22517.7-2011",
@@ -669,7 +695,8 @@
       "summary": "规定了健身房地面材料的技术要求、检验方法和使用要求。",
       "isMandatory": false,
       "scope": "适用于健身房、多功能运动房等场地地面",
-      "localFile": "downloads/GBT22517.7-2011.pdf"
+      "localFile": "downloads/GBT22517.7-2011.pdf",
+      "_origIndex": 26
     },
     {
       "id": "GBT22517.5-2011",
@@ -693,7 +720,8 @@
       "summary": "规定了网球场地面层材料的技术要求、检验方法和使用要求。",
       "isMandatory": false,
       "scope": "适用于室内外网球比赛和训练场地",
-      "localFile": "downloads/GBT22517.5-2011.pdf"
+      "localFile": "downloads/GBT22517.5-2011.pdf",
+      "_origIndex": 27
     },
     {
       "id": "GBT14960-2009",
@@ -717,7 +745,8 @@
       "summary": "【已废止】原规定体育用人造草皮的术语、分类、技术要求等，已由JG/T 388-2012替代。",
       "isMandatory": false,
       "scope": "原适用于体育运动场所使用的人造草皮",
-      "localFile": "downloads/GBT14960-2009.pdf"
+      "localFile": "downloads/GBT14960-2009.pdf",
+      "_origIndex": 28
     },
     {
       "id": "JGJ31-2003",
@@ -741,7 +770,8 @@
       "summary": "规定了体育建筑设计的基本要求、功能分区、技术指标，包括运动场地的各项设计要求。",
       "isMandatory": true,
       "scope": "适用于新建、改建和扩建的体育建筑",
-      "localFile": "downloads/JGJ31-2003.pdf"
+      "localFile": "downloads/JGJ31-2003.pdf",
+      "_origIndex": 29
     }
   ]
 }
