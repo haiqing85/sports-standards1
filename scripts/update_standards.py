@@ -429,12 +429,14 @@ def fetch_samr(keyword):
     for row in rows:
         code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
         if not code or not title: continue
-        if not is_sports(title): continue
         if code in seen: continue
         seen.add(code)
         results.append({'code':code,'title':title,'status':norm_status(status_raw),
                         'issueDate':issue_date,'implementDate':impl_date,
                         'abolishDate':abol_date,'issuedBy':issued_by,'isMandatory':mandatory})
+
+    if results and DEBUG_MODE:
+        log(f"    [DEBUG] 第1页样本标题: {results[0]['title'][:40]}")
 
     # 继续抓后续页（最多10页，避免超时）
     for page in range(2, min(total_pages + 1, 11)):
@@ -445,7 +447,6 @@ def fetch_samr(keyword):
         for row in rows:
             code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
             if not code or not title: continue
-            if not is_sports(title): continue
             if code in seen: continue
             seen.add(code)
             results.append({'code':code,'title':title,'status':norm_status(status_raw),
@@ -469,7 +470,6 @@ def fetch_samr(keyword):
                     for row in (data.get('rows') or []):
                         code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
                         if not code or not title: continue
-                        if not is_sports(title): continue
                         if code in seen: continue
                         seen.add(code)
                         results.append({'code':code,'title':title,'status':norm_status(status_raw),
@@ -505,7 +505,7 @@ def fetch_ttbz(keyword):
                 for row in rows:
                     code  = (row.get('StdCode') or row.get('stdCode') or '').strip()
                     title = (row.get('StdName') or row.get('stdName') or '').strip()
-                    if code and title and is_sports(title):
+                    if code and title:
                         results.append({
                             'code':          code,
                             'title':         title,
@@ -537,7 +537,7 @@ def fetch_ttbz(keyword):
                 for row in rows:
                     code  = (row.get('StdCode') or '').strip()
                     title = (row.get('StdName') or '').strip()
-                    if code and title and is_sports(title):
+                    if code and title:
                         results.append({
                             'code': code, 'title': title, 'type': '团标',
                             'status': '现行', 'isMandatory': False,
@@ -577,7 +577,7 @@ def fetch_dbba(keyword):
             for item in items:
                 code  = (item.get('stdCode') or item.get('StdCode') or '').strip()
                 title = (item.get('stdName') or item.get('StdName') or '').strip()
-                if code and title and is_sports(title):
+                if code and title:
                     results.append({
                         'code':          code,
                         'title':         title,
@@ -627,7 +627,7 @@ def fetch_samr_by_type(keyword, std_type=''):
                 rows = data.get('rows') or data.get('data',{}).get('rows',[]) or []
                 for row in rows:
                     code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-                    if not code or not title or not is_sports(title): continue
+                    if not code or not title: continue
                     results.append({
                         'code': code, 'title': title,
                         'status': norm_status(status_raw),
@@ -901,10 +901,6 @@ def run(dry_run=False, check_only=False, use_ai=False):
 
     # 去除明显非体育的标准
     before_filter = len(standards)
-    standards = [s for s in standards if is_sports(s.get('title','') + s.get('summary',''))]
-    removed = before_filter - len(standards)
-    if removed:
-        log(f"  🗑️  过滤非体育标准：移除 {removed} 条")
 
     # Step 1：核查状态
     if standards and not DEBUG_MODE:
