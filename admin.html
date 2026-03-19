@@ -360,11 +360,36 @@
         }
     }
 
-    // ── 从 GitHub 读取数据 ──
+    // ── 从 GitHub 读取数据（支持公开和私有仓库）──
     async function loadDataFromGithub() {
         try {
-            var resp = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH);
-            if (!resp.ok) throw new Error('仓库文件读取失败 ('+resp.status+')');
+            // 优先使用已保存的 Token（私有仓库必须），公开仓库无 Token 也可读
+            var token = localStorage.getItem('github_token');
+            var headers = { 'Accept': 'application/vnd.github.v3+json' };
+            if (token) headers['Authorization'] = 'token ' + token;
+
+            var resp = await fetch(
+                'https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH,
+                { headers: headers }
+            );
+
+            // 403/404 且没有 Token：提示用户输入
+            if (!resp.ok && !token) {
+                var t = prompt(
+                    '读取失败 (' + resp.status + ')。\n\n' +
+                    '若仓库为私有，请输入 GitHub Token：\n' +
+                    '（公开仓库无需填写，直接点取消）'
+                );
+                if (t) {
+                    localStorage.setItem('github_token', t);
+                    loadDataFromGithub();  // 带 Token 重试
+                    return;
+                }
+                throw new Error('仓库文件读取失败 (' + resp.status + ')，请检查仓库是否为公开，或提供 Token');
+            }
+
+            if (!resp.ok) throw new Error('仓库文件读取失败 (' + resp.status + ')');
+
             var result = await resp.json();
             if (result.sha) {
                 fileSha = result.sha;
@@ -372,12 +397,10 @@
                 DB = JSON.parse(jsonStr);
                 if (!DB.standards) DB.standards = [];
 
-                // 加载后立即检查状态联动
                 var changed = autoUpdateStatuses();
                 renderList();
 
                 if (changed > 0) {
-                    // 有状态自动变更，静默推送回 GitHub
                     document.getElementById('statusText').textContent =
                         '⏳ 检测到 ' + changed + ' 条标准已到实施日期，正在自动更新状态…';
                     await silentPush('🤖 自动状态更新：' + changed + ' 条即将实施→现行 ' + new Date().toISOString().slice(0,10));
