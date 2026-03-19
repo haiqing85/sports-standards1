@@ -61,9 +61,39 @@ KEYWORDS = [
     "体育场地", "运动场地", "体育场馆",
     "颗粒填充料", "橡胶颗粒",
     "足球场地", "篮球场地", "网球场地",
-    "田径场地", "游泳场地",
+    "田径场地", "游泳场地", "排球场地", "羽毛球场地",
     "学校操场", "体育设施",
     "PVC运动地板", "运动地胶",
+]
+
+# 行业标准专用关键词
+INDUSTRY_KEYWORDS = [
+    "体育场馆照明", "体育建筑设计",
+    "运动场地面层", "体育场地验收",
+    "健身器材安全", "体育围网安装",
+    "运动木地板安装", "弹性运动地板",
+    "体育场馆建设", "全民健身设施",
+]
+
+# 地方标准专用关键词
+LOCAL_KEYWORDS = [
+    "合成材料面层 学校", "塑胶跑道 有害物质",
+    "人造草坪 运动场", "体育场地 验收",
+    "运动场地 地方标准", "学校操场 安全",
+    "健身器材 室外", "体育设施 建设",
+    "运动木地板 安装", "体育围网 规范",
+]
+
+# 团体标准专用关键词
+GROUP_KEYWORDS = [
+    "合成材料跑道 施工验收",
+    "人造草坪 施工验收",
+    "运动地板 施工验收",
+    "体育场地照明 LED",
+    "健身器材 团体标准",
+    "运动场围网 团体标准",
+    "体育木地板 团体标准",
+    "颗粒填充 橡胶 团体",
 ]
 
 SPORTS_KW = [
@@ -224,6 +254,12 @@ def safe_json(resp, source=''):
             log(f"    [DEBUG] 返回内容: {resp.text[:300]}")
         return None
 
+def clean_sacinfo(raw):
+    """清洗字段中的 <sacinfo> XML 标签，保留纯文字"""
+    if not raw:
+        return ''
+    return re.sub(r'</?sacinfo>', '', raw).strip()
+
 def clean_samr_code(raw):
     """清洗 samr 返回的标准编号（含 <sacinfo> XML 标签）
     例：<sacinfo>GB</sacinfo><sacinfo>T</sacinfo> <sacinfo>14833-2011</sacinfo>
@@ -245,7 +281,7 @@ def parse_samr_row(row):
     code  = clean_samr_code(
         row.get('C_STD_CODE') or row.get('STD_CODE') or row.get('stdCode') or ''
     ).strip()
-    title = (row.get('C_C_NAME') or row.get('STD_NAME') or row.get('stdName') or '').strip()
+    title = clean_sacinfo(row.get('C_C_NAME') or row.get('STD_NAME') or row.get('stdName') or '').strip()
     status_raw   = row.get('STATE') or row.get('STD_STATUS') or row.get('status') or ''
     issue_date   = norm_date(row.get('ISSUE_DATE') or row.get('issueDate'))
     impl_date    = norm_date(row.get('ACT_DATE') or row.get('IMPL_DATE') or row.get('implDate'))
@@ -469,7 +505,95 @@ def fetch_dbba(keyword):
     return results
 
 # ============================================================
-#  来源四：国内搜索引擎
+#  来源扩展：行业标准专用抓取（samr 接口加类型过滤）
+# ============================================================
+def fetch_samr_by_type(keyword, std_type=''):
+    """在 samr 接口中按标准类型过滤抓取
+    std_type: '' 全部 | 'HB' 行业标准 | 'DB' 地方标准
+    """
+    results = []
+    try:
+        payload = {
+            "searchText": keyword,
+            "status": "",
+            "sortField": "ISSUE_DATE",
+            "sortType": "desc",
+            "pageSize": 50,
+            "pageIndex": 1,
+        }
+        if std_type:
+            payload["stdType"] = std_type
+        resp = SESSION.post(
+            "https://std.samr.gov.cn/gb/search/gbQueryPage",
+            json=payload,
+            headers={'Referer':'https://std.samr.gov.cn/',
+                     'Content-Type':'application/json',
+                     'Accept':'application/json, text/plain, */*',
+                     'Origin':'https://std.samr.gov.cn'},
+            timeout=20
+        )
+        if resp.ok:
+            data = safe_json(resp, f'samr-type-{std_type}')
+            if data:
+                rows = data.get('rows') or data.get('data',{}).get('rows',[]) or []
+                for row in rows:
+                    code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
+                    if not code or not title or not is_sports(title): continue
+                    results.append({
+                        'code': code, 'title': title,
+                        'status': norm_status(status_raw),
+                        'issueDate': issue_date, 'implementDate': impl_date,
+                        'abolishDate': abol_date, 'issuedBy': issued_by,
+                        'isMandatory': mandatory,
+                    })
+    except Exception as e:
+        if DEBUG_MODE: log(f"    [DEBUG] samr-type异常: {e}")
+    return results
+
+# ============================================================
+#  来源扩展：住建部行业标准（JGJ/CJJ/JG）
+# ============================================================
+def fetch_mohurd(keyword):
+    """住建部标准规范信息网（行业标准主要来源）"""
+    results = []
+    for url in [
+        "https://www.mohurd.gov.cn/gongkai/bzde/bzgflb/index.html",
+    ]:
+        try:
+            resp = SESSION.get(url, params={"keyword": keyword}, timeout=15,
+                               headers={'Referer':'https://www.mohurd.gov.cn/'})
+            if resp.ok:
+                # 从页面提取标准编号
+                r = extract_codes(resp.text, keyword)
+                if r:
+                    log(f"    住建部发现 {len(r)} 个编号")
+                    results.extend(r)
+        except Exception:
+            pass
+    return results
+
+# ============================================================
+#  来源扩展：地方标准完整抓取（按省份分区域）
+# ============================================================
+def fetch_local_standards(keyword):
+    """地方标准专项抓取（dbba + 各省市标准数据库）"""
+    results = fetch_dbba(keyword)  # 已有的 dbba 函数
+    # 补充：通过 samr 地方标准入口
+    local = fetch_samr_by_type(keyword, 'DB')
+    results.extend(local)
+    if DEBUG_MODE and (results):
+        log(f"    地方标准合计: {len(results)} 条")
+    return results
+
+# ============================================================
+#  来源扩展：团体标准完整抓取
+# ============================================================
+def fetch_group_standards(keyword):
+    """团体标准专项抓取（ttbz 全国团标平台）"""
+    results = fetch_ttbz(keyword)  # 已有的 ttbz 函数
+    if DEBUG_MODE and results:
+        log(f"    团体标准: {len(results)} 条")
+    return results
 # ============================================================
 def extract_codes(html, keyword):
     codes = STD_CODE_RE.findall(html)
@@ -686,21 +810,51 @@ def run(dry_run=False, check_only=False, use_ai=False):
     if check_only:
         save_db(db, standards, dry_run); return
 
-    # Step 2：官方平台
-    log(f"\n🌐 Step 2：官方平台抓取（{len(KEYWORDS)} 个关键词）…")
+    # Step 2：国家标准抓取
+    log(f"\n🌐 Step 2-A：国家标准（{len(KEYWORDS)} 个关键词）…")
     all_new, official_ok = [], False
     for i, kw in enumerate(KEYWORDS, 1):
         log(f"  [{i:02d}/{len(KEYWORDS)}] {kw}")
-        a = fetch_samr(kw);   time.sleep(0.8)
-        b = fetch_ttbz(kw);   time.sleep(0.6)
-        c = fetch_dbba(kw) if i % 3 == 0 else []
-        if c: time.sleep(0.5)
-        got = len(a)+len(b)+len(c)
+        a = fetch_samr(kw)
+        time.sleep(0.8)
+        got = len(a)
         if got:
-            all_new.extend(a+b+c); official_ok = True
-            log(f"         ✅ samr:{len(a)} ttbz:{len(b)} dbba:{len(c)}")
+            all_new.extend(a); official_ok = True
+            log(f"         ✅ +{got}")
 
-    # Step 3：搜索引擎
+    # Step 2-B：行业标准专项
+    log(f"\n🏗️  Step 2-B：行业标准（{len(INDUSTRY_KEYWORDS)} 个关键词）…")
+    for i, kw in enumerate(INDUSTRY_KEYWORDS, 1):
+        log(f"  [{i:02d}/{len(INDUSTRY_KEYWORDS)}] {kw}")
+        a = fetch_samr_by_type(kw, 'HB')   # 行业标准类型
+        b = fetch_samr(kw)                  # 普通搜索补充
+        got = len(a) + len(b)
+        if got:
+            all_new.extend(a+b); official_ok = True
+            log(f"         ✅ +{got}")
+        time.sleep(0.8)
+
+    # Step 2-C：地方标准专项
+    log(f"\n🗺️  Step 2-C：地方标准（{len(LOCAL_KEYWORDS)} 个关键词）…")
+    for i, kw in enumerate(LOCAL_KEYWORDS, 1):
+        log(f"  [{i:02d}/{len(LOCAL_KEYWORDS)}] {kw}")
+        a = fetch_local_standards(kw)
+        time.sleep(0.8)
+        if a:
+            all_new.extend(a); official_ok = True
+            log(f"         ✅ +{len(a)}")
+
+    # Step 2-D：团体标准专项
+    log(f"\n🏅 Step 2-D：团体标准（{len(GROUP_KEYWORDS)} 个关键词）…")
+    for i, kw in enumerate(GROUP_KEYWORDS, 1):
+        log(f"  [{i:02d}/{len(GROUP_KEYWORDS)}] {kw}")
+        a = fetch_group_standards(kw)
+        time.sleep(0.6)
+        if a:
+            all_new.extend(a); official_ok = True
+            log(f"         ✅ +{len(a)}")
+
+    # Step 3：搜索引擎辅助
     log(f"\n🔎 Step 3：搜索引擎辅助发现…")
     found_codes, search_new = set(), []
     for kw in KEYWORDS[:10]:
