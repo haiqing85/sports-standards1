@@ -77,8 +77,10 @@
 
         /* 状态提示 */
         #statusText { margin-bottom: 14px; color: #64748b; font-size: 14px; }
-        .empty-tip { text-align: center; padding: 48px 20px; color: #94a3b8; }
-        .empty-tip .ei { font-size: 36px; margin-bottom: 10px; }
+        .stat-card.nopdf .s-num { color: #ea580c; }
+        .stat-card.nopdf.selected { border-color: #ea580c; background: #fff7ed; }
+        .badge-nopdf { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; border-radius: 20px; font-size: 11px; font-weight: 700; padding: 2px 8px; display: inline-flex; align-items: center; gap: 3px; }
+        .upload-hint { font-size: 11px; color: #ea580c; margin-top: 3px; }
 
         /* 统计卡片 */
         .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
@@ -159,6 +161,9 @@
         <div class="stat-card coming" onclick="filterByCard('即将实施')" title="点击查看即将实施标准">
             <div class="s-num" id="st-coming">—</div><div class="s-lbl">即将实施 ↓点击查看</div>
         </div>
+        <div class="stat-card nopdf" onclick="filterByCard('__nopdf__')" title="点击查看缺少PDF的标准，逐条上传">
+            <div class="s-num" id="st-nopdf">—</div><div class="s-lbl">⚠️ 缺PDF ↓点击补传</div>
+        </div>
     </div>
 
     <!-- 搜索筛选 -->
@@ -169,7 +174,7 @@
             <option>国家标准</option><option>行业标准</option>
             <option>地方标准</option><option>团标</option><option>企业标准</option>
         </select>
-        <select id="filterStatus" onchange="renderList()">
+        <select id="filterStatus" onchange="window._filterNoPdf=false;renderList()">
             <option value="">全部状态</option>
             <option>现行</option><option>废止</option><option>即将实施</option>
         </select>
@@ -439,12 +444,14 @@
         var fType  = document.getElementById('filterType').value;
         var fStat  = document.getElementById('filterStatus').value;
         var fCat   = document.getElementById('filterCat').value;
+        var noPdfMode = window._filterNoPdf || false;
 
         var list = DB.standards.filter(function(s, i) {
             s._origIndex = i;
             if (fType && s.type !== fType) return false;
             if (fStat && s.status !== fStat) return false;
             if (fCat  && s.category !== fCat) return false;
+            if (noPdfMode && s.localFile) return false;   // 缺PDF模式：只显示没有PDF的
             if (q && !((s.code+' '+s.title+' '+(s.summary||'')).toLowerCase().includes(q))) return false;
             return true;
         });
@@ -469,7 +476,10 @@
                 + '<span class="badge badge-mand">' + mandText + '</span>'
                 + '<span class="badge badge-cat">📂 ' + eh(Array.isArray(s.category) ? s.category.join(' / ') : (s.category||'未归类')) + '</span>'
                 + '<span class="badge '+statusCls+'">' + eh(s.status||'现行') + '</span>'
-                + '</div></div>'
+                + (!s.localFile ? ' <span class="badge-nopdf">📭 缺PDF</span>' : '')
+                + '</div>'
+                + (!s.localFile ? '<div class="upload-hint">⬆️ 点击编辑按钮为该标准上传PDF文件</div>' : '')
+                + '</div>'
                 + '<div class="std-item-btns">'
                 + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
                 + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
@@ -741,14 +751,21 @@
         document.getElementById('st-active').textContent = stds.filter(function(s){ return s.status === '现行'; }).length;
         document.getElementById('st-abol').textContent   = stds.filter(function(s){ return s.status === '废止'; }).length;
         document.getElementById('st-coming').textContent = stds.filter(function(s){ return s.status === '即将实施'; }).length;
+        document.getElementById('st-nopdf').textContent  = stds.filter(function(s){ return !s.localFile; }).length;
     }
 
     // ── 点击统计卡片快速筛选 ──
     function filterByCard(statusVal) {
-        // 设置筛选下拉
-        document.getElementById('filterStatus').value = statusVal;
-        // 更新卡片选中高亮
-        var cardMap = { '': 'total', '现行': 'active', '废止': 'abol', '即将实施': 'coming' };
+        // 更新状态筛选下拉（缺PDF模式单独处理）
+        if (statusVal === '__nopdf__') {
+            document.getElementById('filterStatus').value = '';
+        } else {
+            document.getElementById('filterStatus').value = statusVal;
+        }
+        // 保存当前PDF筛选模式
+        window._filterNoPdf = (statusVal === '__nopdf__');
+        // 更新卡片高亮
+        var cardMap = { '': 'total', '现行': 'active', '废止': 'abol', '即将实施': 'coming', '__nopdf__': 'nopdf' };
         document.querySelectorAll('.stat-card').forEach(function(card) {
             card.classList.remove('selected');
         });
@@ -757,10 +774,8 @@
             var selCard = document.querySelector('.stat-card.' + selClass);
             if (selCard) selCard.classList.add('selected');
         }
-        // 清空搜索框，重新渲染列表
         document.getElementById('searchInput').value = '';
         renderList();
-        // 滚动到列表区域
         document.getElementById('list').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
