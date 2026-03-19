@@ -1,7 +1,7 @@
 {
   "version": "2026.03.19",
   "updated": "2026-03-19",
-  "total": 61,
+  "total": 63,
   "standards": [
     {
       "id": "GB362462018",
@@ -1452,6 +1452,50 @@
       "isMandatory": true,
       "scope": "",
       "localFile": "downloads/GB1749812008.pdf"
+    },
+    {
+      "id": "GBT471822026",
+      "code": "GB/T 47182-2026",
+      "title": "微束分析 分析电子显微术 核壳颗粒壳壁厚度的测量方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-02-27",
+      "implementDate": "2026-09-01",
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "颗粒填充料",
+      "tags": [
+        "颗粒"
+      ],
+      "summary": "",
+      "isMandatory": false,
+      "scope": "",
+      "localFile": "downloads/GBT471822026.pdf"
+    },
+    {
+      "id": "GBT471882026",
+      "code": "GB/T 47188-2026",
+      "title": "颗粒 比热容测量 绝热量热法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-02-27",
+      "implementDate": "2026-09-01",
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "颗粒填充料",
+      "tags": [
+        "颗粒"
+      ],
+      "summary": "",
+      "isMandatory": false,
+      "scope": "",
+      "localFile": "downloads/GBT471882026.pdf"
     }
   ]
 }
