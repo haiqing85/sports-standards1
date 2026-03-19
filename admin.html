@@ -2,161 +2,713 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>体育标准管理后台 - 增强优化版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>体育标准数据库 - 管理后台</title>
     <style>
-        /* 样式简化，保留核心 */
         :root { --primary: #2563eb; --bg: #f8fafc; }
-        body { font-family: system-ui; background: var(--bg); padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
-        .std-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #e2e8f0; align-items: center; }
-        .std-item:hover { background: #f1f5f9; }
-        .btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; border: none; font-size: 14px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-upload { background: #10b981; color: white; }
-        .input-group { margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; margin-top: 5px; }
-        .id-preview { font-size: 12px; color: #64748b; margin-top: 4px; }
-        .status-ok { color: #10b981; font-size: 12px; }
-        .status-err { color: #ef4444; font-size: 12px; }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 0; }
+
+        /* 登录页 */
+        .login-screen { position: fixed; inset: 0; background: #1e293b; display: flex; align-items: center; justify-content: center; z-index: 999; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box h2 { margin-top: 0; margin-bottom: 6px; color: #0f172a; font-size: 20px; }
+        .login-box .sub { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+        .login-box label { display: block; text-align: left; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .login-box input { width: 100%; padding: 11px 13px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 7px; box-sizing: border-box; font-size: 14px; font-family: inherit; color: #1e293b; }
+        .login-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; }
+        .login-box button:hover { background: #1d4ed8; }
+        .login-err { color: #dc2626; font-size: 13px; margin-top: 10px; min-height: 18px; }
+
+        /* 主界面 */
+        .container { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
+        .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
+        .header-bar h1 { margin: 0; font-size: 22px; color: #0f172a; }
+        .header-btns { display: flex; gap: 10px; }
+        .btn { padding: 9px 18px; border-radius: 7px; cursor: pointer; border: none; font-size: 14px; color: white; font-weight: 700; font-family: inherit; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-sync { background: #10b981; }
+        .btn-sync:hover { background: #059669; }
+        .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
+        .btn:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* 搜索和筛选 */
+        .search-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+        .search-bar input { flex: 1; min-width: 200px; padding: 9px 13px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 13.5px; font-family: inherit; outline: none; color: #1e293b; }
+        .search-bar input:focus { border-color: var(--primary); }
+        .search-bar select { padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 7px; font-size: 13px; font-family: inherit; outline: none; color: #1e293b; cursor: pointer; background: white; }
+
+        /* 列表 */
+        .std-item { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid #f1f5f9; align-items: center; transition: background .15s; }
+        .std-item:hover { background: #f8fafc; }
+        .std-item:last-child { border-bottom: none; }
+        .std-info-code { font-weight: 700; color: #0f172a; font-size: 15px; font-family: monospace; margin-bottom: 4px; }
+        .std-info-title { font-size: 13.5px; color: #475569; margin-bottom: 8px; font-weight: 500; }
+        .std-item-btns { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
+        .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; margin-right: 5px; }
+        .badge-type  { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .badge-mand  { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .badge-cat   { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+        .badge-ok    { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+        .badge-abol  { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+
+        /* 弹窗 */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(3px); }
+        .modal.open { display: flex; }
+        .modal-content { background: white; padding: 28px; border-radius: 12px; width: 560px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,.2); animation: mup .18s ease; }
+        @keyframes mup { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+        .modal-content h2 { margin-top: 0; margin-bottom: 20px; color: #0f172a; font-size: 18px; }
+
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.4px; }
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%; padding: 9px 12px; border: 1px solid #e2e8f0; border-radius: 7px;
+            box-sizing: border-box; font-family: inherit; font-size: 13.5px; color: #1e293b; background: white;
+        }
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+        }
+        .input-group input[readonly] { background: #f8fafc; color: #64748b; cursor: not-allowed; }
+        .hint { font-size: 11px; color: #64748b; margin-top: 4px; display: block; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; padding-top: 16px; border-top: 1px solid #f1f5f9; }
+
+        /* 状态提示 */
+        #statusText { margin-bottom: 14px; color: #64748b; font-size: 14px; }
+        .empty-tip { text-align: center; padding: 48px 20px; color: #94a3b8; }
+        .empty-tip .ei { font-size: 36px; margin-bottom: 10px; }
+
+        /* 多选分类 */
+        .cat-box { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; }
+        .cat-item { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; cursor: pointer; font-size: 13px; color: #475569; transition: all .15s; user-select: none; }
+        .cat-item:hover { border-color: #2563eb; color: #2563eb; }
+        .cat-item input[type="checkbox"] { accent-color: #2563eb; cursor: pointer; width: 14px; height: 14px; }
+        .cat-item:has(input:checked) { background: #dbeafe; border-color: #2563eb; color: #1d4ed8; font-weight: 600; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h1>标准数据库管理</h1>
-        <div>
+<!-- 登录页 -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <h2>🏟 体育标准管理后台</h2>
+        <div class="sub">请输入管理员账号登录</div>
+        <label>用户名</label>
+        <input type="text" id="username" placeholder="请输入用户名"
+            onkeydown="if(event.key==='Enter')checkLogin()">
+        <label>密码</label>
+        <input type="password" id="password" placeholder="请输入密码"
+            onkeydown="if(event.key==='Enter')checkLogin()">
+        <button onclick="checkLogin()">登 录</button>
+        <div class="login-err" id="loginErr"></div>
+    </div>
+</div>
+
+<!-- 主界面 -->
+<div class="container" id="adminScreen">
+    <div class="header-bar">
+        <h1>📋 标准数据管理</h1>
+        <div class="header-btns">
             <button class="btn btn-primary" onclick="openModal()">➕ 新增标准</button>
-            <button class="btn" onclick="syncToGithub()" id="syncBtn">☁️ 同步到 GitHub</button>
+            <button class="btn btn-sync" onclick="syncToGithub()" id="syncBtn">☁️ 推送至 GitHub</button>
         </div>
     </div>
+    <div id="statusText">正在连接 GitHub 并加载数据…</div>
 
-    <div id="stats" style="margin-bottom: 10px; color: #64748b;">正在加载数据...</div>
+    <!-- 搜索筛选 -->
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 搜索标准编号、名称…" oninput="renderList()">
+        <select id="filterType" onchange="renderList()">
+            <option value="">全部类型</option>
+            <option>国家标准</option><option>行业标准</option>
+            <option>地方标准</option><option>团标</option><option>企业标准</option>
+        </select>
+        <select id="filterStatus" onchange="renderList()">
+            <option value="">全部状态</option>
+            <option>现行</option><option>废止</option><option>即将实施</option>
+        </select>
+        <select id="filterCat" onchange="renderList()">
+            <option value="">全部分类</option>
+            <option>合成材料面层</option><option>人造草坪</option><option>灯光照明</option>
+            <option>木地板</option><option>PVC运动地胶</option><option>围网</option>
+            <option>健身路径</option><option>体育器材</option><option>颗粒填充料</option>
+            <option>运动地板</option><option>场地设计</option><option>游泳场地</option>
+            <option>综合</option>
+        </select>
+    </div>
+
     <div id="list"></div>
 </div>
 
-<div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;">
-    <div style="background:white; padding:30px; border-radius:12px; width:500px; max-height:90vh; overflow-y:auto;">
-        <h2 id="modalTitle">编辑标准</h2>
-        <div class="input-group">
-            <label>标准编号 (Code) - <small>如 GB/T 14833-2011</small></label>
-            <input type="text" id="f_code" oninput="autoGenId(this.value)" placeholder="请输入完整编号">
+<!-- 新增 / 编辑弹窗 -->
+<div class="modal" id="editModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-content">
+        <h2 id="modalTitle">新增标准</h2>
+
+        <div class="grid-2">
+            <div class="input-group" style="grid-column:1/-1">
+                <label>标准编号 <span style="color:#dc2626">*</span></label>
+                <input type="text" id="f_code" placeholder="如：GB/T 14833-2011" oninput="autoGenId(this.value)">
+            </div>
+            <div class="input-group" style="grid-column:1/-1">
+                <label>系统内部 ID（自动生成，与 PDF 文件名绑定）</label>
+                <input type="text" id="f_id" readonly>
+                <span class="hint">由标准编号自动生成，对应 downloads/{ID}.pdf</span>
+            </div>
+            <div class="input-group" style="grid-column:1/-1">
+                <label>标准名称 <span style="color:#dc2626">*</span></label>
+                <input type="text" id="f_title" placeholder="如：合成材料跑道">
+            </div>
         </div>
-        <div class="input-group">
-            <label>系统内部 ID (自动生成，请勿改动)</label>
-            <input type="text" id="f_id" readonly style="background:#f1f5f9">
-            <div class="id-preview">对应的文件名应为: <span id="f_filename" style="color:red;font-weight:bold;">-</span></div>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>标准级别</label>
+                <select id="f_type" onchange="toggleCustom('f_type','f_type_custom',this.value)">
+                    <option value="">请选择…</option>
+                    <option>国家标准</option>
+                    <option>行业标准</option>
+                    <option>地方标准</option>
+                    <option>团标</option>
+                    <option>企业标准</option>
+                    <option value="__custom__">✏️ 手动输入…</option>
+                </select>
+                <input type="text" id="f_type_custom" placeholder="请输入自定义标准级别"
+                    style="display:none;margin-top:6px">
+            </div>
+            <div class="input-group">
+                <label>强制程度</label>
+                <select id="f_mandatory" onchange="toggleCustom('f_mandatory','f_mandatory_custom',this.value)">
+                    <option value="">请选择…</option>
+                    <option value="强制性标准">强制性标准</option>
+                    <option value="推荐性标准">推荐性标准</option>
+                    <option value="__custom__">✏️ 手动输入…</option>
+                </select>
+                <input type="text" id="f_mandatory_custom" placeholder="请输入自定义强制程度"
+                    style="display:none;margin-top:6px">
+            </div>
         </div>
-        <div class="input-group">
-            <label>标准名称 (Title)</label>
-            <input type="text" id="f_title">
+
+        <div class="grid-2">
+            <div class="input-group" style="grid-column:1/-1">
+                <label>业务分类归类 <span style="font-weight:400;color:#94a3b8;font-size:11px;text-transform:none;letter-spacing:0">（可多选）</span></label>
+                <div class="cat-box" id="f_category_box">
+                    <label class="cat-item"><input type="checkbox" value="合成材料面层"> 合成材料面层</label>
+                    <label class="cat-item"><input type="checkbox" value="人造草坪"> 人造草坪</label>
+                    <label class="cat-item"><input type="checkbox" value="灯光照明"> 灯光照明</label>
+                    <label class="cat-item"><input type="checkbox" value="木地板"> 木地板</label>
+                    <label class="cat-item"><input type="checkbox" value="PVC运动地胶"> PVC运动地胶</label>
+                    <label class="cat-item"><input type="checkbox" value="围网"> 围网</label>
+                    <label class="cat-item"><input type="checkbox" value="健身路径"> 健身路径</label>
+                    <label class="cat-item"><input type="checkbox" value="体育器材"> 体育器材</label>
+                    <label class="cat-item"><input type="checkbox" value="颗粒填充料"> 颗粒填充料</label>
+                    <label class="cat-item"><input type="checkbox" value="运动地板"> 运动地板</label>
+                    <label class="cat-item"><input type="checkbox" value="场地设计"> 场地设计</label>
+                    <label class="cat-item"><input type="checkbox" value="游泳场地"> 游泳场地</label>
+                    <label class="cat-item"><input type="checkbox" value="综合"> 综合</label>
+                </div>
+                <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+                    <span style="font-size:12px;color:#94a3b8;flex-shrink:0">✏️ 自定义：</span>
+                    <input type="text" id="f_category_custom"
+                        placeholder="输入自定义分类后按回车添加"
+                        style="flex:1;padding:6px 10px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit;outline:none"
+                        onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomCat();}">
+                    <button type="button" class="btn btn-primary" style="padding:5px 12px;font-size:12px;flex-shrink:0" onclick="addCustomCat()">添加</button>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>当前状态</label>
+                <select id="f_status" onchange="updateStatusHint()">
+                    <option value="现行">✅ 现行</option>
+                    <option value="废止">❌ 废止</option>
+                    <option value="即将实施">⏳ 即将实施</option>
+                </select>
+                <div id="status_hint" style="display:none;margin-top:6px;padding:8px 10px;background:#fef3c7;border:1px solid #fde68a;border-radius:6px;font-size:12px;color:#92400e;line-height:1.6">
+                    ⏳ 已设为"即将实施"。系统将在实施日期当天自动将状态更新为"现行"，无需手动修改。
+                </div>
+            </div>
         </div>
-        <div class="input-group">
-            <label>分类</label>
-            <select id="f_type">
-                <option value="国家标准">国家标准</option>
-                <option value="行业标准">行业标准</option>
-                <option value="地方标准">地方标准</option>
-                <option value="团体标准">团体标准</option>
-            </select>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>发布日期</label>
+                <input type="date" id="f_date">
+            </div>
+            <div class="input-group">
+                <label>实施日期</label>
+                <input type="date" id="f_impl_date">
+            </div>
         </div>
+
         <div class="input-group">
-            <label>上传 PDF 文件</label>
-            <input type="file" id="f_file" accept=".pdf">
+            <label>发布机构</label>
+            <input type="text" id="f_issuedBy" placeholder="如：国家市场监督管理总局">
         </div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button class="btn btn-primary" onclick="saveData()">保存并准备上传</button>
-            <button class="btn" onclick="closeModal()">取消</button>
+
+        <div class="grid-2">
+            <div class="input-group">
+                <label>替代旧标准</label>
+                <input type="text" id="f_replaces" placeholder="本标准替代的旧编号">
+            </div>
+            <div class="input-group">
+                <label>被新标准替代</label>
+                <input type="text" id="f_replacedBy" placeholder="废止时填替代本标准的新编号">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>标准摘要</label>
+            <textarea id="f_summary" rows="3" style="resize:vertical"
+                placeholder="简要描述标准规定的主要内容…"></textarea>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn" style="background:#e2e8f0;color:#334155" onclick="closeModal()">取消</button>
+            <button class="btn btn-primary" onclick="saveData()">💾 暂存修改</button>
         </div>
     </div>
 </div>
 
 <script>
-    let DB = { standards: [] };
-    const GITHUB_CONFIG = {
-        token: '你的GITHUB_TOKEN', // 建议通过环境变量或登录框输入
-        repo: '你的用户名/仓库名',
-        path: 'data/standards.json'
-    };
+    // ── GitHub 配置（已锁定） ──
+    var REPO_OWNER = 'haiqing85';
+    var REPO_NAME  = 'sports-standards1';
+    var FILE_PATH  = 'data/standards.json';
 
-    // 核心优化：ID 生成规则与爬虫强制统一
-    function autoGenId(code) {
-        if(!code) return;
-        // 规则：去除空格、斜杠、点、横杠，转大写
-        const id = code.replace(/[\s\/\.\-]/g, '').toUpperCase();
-        document.getElementById('f_id').value = id;
-        document.getElementById('f_filename').innerText = id + '.pdf';
+    var DB = { standards: [] };
+    var fileSha = '';
+    var editIndex = -1;
+
+    // ── 登录 ──
+    function checkLogin() {
+        var u = document.getElementById('username').value.trim();
+        var p = document.getElementById('password').value;
+        if (u === 'admin' && p === 'admin123456') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminScreen').style.display = 'block';
+            loadDataFromGithub();
+        } else {
+            document.getElementById('loginErr').textContent = '用户名或密码错误，请重新输入';
+        }
     }
 
-    async function loadData() {
-        const resp = await fetch('data/standards.json?t=' + Date.now());
-        DB = await resp.json();
-        renderList();
+    // ── 从 GitHub 读取数据 ──
+    async function loadDataFromGithub() {
+        try {
+            var resp = await fetch('https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH);
+            if (!resp.ok) throw new Error('仓库文件读取失败 ('+resp.status+')');
+            var result = await resp.json();
+            if (result.sha) {
+                fileSha = result.sha;
+                var jsonStr = decodeURIComponent(escape(atob(result.content.replace(/\n/g,''))));
+                DB = JSON.parse(jsonStr);
+                if (!DB.standards) DB.standards = [];
+
+                // 加载后立即检查状态联动
+                var changed = autoUpdateStatuses();
+                renderList();
+
+                if (changed > 0) {
+                    // 有状态自动变更，静默推送回 GitHub
+                    document.getElementById('statusText').textContent =
+                        '⏳ 检测到 ' + changed + ' 条标准已到实施日期，正在自动更新状态…';
+                    await silentPush('🤖 自动状态更新：' + changed + ' 条即将实施→现行 ' + new Date().toISOString().slice(0,10));
+                    document.getElementById('statusText').textContent =
+                        '✅ 同步成功，共 ' + DB.standards.length + ' 条（自动更新 ' + changed + ' 条状态）。';
+                } else {
+                    document.getElementById('statusText').textContent =
+                        '✅ 与 GitHub 同步成功，库中现存 ' + DB.standards.length + ' 条数据。';
+                }
+            }
+        } catch (e) {
+            document.getElementById('statusText').textContent = '❌ 无法连接到 GitHub：' + e.message;
+        }
     }
 
+    // ── 状态自动联动：即将实施 → 现行 ──
+    // 遍历所有标准，实施日期 ≤ 今天 且状态为"即将实施"的，自动改为"现行"
+    // 返回实际变更的条数
+    function autoUpdateStatuses() {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);  // 只比较日期部分
+        var count = 0;
+        DB.standards.forEach(function(s) {
+            if (s.status === '即将实施' && s.implementDate) {
+                var implDate = new Date(s.implementDate);
+                implDate.setHours(0, 0, 0, 0);
+                if (today >= implDate) {
+                    s.status = '现行';
+                    count++;
+                }
+            }
+        });
+        return count;
+    }
+
+    // ── 静默推送（无弹窗提示，加载时自动触发用） ──
+    async function silentPush(message) {
+        var token = localStorage.getItem('github_token');
+        if (!token) return;  // 未登录 Token 则跳过，等下次手动推送
+        try {
+            DB.updated = new Date().toISOString().slice(0, 10);
+            DB.version = DB.updated.replace(/-/g, '.');
+            var encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(DB, null, 2))));
+            var resp = await fetch(
+                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message, content: encodedContent, sha: fileSha })
+                }
+            );
+            if (resp.ok) {
+                var r = await resp.json();
+                fileSha = r.content.sha;
+            }
+        } catch (e) {
+            console.warn('静默推送失败：', e.message);
+        }
+    }
+
+    // ── 渲染列表 ──
     function renderList() {
-        const list = document.getElementById('list');
-        document.getElementById('stats').innerText = `共 ${DB.standards.length} 条标准`;
-        list.innerHTML = DB.standards.map(s => `
-            <div class="std-item">
-                <div>
-                    <div style="font-weight:bold">${s.code}</div>
-                    <div style="font-size:13px; color:#64748b">${s.title}</div>
-                </div>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <span class="${s.localFile ? 'status-ok' : 'status-err'}">
-                        ${s.localFile ? '● 有文件' : '○ 缺文件'}
-                    </span>
-                    <button class="btn" onclick="editStd('${s.id}')">编辑</button>
-                    <button class="btn" style="color:red" onclick="deleteStd('${s.id}')">删除</button>
-                </div>
-            </div>
-        `).join('');
+        var q      = document.getElementById('searchInput').value.trim().toLowerCase();
+        var fType  = document.getElementById('filterType').value;
+        var fStat  = document.getElementById('filterStatus').value;
+        var fCat   = document.getElementById('filterCat').value;
+
+        var list = DB.standards.filter(function(s, i) {
+            s._origIndex = i;
+            if (fType && s.type !== fType) return false;
+            if (fStat && s.status !== fStat) return false;
+            if (fCat  && s.category !== fCat) return false;
+            if (q && !((s.code+' '+s.title+' '+(s.summary||'')).toLowerCase().includes(q))) return false;
+            return true;
+        });
+
+        var listEl = document.getElementById('list');
+        if (!list.length) {
+            listEl.innerHTML = '<div class="empty-tip"><div class="ei">🔍</div><p>未找到匹配的标准</p></div>';
+            return;
+        }
+
+        listEl.innerHTML = list.map(function(s) {
+            var idx = s._origIndex;
+            var mandText = s.isMandatory ? '强制性标准' : '推荐性标准';
+            var statusCls = s.status === '废止' ? 'badge-abol' : 'badge-ok';
+            return '<div class="std-item">'
+                + '<div>'
+                + '<div class="std-info-code">' + eh(s.code) + '</div>'
+                + '<div class="std-info-title">' + eh(s.title) + '</div>'
+                + '<div>'
+                + '<span class="badge badge-type">' + eh(s.type||'未设级别') + '</span>'
+                + '<span class="badge badge-mand">' + mandText + '</span>'
+                + '<span class="badge badge-cat">📂 ' + eh(Array.isArray(s.category) ? s.category.join(' / ') : (s.category||'未归类')) + '</span>'
+                + '<span class="badge '+statusCls+'">' + eh(s.status||'现行') + '</span>'
+                + '</div></div>'
+                + '<div class="std-item-btns">'
+                + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
+                + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
+                + '</div></div>';
+        }).join('');
     }
 
-    // 保存逻辑：不仅更新 JSON，还处理文件名关联
-    async function saveData() {
-        const id = document.getElementById('f_id').value;
-        const code = document.getElementById('f_code').value;
-        const fileInput = document.getElementById('f_file');
-        
-        const newStd = {
-            id: id,
-            code: code,
-            title: document.getElementById('f_title').value,
-            type: document.getElementById('f_type').value,
-            localFile: `downloads/${id}.pdf`, // 强制指向规范化的文件名
-            updated: new Date().toISOString().slice(0,10)
+    // ── 自动生成 ID ──
+    function autoGenId(code) {
+        if (!code) return;
+        document.getElementById('f_id').value = code.replace(/[\s\/\.\-]/g,'').toUpperCase();
+    }
+
+    // ── 下拉选择"手动输入"时显示/隐藏文本框 ──
+    function toggleCustom(selId, inputId, val) {
+        var inp = document.getElementById(inputId);
+        if (val === '__custom__') {
+            inp.style.display = 'block';
+            inp.focus();
+        } else {
+            inp.style.display = 'none';
+            inp.value = '';
+        }
+    }
+
+    // ── 当前状态联动提示 ──
+    function updateStatusHint() {
+        var v = document.getElementById('f_status').value;
+        var hint = document.getElementById('status_hint');
+        hint.style.display = (v === '即将实施') ? 'block' : 'none';
+    }
+
+    // ── 读取下拉或自定义输入框的值 ──
+    function getFieldVal(selId, customId) {
+        var sel = document.getElementById(selId).value;
+        if (sel === '__custom__') {
+            return document.getElementById(customId).value.trim();
+        }
+        return sel.trim();
+    }
+
+    // ── 回填下拉：若值不在选项中则切换到"手动输入"并填入文本框 ──
+    function setFieldVal(selId, customId, value) {
+        var sel = document.getElementById(selId);
+        var inp = document.getElementById(customId);
+        var found = false;
+        for (var j = 0; j < sel.options.length; j++) {
+            if (sel.options[j].value === value || sel.options[j].text === value) {
+                sel.value = sel.options[j].value;
+                found = true;
+                break;
+            }
+        }
+        if (!found && value) {
+            sel.value = '__custom__';
+            inp.style.display = 'block';
+            inp.value = value;
+        } else {
+            inp.style.display = 'none';
+            inp.value = '';
+        }
+    }
+
+    // ── 读取分类多选框的值（返回数组） ──
+    function getCategoryVals() {
+        var checked = [];
+        document.querySelectorAll('#f_category_box input[type="checkbox"]:checked').forEach(function(cb) {
+            checked.push(cb.value);
+        });
+        // 加入自定义输入的已添加项（data-custom="1" 的checkbox）
+        return checked;
+    }
+
+    // ── 清空分类多选框 ──
+    function clearCategoryBox() {
+        document.querySelectorAll('#f_category_box input[type="checkbox"]').forEach(function(cb) {
+            cb.checked = false;
+        });
+        // 移除之前动态添加的自定义项
+        document.querySelectorAll('#f_category_box .cat-item[data-custom="1"]').forEach(function(el) {
+            el.remove();
+        });
+        document.getElementById('f_category_custom').value = '';
+    }
+
+    // ── 回填分类多选框 ──
+    function setCategoryVals(catValue) {
+        clearCategoryBox();
+        if (!catValue) return;
+        // 支持字符串（单个）或数组（多个）
+        var cats = Array.isArray(catValue) ? catValue : [catValue];
+        cats.forEach(function(cat) {
+            if (!cat) return;
+            // 找已有的checkbox
+            var found = false;
+            document.querySelectorAll('#f_category_box input[type="checkbox"]').forEach(function(cb) {
+                if (cb.value === cat) { cb.checked = true; found = true; }
+            });
+            // 不在列表中的，动态添加
+            if (!found) {
+                addCustomCatVal(cat);
+            }
+        });
+    }
+
+    // ── 添加自定义分类项（按回车或点添加按钮） ──
+    function addCustomCat() {
+        var inp = document.getElementById('f_category_custom');
+        var val = inp.value.trim();
+        if (!val) return;
+        // 检查是否已存在
+        var exists = false;
+        document.querySelectorAll('#f_category_box input[type="checkbox"]').forEach(function(cb) {
+            if (cb.value === val) { cb.checked = true; exists = true; }
+        });
+        if (!exists) addCustomCatVal(val);
+        inp.value = '';
+    }
+
+    function addCustomCatVal(val) {
+        var box = document.getElementById('f_category_box');
+        var label = document.createElement('label');
+        label.className = 'cat-item';
+        label.dataset.custom = '1';
+        var cb = document.createElement('input');
+        cb.type = 'checkbox'; cb.value = val; cb.checked = true;
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + val));
+        box.appendChild(label);
+    }
+
+    // ── 弹窗：新增 ──
+    function openModal() {
+        editIndex = -1;
+        document.getElementById('modalTitle').textContent = '新增标准';
+        document.getElementById('f_code').value = '';
+        document.getElementById('f_id').value = '';
+        document.getElementById('f_title').value = '';
+        document.getElementById('f_type').value = '';
+        document.getElementById('f_type_custom').style.display = 'none';
+        document.getElementById('f_type_custom').value = '';
+        document.getElementById('f_mandatory').value = '';
+        document.getElementById('f_mandatory_custom').style.display = 'none';
+        document.getElementById('f_mandatory_custom').value = '';
+        clearCategoryBox();
+        document.getElementById('f_status').value = '现行';
+        updateStatusHint();
+        document.getElementById('f_date').value = '';
+        document.getElementById('f_impl_date').value = '';
+        document.getElementById('f_issuedBy').value = '';
+        document.getElementById('f_replaces').value = '';
+        document.getElementById('f_replacedBy').value = '';
+        document.getElementById('f_summary').value = '';
+        document.getElementById('f_id').dataset.index = '-1';
+        document.getElementById('editModal').classList.add('open');
+    }
+
+    // ── 弹窗：编辑 ──
+    function editStd(index) {
+        var s = DB.standards[index];
+        editIndex = index;
+        document.getElementById('modalTitle').textContent = '编辑标准';
+        document.getElementById('f_code').value       = s.code || '';
+        document.getElementById('f_id').value         = s.id   || '';
+        document.getElementById('f_title').value      = s.title || '';
+        setFieldVal('f_type',      'f_type_custom',      s.type || '');
+        setFieldVal('f_mandatory', 'f_mandatory_custom', s.isMandatory ? '强制性标准' : '推荐性标准');
+        setCategoryVals(s.category);
+        document.getElementById('f_status').value     = s.status || '现行';
+        updateStatusHint();
+        document.getElementById('f_date').value       = s.issueDate || '';
+        document.getElementById('f_impl_date').value  = s.implementDate || '';
+        document.getElementById('f_issuedBy').value   = s.issuedBy || '';
+        document.getElementById('f_replaces').value   = s.replaces || '';
+        document.getElementById('f_replacedBy').value = s.replacedBy || '';
+        document.getElementById('f_summary').value    = s.summary || '';
+        document.getElementById('f_id').dataset.index = index;
+        document.getElementById('editModal').classList.add('open');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('open');
+    }
+
+    // ── 暂存修改 ──
+    function saveData() {
+        var index   = parseInt(document.getElementById('f_id').dataset.index);
+        var code    = document.getElementById('f_code').value.trim();
+        var id      = document.getElementById('f_id').value.trim();
+        var typeVal = getFieldVal('f_type', 'f_type_custom');
+        var mandVal = getFieldVal('f_mandatory', 'f_mandatory_custom');
+        var catArr  = getCategoryVals();
+        // 分类：多选时存数组，单选时存字符串（兼容旧格式）
+        var catVal  = catArr.length === 1 ? catArr[0] : (catArr.length > 1 ? catArr : '综合');
+
+        if (!code) { alert('标准编号不能为空！'); return; }
+        if (!id)   { alert('系统ID生成失败，请重新输入编号！'); return; }
+
+        var newStd = {
+            id:             id,
+            code:           code,
+            title:          document.getElementById('f_title').value.trim(),
+            type:           typeVal || '未设级别',
+            isMandatory:    mandVal.includes('强制'),
+            category:       catVal,
+            status:         document.getElementById('f_status').value || '现行',
+            issueDate:      document.getElementById('f_date').value || null,
+            implementDate:  document.getElementById('f_impl_date').value || null,
+            issuedBy:       document.getElementById('f_issuedBy').value.trim() || null,
+            replaces:       document.getElementById('f_replaces').value.trim() || null,
+            replacedBy:     document.getElementById('f_replacedBy').value.trim() || null,
+            summary:        document.getElementById('f_summary').value.trim() || null,
+            localFile:      'downloads/' + id + '.pdf'
         };
 
-        const idx = DB.standards.findIndex(s => s.id === id);
-        if(idx > -1) DB.standards[idx] = {...DB.standards[idx], ...newStd};
-        else DB.standards.unshift(newStd);
+        if (index === -1) {
+            DB.standards.unshift(newStd);
+        } else {
+            DB.standards[index] = Object.assign({}, DB.standards[index], newStd);
+        }
 
-        // 如果选择了文件，可以在此处通过 GitHub API 直接上传（需额外逻辑）
-        // 这里先处理 JSON 的本地保存/预览
+        // 保存时同步检查所有即将实施是否已到期
+        autoUpdateStatuses();
+
+        DB.total = DB.standards.length;
         renderList();
         closeModal();
-        alert('修改已记录，请点击上方“同步到 GitHub”生效');
+        document.getElementById('statusText').textContent =
+            '✏️ 已暂存修改，共 ' + DB.standards.length + ' 条。点击"推送至 GitHub"保存到云端。';
     }
 
-    // 弹窗控制
-    function openModal() { document.getElementById('modal').style.display='flex'; }
-    function closeModal() { document.getElementById('modal').style.display='none'; }
-    
-    function editStd(id) {
-        const s = DB.standards.find(x => x.id === id);
-        if(!s) return;
-        document.getElementById('f_code').value = s.code;
-        document.getElementById('f_id').value = s.id;
-        document.getElementById('f_title').value = s.title;
-        document.getElementById('f_type').value = s.type;
-        document.getElementById('f_filename').innerText = s.id + '.pdf';
-        openModal();
+    // ── 删除标准 ──
+    function deleteStd(index) {
+        var s = DB.standards[index];
+        if (confirm('⚠️ 确定要删除以下标准吗？\n\n' + s.code + '\n' + s.title + '\n\n此操作不可撤销！')) {
+            DB.standards.splice(index, 1);
+            DB.total = DB.standards.length;
+            renderList();
+            document.getElementById('statusText').textContent =
+                '🗑️ 已删除，剩余 ' + DB.standards.length + ' 条。请记得推送至 GitHub 保存。';
+        }
     }
 
-    // 初始化
-    loadData();
+    // ── 同步至 GitHub ──
+    async function syncToGithub() {
+        var token = localStorage.getItem('github_token');
+        if (!token) {
+            token = prompt('请输入 ' + REPO_OWNER + ' 的 GitHub Personal Access Token（PAT）：');
+            if (!token) return;
+            localStorage.setItem('github_token', token);
+        }
+
+        var btn = document.getElementById('syncBtn');
+        btn.textContent = '⏳ 正在推送…';
+        btn.disabled = true;
+
+        try {
+            DB.updated = new Date().toISOString().slice(0, 10);
+            DB.version = DB.updated.replace(/-/g, '.');
+            var jsonStr = JSON.stringify(DB, null, 2);
+            var encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
+
+            var resp = await fetch(
+                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: '🤖 后台更新数据: ' + DB.updated,
+                        content: encodedContent,
+                        sha: fileSha
+                    })
+                }
+            );
+
+            if (resp.ok) {
+                var result = await resp.json();
+                fileSha = result.content.sha;
+                document.getElementById('statusText').textContent =
+                    '🎉 推送成功！数据已更新至 GitHub，网站约 1 分钟后自动更新。';
+            } else {
+                var err = await resp.json();
+                if (err.message === 'Bad credentials') {
+                    localStorage.removeItem('github_token');
+                    alert('Token 失效！请刷新页面，重新点击"推送至 GitHub"并输入正确的 Token。');
+                } else {
+                    alert('推送失败：' + err.message);
+                }
+            }
+        } catch (e) {
+            alert('网络请求失败，请检查网络连接。\n' + e.message);
+        } finally {
+            btn.textContent = '☁️ 推送至 GitHub';
+            btn.disabled = false;
+        }
+    }
+
+    function eh(s) {
+        if (!s) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
 </script>
 </body>
 </html>
