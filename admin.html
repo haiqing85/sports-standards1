@@ -80,6 +80,28 @@
         .empty-tip { text-align: center; padding: 48px 20px; color: #94a3b8; }
         .empty-tip .ei { font-size: 36px; margin-bottom: 10px; }
 
+        /* 统计卡片 */
+        .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 14px 16px; text-align: center; }
+        .stat-card .s-num { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
+        .stat-card .s-lbl { font-size: 12px; color: #94a3b8; }
+        .stat-card.total  .s-num { color: #2563eb; }
+        .stat-card.active .s-num { color: #16a34a; }
+        .stat-card.abol   .s-num { color: #dc2626; }
+        .stat-card.coming .s-num { color: #d97706; }
+
+        /* PDF上传区 */
+        .pdf-upload-area { border: 2px dashed #e2e8f0; border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all .2s; background: #f8fafc; }
+        .pdf-upload-area:hover, .pdf-upload-area.dragover { border-color: #2563eb; background: rgba(37,99,235,.04); }
+        .pdf-upload-area .pu-icon { font-size: 28px; margin-bottom: 6px; }
+        .pdf-upload-area .pu-text { font-size: 13px; color: #475569; }
+        .pdf-upload-area .pu-hint { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+        .pdf-status-bar { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 8px 11px; border-radius: 6px; font-size: 12.5px; }
+        .pdf-status-bar.has  { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+        .pdf-status-bar.none { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+        .pdf-status-bar.uploading { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .pdf-status-bar.error { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+
         /* 多选分类 */
         .cat-box { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 7px; }
         .cat-item { display: flex; align-items: center; gap: 5px; padding: 5px 12px; background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; cursor: pointer; font-size: 13px; color: #475569; transition: all .15s; user-select: none; }
@@ -116,6 +138,14 @@
         </div>
     </div>
     <div id="statusText">正在连接 GitHub 并加载数据…</div>
+
+    <!-- 统计面板 -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-card total"><div class="s-num" id="st-total">—</div><div class="s-lbl">收录标准</div></div>
+        <div class="stat-card active"><div class="s-num" id="st-active">—</div><div class="s-lbl">现行有效</div></div>
+        <div class="stat-card abol"><div class="s-num" id="st-abol">—</div><div class="s-lbl">已废止</div></div>
+        <div class="stat-card coming"><div class="s-num" id="st-coming">—</div><div class="s-lbl">即将实施</div></div>
+    </div>
 
     <!-- 搜索筛选 -->
     <div class="search-bar">
@@ -264,6 +294,22 @@
                 placeholder="简要描述标准规定的主要内容…"></textarea>
         </div>
 
+        <div class="input-group">
+            <label>上传 PDF 文件</label>
+            <div class="pdf-upload-area" id="pdfDropZone"
+                onclick="document.getElementById('pdfFileInput').click()"
+                ondragover="event.preventDefault();this.classList.add('dragover')"
+                ondragleave="this.classList.remove('dragover')"
+                ondrop="handlePdfDrop(event)">
+                <div class="pu-icon">📄</div>
+                <div class="pu-text">点击选择 PDF，或拖拽文件到此处</div>
+                <div class="pu-hint">文件将上传至 GitHub downloads/ 目录，供用户直接下载</div>
+            </div>
+            <input type="file" id="pdfFileInput" accept=".pdf" style="display:none"
+                onchange="handlePdfSelect(this.files[0])">
+            <div class="pdf-status-bar none" id="pdfStatusBar">📭 暂未选择文件</div>
+        </div>
+
         <div class="modal-footer">
             <button class="btn" style="background:#e2e8f0;color:#334155" onclick="closeModal()">取消</button>
             <button class="btn btn-primary" onclick="saveData()">💾 暂存修改</button>
@@ -280,6 +326,7 @@
     var DB = { standards: [] };
     var fileSha = '';
     var editIndex = -1;
+    var pendingPdfFile = null;   // 待上传的 PDF 文件对象
 
     // ── 登录 ──
     function checkLogin() {
@@ -413,6 +460,8 @@
                 + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
                 + '</div></div>';
         }).join('');
+
+        renderStats();
     }
 
     // ── 自动生成 ID ──
@@ -561,6 +610,10 @@
         document.getElementById('f_replaces').value = '';
         document.getElementById('f_replacedBy').value = '';
         document.getElementById('f_summary').value = '';
+        // 重置PDF状态
+        pendingPdfFile = null;
+        document.getElementById('pdfFileInput').value = '';
+        setPdfStatus('none', '📭 暂未选择文件');
         document.getElementById('f_id').dataset.index = '-1';
         document.getElementById('editModal').classList.add('open');
     }
@@ -584,6 +637,14 @@
         document.getElementById('f_replaces').value   = s.replaces || '';
         document.getElementById('f_replacedBy').value = s.replacedBy || '';
         document.getElementById('f_summary').value    = s.summary || '';
+        // PDF状态
+        pendingPdfFile = null;
+        document.getElementById('pdfFileInput').value = '';
+        if (s.localFile) {
+            setPdfStatus('has', '✅ 已有PDF文件：' + s.localFile + '  （可重新上传覆盖）');
+        } else {
+            setPdfStatus('none', '📭 该标准暂无PDF，可上传文件');
+        }
         document.getElementById('f_id').dataset.index = index;
         document.getElementById('editModal').classList.add('open');
     }
@@ -634,9 +695,107 @@
 
         DB.total = DB.standards.length;
         renderList();
+
+        // 若有待上传的PDF，立即上传到GitHub
+        if (pendingPdfFile) {
+            var token = localStorage.getItem('github_token');
+            if (!token) {
+                token = prompt('上传PDF需要 GitHub Token，请输入：');
+                if (token) localStorage.setItem('github_token', token);
+            }
+            if (token) {
+                setPdfStatus('uploading', '⏳ 正在上传PDF至GitHub…');
+                uploadPdfToGithub(newStd.id, pendingPdfFile, token).then(function() {
+                    setPdfStatus('has', '✅ PDF已成功上传：downloads/' + newStd.id + '.pdf');
+                    pendingPdfFile = null;
+                }).catch(function(e) {
+                    setPdfStatus('error', '❌ PDF上传失败：' + e.message + '（可稍后重试）');
+                });
+            } else {
+                setPdfStatus('error', '❌ 未提供Token，PDF暂未上传，可在GitHub Actions中手动补传');
+            }
+        }
+
         closeModal();
         document.getElementById('statusText').textContent =
             '✏️ 已暂存修改，共 ' + DB.standards.length + ' 条。点击"推送至 GitHub"保存到云端。';
+    }
+
+    // ── 统计面板更新 ──
+    function renderStats() {
+        var stds = DB.standards || [];
+        document.getElementById('st-total').textContent  = stds.length;
+        document.getElementById('st-active').textContent = stds.filter(function(s){ return s.status === '现行'; }).length;
+        document.getElementById('st-abol').textContent   = stds.filter(function(s){ return s.status === '废止'; }).length;
+        document.getElementById('st-coming').textContent = stds.filter(function(s){ return s.status === '即将实施'; }).length;
+    }
+
+    // ── PDF 上传：文件选择 ──
+    function handlePdfSelect(file) {
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+            setPdfStatus('error', '❌ 请选择 PDF 格式文件');
+            pendingPdfFile = null;
+            return;
+        }
+        pendingPdfFile = file;
+        setPdfStatus('has', '📄 已选择：' + file.name + '（' + (file.size / 1024).toFixed(0) + ' KB）· 保存时自动上传');
+    }
+
+    // ── PDF 上传：拖拽放入 ──
+    function handlePdfDrop(e) {
+        e.preventDefault();
+        document.getElementById('pdfDropZone').classList.remove('dragover');
+        var file = e.dataTransfer.files[0];
+        if (file) handlePdfSelect(file);
+    }
+
+    // ── PDF 状态显示 ──
+    function setPdfStatus(type, msg) {
+        var bar = document.getElementById('pdfStatusBar');
+        bar.className = 'pdf-status-bar ' + type;
+        bar.textContent = msg;
+    }
+
+    // ── PDF 实际上传到 GitHub downloads/ ──
+    async function uploadPdfToGithub(stdId, file, token) {
+        return new Promise(function(resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    var base64 = e.target.result.split(',')[1];
+                    var filePath = 'downloads/' + stdId + '.pdf';
+                    // 先查是否已存在（获取旧 sha）
+                    var existSha = '';
+                    try {
+                        var chk = await fetch(
+                            'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
+                            { headers: { 'Authorization': 'token ' + token } }
+                        );
+                        if (chk.ok) { var chkJson = await chk.json(); existSha = chkJson.sha || ''; }
+                    } catch(e2) {}
+
+                    var body = {
+                        message: '📄 上传PDF: ' + stdId + '.pdf',
+                        content: base64
+                    };
+                    if (existSha) body.sha = existSha;
+
+                    var resp = await fetch(
+                        'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
+                        {
+                            method: 'PUT',
+                            headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+                            body: JSON.stringify(body)
+                        }
+                    );
+                    if (resp.ok) { resolve(); }
+                    else { var err = await resp.json(); reject(new Error(err.message)); }
+                } catch(ex) { reject(ex); }
+            };
+            reader.onerror = function() { reject(new Error('文件读取失败')); };
+            reader.readAsDataURL(file);
+        });
     }
 
     // ── 删除标准 ──
