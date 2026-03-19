@@ -891,27 +891,41 @@ def run(dry_run=False, check_only=False, use_ai=False):
 
     db, standards = load_db()
 
-    # Step 0：清洗现有数据（修复 sacinfo 标签、虚假 localFile）
+    # Step 0：清洗现有数据
     cleaned = 0
     for i, std in enumerate(standards):
         dirty = False
-        # 清洗标题中的 <sacinfo> 标签
         if std.get('title') and '<sacinfo>' in std['title']:
             standards[i]['title'] = clean_sacinfo(std['title'])
             dirty = True
-        # 清洗 summary 中的 <sacinfo> 标签
         if std.get('summary') and '<sacinfo>' in std['summary']:
             standards[i]['summary'] = clean_sacinfo(std['summary'])
             dirty = True
-        # 清除虚假 localFile（文件名存在但路径是自动生成的占位，后台未实际上传）
-        # 规则：localFile 存在，但 summary 为空或是默认占位文字，认为是自动生成的假路径
-        # 注意：不清除后台手动上传的真实文件（后台上传的文件 localFile 会在 saveData 中设置）
         if dirty: cleaned += 1
     if cleaned:
-        log(f"  🧹 清洗现有数据：修复 {cleaned} 条标题/摘要中的 XML 标签")
+        log(f"  🧹 清洗 XML 标签：修复 {cleaned} 条")
 
-    # 去除明显非体育的标准
-    before_filter = len(standards)
+    # Step 0B：自动删除不属于体育建设行业的标准
+    before = len(standards)
+    kept, removed_list = [], []
+    for std in standards:
+        title = std.get('title', '')
+        if is_sports(title):
+            kept.append(std)
+        else:
+            removed_list.append(std)
+    standards = kept
+    removed = before - len(standards)
+    if removed:
+        log(f"  🗑️  自动移除非体育标准：{removed} 条")
+        if removed <= 20:  # 条数少时逐条显示
+            for s in removed_list:
+                log(f"      ✂️  [{s.get('code','')}] {s.get('title','')[:40]}")
+        else:
+            log(f"      （超过20条，只显示前5条示例）")
+            for s in removed_list[:5]:
+                log(f"      ✂️  [{s.get('code','')}] {s.get('title','')[:40]}")
+        log(f"  剩余体育标准：{len(standards)} 条")
 
     # Step 1：核查状态
     if standards and not DEBUG_MODE:
