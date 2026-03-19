@@ -2,8 +2,7 @@ name: 自动抓取更新体育标准数据库
 
 on:
   schedule:
-    # 每天北京时间早上 8:00 (UTC 0:00) 自动触发
-    - cron: '0 0 * * *'
+    - cron: '0 0 * * *'   # 每天北京时间 08:00
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -14,9 +13,10 @@ on:
         default: 'full'
         type: choice
         options:
-          - full
-          - check
-          - pdf
+          - full      # 内置数据 + 在线抓取（推荐）
+          - builtin   # 仅导入内置权威数据（数据库为空时使用）
+          - check     # 仅核查现有标准状态
+          - pdf       # 下载缺失 PDF 文件
 
 jobs:
   update:
@@ -28,7 +28,7 @@ jobs:
       - name: 检出仓库
         uses: actions/checkout@v4
 
-      - name: 配置 Python
+      - name: 配置 Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -36,26 +36,36 @@ jobs:
       - name: 安装依赖
         run: pip install requests urllib3
 
-      - name: 完整抓取
+      # ── 完整模式（默认）────────────────────────────────────
+      - name: 完整抓取（内置数据 + 在线补充）
         if: ${{ github.event.inputs.mode == 'full' || github.event.inputs.mode == '' }}
         run: python scripts/update_standards.py
-        timeout-minutes: 40
+        timeout-minutes: 45
 
-      - name: 仅核查状态
+      # ── 仅导入内置数据（数据库被清空时急救用）────────────────
+      - name: 仅导入内置权威数据
+        if: ${{ github.event.inputs.mode == 'builtin' }}
+        run: python scripts/update_standards.py --builtin
+        timeout-minutes: 5
+
+      # ── 仅核查状态 ─────────────────────────────────────────
+      - name: 核查标准状态
         if: ${{ github.event.inputs.mode == 'check' }}
         run: python scripts/update_standards.py --check
-        timeout-minutes: 15
+        timeout-minutes: 20
 
-      - name: 下载 PDF
+      # ── 下载 PDF ───────────────────────────────────────────
+      - name: 下载缺失 PDF 文件
         if: ${{ github.event.inputs.mode == 'pdf' }}
         run: python scripts/download_pdfs.py
         timeout-minutes: 60
 
+      # ── 提交变更 ───────────────────────────────────────────
       - name: 检查变更并提交
         run: |
-          git config user.name "Standards Bot"
+          git config user.name  "Standards Bot"
           git config user.email "bot@github-actions.com"
           git add data/standards.json data/update_log.txt 2>/dev/null || git add data/standards.json
           git diff --cached --quiet \
-            && echo "今天暂无新标准发布" \
-            || git commit -m "🤖 自动抓取更新 $(date '+%Y-%m-%d')" && git push
+            && echo "✅ 数据无变化，无需提交" \
+            || (git commit -m "🤖 自动更新 $(date '+%Y-%m-%d') | $(python -c \"import json; d=json.load(open('data/standards.json')); print(f'共{d[\\\"total\\\"]}条')\" 2>/dev/null || echo '')" && git push)
