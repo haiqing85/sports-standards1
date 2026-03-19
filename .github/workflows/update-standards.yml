@@ -14,7 +14,6 @@ on:
         type: choice
         options:
           - full
-          - builtin
           - check
           - pdf
 
@@ -23,6 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: 检出仓库
@@ -36,22 +37,17 @@ jobs:
       - name: 安装依赖
         run: pip install requests urllib3
 
-      - name: 完整抓取（内置数据 + 在线补充）
+      - name: 完整抓取
         if: ${{ github.event.inputs.mode == 'full' || github.event.inputs.mode == '' }}
         run: python scripts/update_standards.py
         timeout-minutes: 45
-
-      - name: 仅导入内置权威数据
-        if: ${{ github.event.inputs.mode == 'builtin' }}
-        run: python scripts/update_standards.py --builtin
-        timeout-minutes: 5
 
       - name: 核查标准状态
         if: ${{ github.event.inputs.mode == 'check' }}
         run: python scripts/update_standards.py --check
         timeout-minutes: 20
 
-      - name: 下载缺失 PDF 文件
+      - name: 下载缺失 PDF
         if: ${{ github.event.inputs.mode == 'pdf' }}
         run: python scripts/download_pdfs.py
         timeout-minutes: 60
