@@ -51,50 +51,116 @@ QWEN_KEY     = os.environ.get('QWEN_KEY', '')
 # ============================================================
 #  关键词
 # ============================================================
-KEYWORDS = [
-    "合成材料面层", "塑胶跑道", "合成材料跑道",
-    "人造草坪", "人造草", "运动场草坪",
-    "体育照明", "体育场馆照明", "运动场照明",
-    "体育木地板", "运动木地板", "弹性地板",
-    "体育围网", "运动场围网",
-    "室外健身器材", "健身路径",
-    "体育场地", "运动场地", "体育场馆",
-    "颗粒填充料", "橡胶颗粒",
+# ============================================================
+#  关键词（全品类体育建设标准，按品类分组）
+# ============================================================
+
+# ── 合成材料面层 / 塑胶跑道 ──
+KW_SYNTHETIC = [
+    "合成材料面层", "合成材料跑道", "塑胶跑道", "聚氨酯跑道",
+    "合成材料运动场地", "合成跑道", "橡胶面层运动场",
+    "运动场地合成材料", "学校合成材料", "中小学合成材料",
+]
+
+# ── 人造草坪 ──
+KW_TURF = [
+    "人造草坪", "人造草", "运动场人造草", "足球场人造草",
+    "人工草坪", "人工草皮", "体育人造草",
+]
+
+# ── 颗粒填充料 ──
+KW_GRANULE = [
+    "颗粒填充料", "橡胶颗粒填充", "人造草填充",
+    "运动场填充颗粒", "草坪填充橡胶",
+]
+
+# ── 灯光照明 ──
+KW_LIGHTING = [
+    "体育场馆照明", "体育照明", "运动场照明",
+    "体育场地照明", "体育建筑电气", "体育场照明",
+    "运动场地灯光", "足球场照明", "网球场照明",
+]
+
+# ── 木地板 ──
+KW_WOOD = [
+    "体育木地板", "运动木地板", "体育用木质地板",
+    "体育场馆木地板", "篮球场木地板",
+]
+
+# ── PVC运动地胶 / 弹性地板 ──
+KW_PVC = [
+    "弹性地板", "PVC运动地板", "运动地胶",
+    "聚氯乙烯运动地板", "卷材运动地板",
+    "体育地板", "运动地板",
+]
+
+# ── 围网 ──
+KW_NET = [
+    "体育围网", "运动场围网", "球场围网",
+    "体育场围网", "防护围网体育",
+]
+
+# ── 健身路径 / 室外健身器材 ──
+KW_FITNESS = [
+    "室外健身器材", "健身路径", "健身器材安全",
+    "公共健身器材", "户外健身设施",
+    "健身设施", "社区健身器材",
+]
+
+# ── 体育器材（含各类专项）──
+KW_EQUIPMENT = [
+    "体育器材", "学校体育器材",
+    "篮球架", "足球门", "排球架",
+    "乒乓球台", "羽毛球网架",
+    "体操器械", "田径器材",
+]
+
+# ── 游泳场地 ──
+KW_SWIM = [
+    "游泳场地", "游泳馆", "游泳池",
+    "游泳池水处理", "游泳池水质",
+]
+
+# ── 各球类场地 ──
+KW_COURT = [
     "足球场地", "篮球场地", "网球场地",
-    "田径场地", "游泳场地", "排球场地", "羽毛球场地",
-    "学校操场", "体育设施",
-    "PVC运动地板", "运动地胶",
+    "田径场地", "排球场地", "羽毛球场地",
+    "乒乓球场地", "手球场地",
+    "棒球场地", "曲棍球场地",
+    "冰球场地", "冰场",
 ]
 
-# 行业标准专用关键词
-INDUSTRY_KEYWORDS = [
-    "体育场馆照明", "体育建筑设计",
-    "运动场地面层", "体育场地验收",
-    "健身器材安全", "体育围网安装",
-    "运动木地板安装", "弹性运动地板",
-    "体育场馆建设", "全民健身设施",
+# ── 场地设计 / 体育建筑 ──
+KW_DESIGN = [
+    "体育建筑设计", "体育场馆建设",
+    "体育建筑", "体育场地设计",
+    "运动场地设计", "体育公园",
+    "全民健身", "体育设施建设",
+    "体育场地建设", "综合体育场",
 ]
 
-# 地方标准专用关键词
-LOCAL_KEYWORDS = [
-    "合成材料面层 学校", "塑胶跑道 有害物质",
-    "人造草坪 运动场", "体育场地 验收",
-    "运动场地 地方标准", "学校操场 安全",
-    "健身器材 室外", "体育设施 建设",
-    "运动木地板 安装", "体育围网 规范",
+# ── 地方标准补充关键词（各省市）──
+KW_LOCAL = [
+    "学校操场 安全", "学校体育场地",
+    "塑胶跑道 有害物质", "合成材料 有害物质限量",
+    "运动场地 验收规范", "体育场地 验收",
 ]
 
-# 团体标准专用关键词
-GROUP_KEYWORDS = [
-    "合成材料跑道 施工验收",
-    "人造草坪 施工验收",
-    "运动地板 施工验收",
-    "体育场地照明 LED",
-    "健身器材 团体标准",
-    "运动场围网 团体标准",
-    "体育木地板 团体标准",
-    "颗粒填充 橡胶 团体",
+# ── 团体标准补充关键词 ──
+KW_GROUP = [
+    "合成材料跑道 施工", "人造草坪 施工",
+    "运动地板 施工", "体育照明 LED",
+    "健身器材 质量", "体育围网 安装",
 ]
+
+# 合并全部关键词（去重）
+_all_kws = (KW_SYNTHETIC + KW_TURF + KW_GRANULE + KW_LIGHTING +
+            KW_WOOD + KW_PVC + KW_NET + KW_FITNESS +
+            KW_EQUIPMENT + KW_SWIM + KW_COURT + KW_DESIGN)
+KEYWORDS = list(dict.fromkeys(_all_kws))  # 保序去重
+INDUSTRY_KEYWORDS = KW_DESIGN + KW_LIGHTING + KW_FITNESS
+LOCAL_KEYWORDS = KW_LOCAL
+GROUP_KEYWORDS = KW_GROUP
 
 SPORTS_KW = [
     "体育","运动","健身","竞技","跑道","操场","球场","场馆",
@@ -155,8 +221,30 @@ def make_id(code):
 def norm_code(c):
     return re.sub(r'\s+', '', c).upper()
 
+SPORTS_KW_STRICT = [
+    # 必须包含以下词之一，才算体育相关标准
+    "体育场地","体育场馆","运动场地","运动场","合成材料面层","合成材料跑道",
+    "塑胶跑道","人造草坪","人造草","体育照明","体育木地板","运动木地板",
+    "弹性地板","体育围网","运动场围网","健身路径","室外健身器材","体育器材",
+    "颗粒填充料","橡胶颗粒填充","体育建筑","体育公园","全民健身",
+    "足球场","篮球场","网球场","田径场","游泳场","排球场","羽毛球场",
+    "乒乓球场","学校操场","运动地板","PVC运动","体育设施",
+    # 允许较短词但需要与"体育/运动"组合，通过下面逻辑处理
+]
+
 def is_sports(text):
-    return any(kw in text for kw in SPORTS_KW)
+    """严格判断是否为体育相关标准，避免误收非体育内容"""
+    if not text:
+        return False
+    # 精确词组匹配（优先）
+    for kw in SPORTS_KW_STRICT:
+        if kw in text:
+            return True
+    # 宽松词组匹配：必须同时含"体育"或"运动"＋另一个关键词
+    has_base = any(w in text for w in ['体育','运动','健身'])
+    has_field = any(w in text for w in ['场地','场馆','器材','地板','跑道','草坪',
+                                         '围网','照明','颗粒','建设','设施'])
+    return has_base and has_field
 
 def norm_status(raw):
     raw = str(raw or '').strip()
@@ -217,7 +305,8 @@ def guess_tags(text):
     return [t for t in candidates if t in text][:6]
 
 def build_entry(item):
-    code, title = item.get('code',''), item.get('title','')
+    code  = item.get('code','')
+    title = clean_sacinfo(item.get('title',''))  # 清洗 <sacinfo> 标签
     return {
         'id':            make_id(code),
         'code':          code,
@@ -236,7 +325,8 @@ def build_entry(item):
         'summary':       item.get('summary') or '',
         'isMandatory':   item.get('isMandatory', is_mandatory(code)),
         'scope':         item.get('scope') or '',
-        'localFile':     f"downloads/{make_id(code)}.pdf",
+        # localFile 不自动设置，只在后台实际上传PDF后才写入
+        'localFile':     item.get('localFile') or None,
     }
 
 def safe_json(resp, source=''):
@@ -293,101 +383,97 @@ def parse_samr_row(row):
     return code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory
 
 # ============================================================
-#  来源一：std.samr.gov.cn（兼容新旧字段名）
+#  来源一：std.samr.gov.cn（带分页，抓取全部结果）
 # ============================================================
-def fetch_samr(keyword):
-    results = []
-
-    # 接口1：gbQueryPage（主接口）
+def fetch_samr_page(keyword, page=1, page_size=50):
+    """抓取单页结果，返回 (rows, total_pages)"""
     try:
         resp = SESSION.post(
             "https://std.samr.gov.cn/gb/search/gbQueryPage",
             json={"searchText": keyword, "status": "",
                   "sortField": "ISSUE_DATE", "sortType": "desc",
-                  "pageSize": 50, "pageIndex": 1},
+                  "pageSize": page_size, "pageIndex": page},
             headers={'Referer':'https://std.samr.gov.cn/',
                      'Content-Type':'application/json',
                      'Accept':'application/json, text/plain, */*',
                      'Origin':'https://std.samr.gov.cn'},
-            timeout=20
+            timeout=25
         )
-        dbg("samr-gbQueryPage", resp)
-        if resp.ok:
-            data = safe_json(resp, 'samr-gbQueryPage')
-            if data:
-                rows = data.get('rows') or data.get('data',{}).get('rows',[]) or []
-                if DEBUG_MODE:
-                    log(f"    [DEBUG] samr rows: {len(rows)}, keys: {list(data.keys())[:6]}")
-                for row in rows:
-                    code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-                    if not code or not title or not is_sports(title): continue
-                    results.append({
-                        'code': code, 'title': title,
-                        'status': norm_status(status_raw),
-                        'issueDate': issue_date, 'implementDate': impl_date,
-                        'abolishDate': abol_date, 'issuedBy': issued_by,
-                        'isMandatory': mandatory,
-                    })
+        dbg(f"samr-p{page}", resp)
+        if not resp.ok:
+            return [], 0
+        data = safe_json(resp, f'samr-p{page}')
+        if not data:
+            return [], 0
+        rows = data.get('rows') or data.get('data',{}).get('rows',[]) or []
+        total = int(data.get('total') or data.get('pageNumber') or
+                    data.get('data',{}).get('total',0) or 0)
+        total_pages = max(1, -(-total // page_size)) if total else (1 if rows else 0)
+        if DEBUG_MODE:
+            log(f"    [DEBUG] p{page} rows:{len(rows)} total:{total} pages:{total_pages}")
+        return rows, total_pages
     except Exception as e:
-        if DEBUG_MODE: log(f"    [DEBUG] samr接口1异常: {e}")
+        if DEBUG_MODE: log(f"    [DEBUG] samr-p{page}异常: {e}")
+        return [], 0
 
-    if results: return results
+def fetch_samr(keyword):
+    """抓取关键词的全部分页结果"""
+    results = []
+    seen = set()
 
-    # 接口2：openstd
-    try:
-        resp = SESSION.get(
-            "https://openstd.samr.gov.cn/bzgk/gb/gbQuery",
-            params={"searchText": keyword, "pageIndex": 1, "pageSize": 50},
-            headers={'Referer':'https://openstd.samr.gov.cn/',
-                     'Accept':'application/json, text/plain, */*'},
-            timeout=20
-        )
-        dbg("openstd-gbQuery", resp)
-        if resp.ok:
-            data = safe_json(resp, 'openstd')
-            if data:
-                rows = data.get('rows') or []
-                if DEBUG_MODE: log(f"    [DEBUG] openstd rows: {len(rows)}")
-                for row in rows:
-                    code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-                    if not code or not title or not is_sports(title): continue
-                    results.append({
-                        'code': code, 'title': title,
-                        'status': norm_status(status_raw),
-                        'issueDate': issue_date, 'implementDate': impl_date,
-                        'abolishDate': abol_date, 'issuedBy': issued_by,
-                        'isMandatory': mandatory,
-                    })
-    except Exception as e:
-        if DEBUG_MODE: log(f"    [DEBUG] openstd异常: {e}")
+    # 第一页，同时获取总页数
+    rows, total_pages = fetch_samr_page(keyword, 1)
+    for row in rows:
+        code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
+        if not code or not title: continue
+        if not is_sports(title): continue
+        if code in seen: continue
+        seen.add(code)
+        results.append({'code':code,'title':title,'status':norm_status(status_raw),
+                        'issueDate':issue_date,'implementDate':impl_date,
+                        'abolishDate':abol_date,'issuedBy':issued_by,'isMandatory':mandatory})
 
-    if results: return results
+    # 继续抓后续页（最多10页，避免超时）
+    for page in range(2, min(total_pages + 1, 11)):
+        time.sleep(0.5)
+        rows, _ = fetch_samr_page(keyword, page)
+        if not rows:
+            break
+        for row in rows:
+            code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
+            if not code or not title: continue
+            if not is_sports(title): continue
+            if code in seen: continue
+            seen.add(code)
+            results.append({'code':code,'title':title,'status':norm_status(status_raw),
+                            'issueDate':issue_date,'implementDate':impl_date,
+                            'abolishDate':abol_date,'issuedBy':issued_by,'isMandatory':mandatory})
 
-    # 接口3：GET 备用
-    try:
-        resp = SESSION.get(
-            "https://std.samr.gov.cn/gb/search/gbQueryPage",
-            params={"searchText": keyword, "pageSize": 30, "pageIndex": 1},
-            headers={'Referer':'https://std.samr.gov.cn/'},
-            timeout=15
-        )
-        dbg("samr-GET", resp)
-        if resp.ok:
-            data = safe_json(resp, 'samr-GET')
-            if data:
-                rows = data.get('rows') or []
-                if DEBUG_MODE: log(f"    [DEBUG] samr-GET rows: {len(rows)}")
-                for row in rows:
-                    code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
-                    if not code or not title or not is_sports(title): continue
-                    results.append({
-                        'code': code, 'title': title,
-                        'status': norm_status(status_raw),
-                        'issueDate': issue_date, 'implementDate': impl_date,
-                        'issuedBy': issued_by, 'isMandatory': mandatory,
-                    })
-    except Exception as e:
-        if DEBUG_MODE: log(f"    [DEBUG] samr接口3异常: {e}")
+    # 若主接口无结果，尝试 openstd 备用接口
+    if not results:
+        try:
+            resp = SESSION.get(
+                "https://openstd.samr.gov.cn/bzgk/gb/gbQuery",
+                params={"searchText": keyword, "pageIndex": 1, "pageSize": 50},
+                headers={'Referer':'https://openstd.samr.gov.cn/',
+                         'Accept':'application/json, text/plain, */*'},
+                timeout=20
+            )
+            dbg("openstd", resp)
+            if resp.ok:
+                data = safe_json(resp, 'openstd')
+                if data:
+                    for row in (data.get('rows') or []):
+                        code, title, status_raw, issue_date, impl_date, abol_date, issued_by, mandatory = parse_samr_row(row)
+                        if not code or not title: continue
+                        if not is_sports(title): continue
+                        if code in seen: continue
+                        seen.add(code)
+                        results.append({'code':code,'title':title,'status':norm_status(status_raw),
+                                        'issueDate':issue_date,'implementDate':impl_date,
+                                        'abolishDate':abol_date,'issuedBy':issued_by,'isMandatory':mandatory})
+        except Exception as e:
+            if DEBUG_MODE: log(f"    [DEBUG] openstd异常: {e}")
 
     return results
 
@@ -791,6 +877,32 @@ def run(dry_run=False, check_only=False, use_ai=False):
 
     db, standards = load_db()
 
+    # Step 0：清洗现有数据（修复 sacinfo 标签、虚假 localFile）
+    cleaned = 0
+    for i, std in enumerate(standards):
+        dirty = False
+        # 清洗标题中的 <sacinfo> 标签
+        if std.get('title') and '<sacinfo>' in std['title']:
+            standards[i]['title'] = clean_sacinfo(std['title'])
+            dirty = True
+        # 清洗 summary 中的 <sacinfo> 标签
+        if std.get('summary') and '<sacinfo>' in std['summary']:
+            standards[i]['summary'] = clean_sacinfo(std['summary'])
+            dirty = True
+        # 清除虚假 localFile（文件名存在但路径是自动生成的占位，后台未实际上传）
+        # 规则：localFile 存在，但 summary 为空或是默认占位文字，认为是自动生成的假路径
+        # 注意：不清除后台手动上传的真实文件（后台上传的文件 localFile 会在 saveData 中设置）
+        if dirty: cleaned += 1
+    if cleaned:
+        log(f"  🧹 清洗现有数据：修复 {cleaned} 条标题/摘要中的 XML 标签")
+
+    # 去除明显非体育的标准
+    before_filter = len(standards)
+    standards = [s for s in standards if is_sports(s.get('title','') + s.get('summary',''))]
+    removed = before_filter - len(standards)
+    if removed:
+        log(f"  🗑️  过滤非体育标准：移除 {removed} 条")
+
     # Step 1：核查状态
     if standards and not DEBUG_MODE:
         log(f"\n🔍 Step 1：核查现有 {len(standards)} 条标准状态…")
@@ -810,51 +922,55 @@ def run(dry_run=False, check_only=False, use_ai=False):
     if check_only:
         save_db(db, standards, dry_run); return
 
-    # Step 2：国家标准抓取
-    log(f"\n🌐 Step 2-A：国家标准（{len(KEYWORDS)} 个关键词）…")
+    # Step 2：全量多源抓取
+    log(f"\n🌐 Step 2：全量多源抓取（{len(KEYWORDS)} 个关键词 × 3个来源）…")
     all_new, official_ok = [], False
+    total_kw = len(KEYWORDS)
     for i, kw in enumerate(KEYWORDS, 1):
-        log(f"  [{i:02d}/{len(KEYWORDS)}] {kw}")
+        log(f"  [{i:02d}/{total_kw}] {kw}")
+        # 国家/行业/地方标准（samr，带分页）
         a = fetch_samr(kw)
         time.sleep(0.8)
-        got = len(a)
+        # 团体标准（ttbz）
+        b = fetch_ttbz(kw)
+        time.sleep(0.5)
+        # 地方标准（dbba，每3个关键词查一次）
+        c = fetch_dbba(kw) if i % 3 == 0 else []
+        if c: time.sleep(0.5)
+        got = len(a)+len(b)+len(c)
         if got:
-            all_new.extend(a); official_ok = True
-            log(f"         ✅ +{got}")
+            all_new.extend(a+b+c); official_ok = True
+            log(f"         ✅ 国标/行标:{len(a)}  团标:{len(b)}  地标:{len(c)}")
 
-    # Step 2-B：行业标准专项
-    log(f"\n🏗️  Step 2-B：行业标准（{len(INDUSTRY_KEYWORDS)} 个关键词）…")
+    # Step 2-B：行业标准专项补充
+    log(f"\n🏗️  Step 2-B：行业标准补充（{len(INDUSTRY_KEYWORDS)} 个关键词）…")
     for i, kw in enumerate(INDUSTRY_KEYWORDS, 1):
-        log(f"  [{i:02d}/{len(INDUSTRY_KEYWORDS)}] {kw}")
-        a = fetch_samr_by_type(kw, 'HB')   # 行业标准类型
-        b = fetch_samr(kw)                  # 普通搜索补充
-        got = len(a) + len(b)
+        a = fetch_samr_by_type(kw, 'HB')
+        b = fetch_samr(kw)
+        got = len(a)+len(b)
         if got:
             all_new.extend(a+b); official_ok = True
-            log(f"         ✅ +{got}")
+            log(f"  [{i:02d}] {kw} → +{got}")
         time.sleep(0.8)
 
-    # Step 2-C：地方标准专项
-    log(f"\n🗺️  Step 2-C：地方标准（{len(LOCAL_KEYWORDS)} 个关键词）…")
+    # Step 2-C：地方标准专项补充
+    log(f"\n🗺️  Step 2-C：地方标准补充（{len(LOCAL_KEYWORDS)} 个关键词）…")
     for i, kw in enumerate(LOCAL_KEYWORDS, 1):
-        log(f"  [{i:02d}/{len(LOCAL_KEYWORDS)}] {kw}")
         a = fetch_local_standards(kw)
         time.sleep(0.8)
         if a:
             all_new.extend(a); official_ok = True
-            log(f"         ✅ +{len(a)}")
+            log(f"  [{i:02d}] {kw} → +{len(a)}")
 
-    # Step 2-D：团体标准专项
-    log(f"\n🏅 Step 2-D：团体标准（{len(GROUP_KEYWORDS)} 个关键词）…")
+    # Step 2-D：团体标准专项补充
+    log(f"\n🏅 Step 2-D：团体标准补充（{len(GROUP_KEYWORDS)} 个关键词）…")
     for i, kw in enumerate(GROUP_KEYWORDS, 1):
-        log(f"  [{i:02d}/{len(GROUP_KEYWORDS)}] {kw}")
         a = fetch_group_standards(kw)
         time.sleep(0.6)
         if a:
             all_new.extend(a); official_ok = True
-            log(f"         ✅ +{len(a)}")
-
-    # Step 3：搜索引擎辅助
+            log(f"  [{i:02d}] {kw} → +{len(a)}")
+    # Step 3：搜索引擎辅助发现
     log(f"\n🔎 Step 3：搜索引擎辅助发现…")
     found_codes, search_new = set(), []
     for kw in KEYWORDS[:10]:
