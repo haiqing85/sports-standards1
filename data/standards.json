@@ -1,7 +1,7 @@
 {
   "version": "2026.03.19",
   "updated": "2026-03-19",
-  "total": 53,
+  "total": 54,
   "standards": [
     {
       "id": "GB362462018",
@@ -1251,6 +1251,30 @@
       "isMandatory": false,
       "scope": "",
       "localFile": "downloads/GBT202392006.pdf"
+    },
+    {
+      "id": "GB148332020",
+      "code": "GB 14833-2020",
+      "title": "合成材料运动场地面层",
+      "english": "",
+      "type": "国家标准",
+      "status": "现行",
+      "issueDate": "2020-03-31",
+      "implementDate": "2021-02-01",
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "合成材料面层",
+      "tags": [
+        "运动",
+        "合成材料",
+        "场地"
+      ],
+      "summary": "",
+      "isMandatory": true,
+      "scope": "",
+      "localFile": "downloads/GB148332020.pdf"
     }
   ]
 }
