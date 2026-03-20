@@ -116,6 +116,47 @@
         .cat-item:hover { border-color: #2563eb; color: #2563eb; }
         .cat-item input[type="checkbox"] { accent-color: #2563eb; cursor: pointer; width: 14px; height: 14px; }
         .cat-item:has(input:checked) { background: #dbeafe; border-color: #2563eb; color: #1d4ed8; font-weight: 600; }
+        /* ── 字段补全增强样式 ── */
+        .field-tip { font-size: 11px; font-weight: 400; color: #94a3b8; text-transform: none; letter-spacing: 0; margin-left: 6px; }
+        .quick-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+        .chip { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; cursor: pointer; transition: all .15s; }
+        .chip:hover { background: #dbeafe; border-color: #93c5fd; }
+        .suggest-list { position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #e2e8f0; border-radius: 7px; box-shadow: 0 8px 20px rgba(0,0,0,.1); z-index: 200; max-height: 180px; overflow-y: auto; }
+        .suggest-item { padding: 9px 13px; font-size: 13px; cursor: pointer; color: #1e293b; transition: background .1s; }
+        .suggest-item:hover { background: #f0f7ff; color: #1d4ed8; }
+        .field-validate { font-size: 12px; margin-top: 4px; min-height: 16px; }
+        .fv-ok   { color: #16a34a; }
+        .fv-warn { color: #d97706; }
+        .btn-ai-fill { float: right; padding: 2px 10px; border-radius: 20px; background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; border: none; font-size: 11.5px; font-weight: 600; cursor: pointer; margin-top: -2px; font-family: inherit; transition: opacity .15s; }
+        .btn-ai-fill:hover { opacity: .85; }
+        .btn-ai-fill:disabled { opacity: .5; cursor: not-allowed; }
+        .summary-counter { position: absolute; bottom: 8px; right: 10px; font-size: 11px; color: #94a3b8; pointer-events: none; }
+        .ai-status { font-size: 12.5px; padding: 8px 12px; border-radius: 7px; margin-top: 6px; }
+        .ai-status.loading { background: #eff6ff; color: #1d4ed8; }
+        .ai-status.ok  { background: #f0fdf4; color: #16a34a; }
+        .ai-status.err { background: #fef2f2; color: #dc2626; }
+
+        /* ── 批量补全面板 ── */
+        .batch-panel { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 18px; display: none; }
+        .batch-panel.open { display: block; }
+        .batch-panel h3 { font-size: 14px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+        .batch-panel p  { font-size: 13px; color: #64748b; margin-bottom: 14px; }
+        .batch-stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .bstat { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px 14px; text-align: center; min-width: 80px; }
+        .bstat-n { font-size: 20px; font-weight: 700; color: #1a56c4; }
+        .bstat-l { font-size: 11px; color: #94a3b8; }
+        .bstat.warn .bstat-n { color: #d97706; }
+        .batch-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+        .batch-table th { text-align: left; padding: 7px 10px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #475569; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+        .batch-table td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .batch-table tr:last-child td { border-bottom: none; }
+        .batch-table tr:hover td { background: #f8fafc; }
+        .miss-badge { display: inline-block; padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 600; margin: 1px; }
+        .miss-issuedBy { background: #fef3c7; color: #b45309; }
+        .miss-summary  { background: #fee2e2; color: #dc2626; }
+        .miss-replaces { background: #ede9fe; color: #7c3aed; }
+        .batch-edit-btn { padding: 4px 10px; background: #1a56c4; color: #fff; border: none; border-radius: 5px; font-size: 11.5px; cursor: pointer; font-family: inherit; }
+        .batch-edit-btn:hover { background: #1d4ed8; }
     </style>
 </head>
 <body>
@@ -164,6 +205,32 @@
         <div class="stat-card nopdf" onclick="filterByCard('__nopdf__')" title="点击查看缺少PDF的标准，逐条上传">
             <div class="s-num" id="st-nopdf">—</div><div class="s-lbl">⚠️ 缺PDF ↓点击补传</div>
         </div>
+        <div class="stat-card nopdf" onclick="toggleBatchPanel()" title="点击查看字段不完整的标准" style="cursor:pointer">
+            <div class="s-num" id="st-incomplete" style="color:#d97706">—</div>
+            <div class="s-lbl">📝 字段不完整 ↓点击补全</div>
+        </div>
+    </div>
+
+    <!-- 批量补全面板 -->
+    <div class="batch-panel" id="batchPanel">
+        <h3>📝 字段补全助手</h3>
+        <p>以下标准的<strong>发布机构</strong>、<strong>标准摘要</strong>或<strong>替代关系</strong>尚未填写，点击「编辑」逐条补全。</p>
+        <div class="batch-stats">
+            <div class="bstat warn"><div class="bstat-n" id="bp-miss-issued">0</div><div class="bstat-l">缺发布机构</div></div>
+            <div class="bstat warn"><div class="bstat-n" id="bp-miss-summary">0</div><div class="bstat-l">缺标准摘要</div></div>
+            <div class="bstat warn"><div class="bstat-n" id="bp-miss-replaces">0</div><div class="bstat-l">缺替代关系</div></div>
+        </div>
+        <table class="batch-table">
+            <thead>
+                <tr>
+                    <th style="width:160px">标准编号</th>
+                    <th>标准名称</th>
+                    <th style="width:150px">缺少字段</th>
+                    <th style="width:60px">操作</th>
+                </tr>
+            </thead>
+            <tbody id="batchTableBody"></tbody>
+        </table>
     </div>
 
     <!-- 搜索筛选 -->
@@ -292,25 +359,56 @@
         </div>
 
         <div class="input-group">
-            <label>发布机构</label>
-            <input type="text" id="f_issuedBy" placeholder="如：国家市场监督管理总局">
+            <label>发布机构
+                <span class="field-tip">（自动抓取时可能为空，请手动补全）</span>
+            </label>
+            <div style="position:relative">
+                <input type="text" id="f_issuedBy" placeholder="如：国家市场监督管理总局" autocomplete="off"
+                       oninput="showIssuedBySuggest(this.value)" onblur="setTimeout(hideIssuedBySuggest,200)">
+                <div id="issuedBySuggest" class="suggest-list" style="display:none"></div>
+            </div>
+            <div class="quick-chips" id="issuedByChips">
+                <span class="chip" onclick="setIssuedBy('国家市场监督管理总局')">国家市场监督管理总局</span>
+                <span class="chip" onclick="setIssuedBy('住房和城乡建设部')">住房和城乡建设部</span>
+                <span class="chip" onclick="setIssuedBy('国家标准化管理委员会')">国家标准化管理委员会</span>
+                <span class="chip" onclick="setIssuedBy('国家体育总局')">国家体育总局</span>
+                <span class="chip" onclick="setIssuedBy('教育部')">教育部</span>
+                <span class="chip" onclick="setIssuedBy('公安部')">公安部</span>
+            </div>
         </div>
 
         <div class="grid-2">
             <div class="input-group">
-                <label>替代旧标准</label>
-                <input type="text" id="f_replaces" placeholder="本标准替代的旧编号">
+                <label>替代旧标准
+                    <span class="field-tip">本标准发布时废止的旧版编号</span>
+                </label>
+                <input type="text" id="f_replaces" placeholder="如：GB/T 14833-2011"
+                       oninput="validateReplaceCode('f_replaces',this.value)">
+                <div class="field-validate" id="f_replaces_v"></div>
             </div>
             <div class="input-group">
-                <label>被新标准替代</label>
-                <input type="text" id="f_replacedBy" placeholder="废止时填替代本标准的新编号">
+                <label>被新标准替代
+                    <span class="field-tip">此标准废止后的替代新编号</span>
+                </label>
+                <input type="text" id="f_replacedBy" placeholder="如：GB/T 14833-2025"
+                       oninput="validateReplaceCode('f_replacedBy',this.value)">
+                <div class="field-validate" id="f_replacedBy_v"></div>
             </div>
         </div>
 
         <div class="input-group">
-            <label>标准摘要</label>
-            <textarea id="f_summary" rows="3" style="resize:vertical"
-                placeholder="简要描述标准规定的主要内容…"></textarea>
+            <label>标准摘要
+                <span class="field-tip">（自动抓取时常为空，建议补全以提升搜索效果）</span>
+                <button class="btn-ai-fill" id="aiFillBtn" onclick="aiFillSummary()" title="调用AI自动生成摘要">
+                    ✨ AI 补全
+                </button>
+            </label>
+            <div style="position:relative">
+                <textarea id="f_summary" rows="4" style="resize:vertical;padding-right:40px"
+                    placeholder="简要描述标准规定的主要内容、适用范围和技术要求…"></textarea>
+                <div class="summary-counter" id="summaryCounter">0 字</div>
+            </div>
+            <div class="ai-status" id="aiStatus" style="display:none"></div>
         </div>
 
         <div class="input-group">
@@ -775,6 +873,60 @@
         document.getElementById('st-abol').textContent   = stds.filter(function(s){ return s.status === '废止'; }).length;
         document.getElementById('st-coming').textContent = stds.filter(function(s){ return s.status === '即将实施'; }).length;
         document.getElementById('st-nopdf').textContent  = stds.filter(function(s){ return !s.localFile; }).length;
+        // 字段不完整统计
+        var incomplete = stds.filter(function(s){
+            return !s.issuedBy || !s.summary;
+        }).length;
+        document.getElementById('st-incomplete').textContent = incomplete;
+        // 更新批量面板数据
+        renderBatchPanel(stds);
+    }
+
+    // ── 批量补全面板 ──
+    function toggleBatchPanel() {
+        var panel = document.getElementById('batchPanel');
+        panel.classList.toggle('open');
+        if (panel.classList.contains('open')) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function renderBatchPanel(stds) {
+        stds = stds || DB.standards || [];
+        var missIssued   = stds.filter(function(s){ return !s.issuedBy; });
+        var missSummary  = stds.filter(function(s){ return !s.summary; });
+        var missReplaces = stds.filter(function(s){ return s.status === '废止' && !s.replacedBy; });
+
+        document.getElementById('bp-miss-issued').textContent   = missIssued.length;
+        document.getElementById('bp-miss-summary').textContent  = missSummary.length;
+        document.getElementById('bp-miss-replaces').textContent = missReplaces.length;
+
+        // 合并所有字段缺失的标准（去重）
+        var missingMap = {};
+        missIssued.forEach(function(s){ (missingMap[s.id] = missingMap[s.id] || {std:s, miss:[]}).miss.push('issuedBy'); });
+        missSummary.forEach(function(s){ (missingMap[s.id] = missingMap[s.id] || {std:s, miss:[]}).miss.push('summary'); });
+        missReplaces.forEach(function(s){ (missingMap[s.id] = missingMap[s.id] || {std:s, miss:[]}).miss.push('replaces'); });
+
+        var rows = Object.values(missingMap).slice(0, 50); // 最多显示50条
+        var tbody = document.getElementById('batchTableBody');
+        if (!rows.length) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#16a34a;padding:16px">🎉 所有字段均已填写完整！</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(function(item) {
+            var s = item.std;
+            var idx = DB.standards.indexOf(s);
+            var badges = item.miss.map(function(m){
+                var labels = { issuedBy:'发布机构', summary:'标准摘要', replaces:'替代关系' };
+                return '<span class="miss-badge miss-'+m+'">'+labels[m]+'</span>';
+            }).join('');
+            return '<tr>'
+                + '<td style="font-family:monospace;font-size:12px;color:#1a56c4">'+eh(s.code)+'</td>'
+                + '<td style="font-size:12px">'+eh(s.title)+'</td>'
+                + '<td>'+badges+'</td>'
+                + '<td><button class="batch-edit-btn" onclick="editStd('+idx+');document.getElementById(\'batchPanel\').classList.remove(\'open\')">编辑</button></td>'
+                + '</tr>';
+        }).join('');
     }
 
     // ── 点击统计卡片快速筛选 ──
@@ -932,6 +1084,141 @@
             alert('网络请求失败，请检查网络连接。\n' + e.message);
         } finally {
             btn.textContent = '☁️ 推送至 GitHub';
+            btn.disabled = false;
+        }
+    }
+
+    // ── 发布机构快捷建议 ──
+    var ISSUED_BY_COMMON = [
+        '国家市场监督管理总局', '国家标准化管理委员会',
+        '住房和城乡建设部', '国家体育总局', '教育部',
+        '中华人民共和国住房和城乡建设部', '公安部',
+        '工业和信息化部', '国家质量监督检验检疫总局',
+        '建设部', '国家质检总局',
+    ];
+
+    function setIssuedBy(val) {
+        document.getElementById('f_issuedBy').value = val;
+        hideIssuedBySuggest();
+    }
+
+    function showIssuedBySuggest(val) {
+        var box = document.getElementById('issuedBySuggest');
+        if (!val || val.length < 2) { box.style.display = 'none'; return; }
+        var matches = ISSUED_BY_COMMON.filter(function(s){ return s.includes(val); });
+        if (!matches.length) { box.style.display = 'none'; return; }
+        box.innerHTML = matches.map(function(m){
+            return '<div class="suggest-item" onmousedown="setIssuedBy(\''+m+'\')">'+eh(m)+'</div>';
+        }).join('');
+        box.style.display = 'block';
+    }
+
+    function hideIssuedBySuggest() {
+        document.getElementById('issuedBySuggest').style.display = 'none';
+    }
+
+    // ── 替代编号格式验证 ──
+    function validateReplaceCode(fieldId, val) {
+        var vEl = document.getElementById(fieldId + '_v');
+        if (!val.trim()) { vEl.textContent = ''; return; }
+        // 检查是否像标准编号格式
+        var codePattern = /^(GB|GB\/T|JGJ|JG\/T|CJJ|T\/|DB|GBZ|YB|QB)[^\s]{2,}/i;
+        if (codePattern.test(val.trim())) {
+            vEl.className = 'field-validate fv-ok';
+            vEl.textContent = '✓ 格式正确';
+            // 检查是否在数据库中已存在
+            var exists = DB.standards.some(function(s){ return s.code.replace(/\s/g,'').toUpperCase() === val.replace(/\s/g,'').toUpperCase(); });
+            if (exists) {
+                vEl.className = 'field-validate fv-ok';
+                vEl.textContent = '✓ 数据库中已收录该标准';
+            }
+        } else {
+            vEl.className = 'field-validate fv-warn';
+            vEl.textContent = '⚠ 请核对编号格式，如：GB/T 14833-2020';
+        }
+    }
+
+    // ── 摘要字数统计 ──
+    document.getElementById('f_summary').addEventListener('input', function() {
+        var len = this.value.length;
+        var counter = document.getElementById('summaryCounter');
+        counter.textContent = len + ' 字';
+        counter.style.color = len > 20 ? '#16a34a' : '#94a3b8';
+    });
+
+    // ── AI 自动生成摘要 ──
+    async function aiFillSummary() {
+        var code  = document.getElementById('f_code').value.trim();
+        var title = document.getElementById('f_title').value.trim();
+        if (!code || !title) {
+            alert('请先填写标准编号和标准名称，再使用AI补全摘要。');
+            return;
+        }
+
+        var btn = document.getElementById('aiFillBtn');
+        var statusEl = document.getElementById('aiStatus');
+        btn.disabled = true;
+        btn.textContent = '⏳ 生成中…';
+        statusEl.className = 'ai-status loading';
+        statusEl.textContent = '🤖 正在调用 AI 生成摘要，请稍候…';
+        statusEl.style.display = 'block';
+
+        var QWEN_KEY = localStorage.getItem('qwen_key') || '';
+        if (!QWEN_KEY) {
+            QWEN_KEY = prompt('请输入通义千问 API Key（仅存于本地浏览器，不上传）：\n申请地址：https://dashscope.aliyuncs.com/');
+            if (!QWEN_KEY) {
+                btn.disabled = false; btn.textContent = '✨ AI 补全';
+                statusEl.style.display = 'none';
+                return;
+            }
+            localStorage.setItem('qwen_key', QWEN_KEY);
+        }
+
+        try {
+            var prompt_text = '你是中国标准化专家。请用3-5句话描述以下标准的主要内容、技术要求和适用范围，语言简洁专业，只返回描述内容，不要任何前缀或标题。\n编号：' + code + '\n名称：' + title;
+
+            var resp = await fetch('https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + QWEN_KEY,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    model: 'qwen-turbo',
+                    messages: [{ role: 'user', content: prompt_text }],
+                    max_tokens: 300
+                })
+            });
+
+            if (!resp.ok) {
+                var errData = await resp.json().catch(function(){ return {}; });
+                throw new Error(errData.error && errData.error.message ? errData.error.message : 'HTTP ' + resp.status);
+            }
+
+            var data = await resp.json();
+            var text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+            if (!text) throw new Error('AI 返回内容为空');
+
+            text = text.trim();
+            document.getElementById('f_summary').value = text;
+            // 触发字数统计更新
+            document.getElementById('f_summary').dispatchEvent(new Event('input'));
+
+            statusEl.className = 'ai-status ok';
+            statusEl.textContent = '✅ AI 摘要已生成，请检查内容是否准确后保存。';
+            btn.textContent = '✅ 已生成';
+
+        } catch (e) {
+            statusEl.className = 'ai-status err';
+            var errMsg = e.message || String(e);
+            if (errMsg.includes('401') || errMsg.includes('invalid_api_key')) {
+                localStorage.removeItem('qwen_key');
+                statusEl.textContent = '❌ API Key 无效，已清除。请重试并重新输入。';
+            } else {
+                statusEl.textContent = '❌ 生成失败：' + errMsg;
+            }
+            btn.textContent = '✨ AI 补全';
+        } finally {
             btn.disabled = false;
         }
     }
