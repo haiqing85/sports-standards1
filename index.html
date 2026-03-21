@@ -327,6 +327,7 @@
       </div>
       <div class="dl-area">
         <a class="dl-btn" id="mDownload" href="#" target="_blank">⬇️ 下载标准 PDF 文件</a>
+        <a class="dl-btn" id="mPreview" style="background:#16a34a;margin-top:12px;" href="#" target="_blank">📖 在线预览 PDF</a>
         <p class="dl-note">若提示文件不存在，该标准 PDF 正在整理收录中，请稍后再试。</p>
       </div>
     </div>
@@ -657,19 +658,9 @@ function renderPager(){
 }
 function goPage(n){curPage=n;renderGrid();renderPager();document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth',block:'start'});}
 
+// 点击查看标准详情：无需任何验证码（仅在线预览和下载需要验证码）
 function openModal(id){
-  // 访问频率检查
-  if(!checkRate()){
-    openCapModal(null, '访问次数过多，请完成验证后继续', true);
-    return;
-  }
-  // 是否需要验证码
-  var needCap = !capPassed() || needReVerify() || sessionStorage.getItem('bot_suspect');
-  if(needCap){
-    openCapModal(function(){ _doOpenModal(id); });
-  } else {
-    _doOpenModal(id);
-  }
+  _doOpenModal(id);
 }
 
 function _doOpenModal(id){
@@ -710,6 +701,21 @@ function _doOpenModal(id){
     }, '下载前请完成验证，感谢您的理解');
     return false;
   };
+
+  // 在线预览按钮：同样需要验证码
+  var previewBtn = document.getElementById('mPreview');
+  previewBtn.removeAttribute('href');
+  previewBtn.setAttribute('data-p1', btoa(pdfPath.slice(0,9)));
+  previewBtn.setAttribute('data-p2', btoa(pdfPath.slice(9)));
+  previewBtn.onclick = function(e){
+    e.preventDefault();
+    openCapModal(function(){
+      var p = atob(previewBtn.getAttribute('data-p1')) + atob(previewBtn.getAttribute('data-p2'));
+      window.open(p, '_blank');
+    }, '在线预览前请完成验证，感谢您的理解');
+    return false;
+  };
+
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
