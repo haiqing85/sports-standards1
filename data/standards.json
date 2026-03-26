@@ -1443,9 +1443,27 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null
+    },
+    {
+      "id": "GB1907922026",
+      "code": "GB 19079.2-2026",
+      "title": "体育场所开放条件与技术要求 第2部分：卡丁车场所",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-02-27",
+      "implementDate": "2026-09-01",
+      "abolishDate": null,
+      "replaces": "",
+      "replacedBy": "",
+      "issuedBy": "国家市场监督管理总局",
+      "category": "综合",
+      "tags": [],
+      "summary": "本标准针对“体育场所开放条件与技术要求 第2部分：卡丁车场所”的材料、施工及验收提出了具体要求。",
+      "isMandatory": true,
+      "localFile": null
     }
   ],
-  "updated": "2026-03-25",
-  "version": "2026.03.25",
-  "total": 62
+  "updated": "2026-03-26",
+  "version": "2026.03.26",
+  "total": 63
 }
