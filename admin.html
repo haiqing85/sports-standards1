@@ -21,7 +21,7 @@
         .login-err { color: #dc2626; font-size: 13px; margin-top: 10px; min-height: 18px; }
 
         /* 主界面 */
-        .container { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,.05); display: none; }
+        .container { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
         .header-bar h1 { margin: 0; font-size: 22px; color: #0f172a; }
         .header-btns { display: flex; gap: 10px; }
@@ -337,32 +337,30 @@
 </div>
 
 <script>
-    // ── GitHub 配置（已锁定） ──
+    // ── GitHub 配置（直接嵌入，无需每次输入）──
     var REPO_OWNER = 'haiqing85';
     var REPO_NAME  = 'sports-standards1';
     var FILE_PATH  = 'data/standards.json';
-
-    // GitHub Token 直接嵌入（请将下面替换为您的真实 PAT，避免每次新电脑输入）
-    var EMBEDDED_TOKEN = '';  // ← 在此处填入 ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+    // ⚠️ 将你的 GitHub Token 直接填入下方引号内，刷新后无需重新输入
+    // Token 需要 repo 权限，在 GitHub → Settings → Developer settings → Personal access tokens 生成
+    var GITHUB_TOKEN_BUILTIN = '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';  // 示例：'ghp_xxxxxxxxxxxxxx'
 
     var DB = { standards: [] };
     var fileSha = '';
     var editIndex = -1;
     var pendingPdfFile = null;   // 待上传的 PDF 文件对象
 
-    // ── 自动记住登录状态，刷新无需重新登录 ──
-    if (localStorage.getItem('admin_logged_in') === 'true') {
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('adminScreen').style.display = 'block';
-        loadDataFromGithub();
+    // ── 获取有效 Token（内置 > localStorage 存储）──
+    function getToken() {
+        return GITHUB_TOKEN_BUILTIN || localStorage.getItem('github_token') || '';
     }
 
-    // ── 登录 ──
+    // ── 登录（使用 sessionStorage 保持登录，刷新不丢失）──
     function checkLogin() {
         var u = document.getElementById('username').value.trim();
         var p = document.getElementById('password').value;
         if (u === 'admin' && p === 'admin123456') {
-            localStorage.setItem('admin_logged_in', 'true');
+            sessionStorage.setItem('admin_logged_in', '1');
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('adminScreen').style.display = 'block';
             loadDataFromGithub();
@@ -371,11 +369,19 @@
         }
     }
 
+    // ── 页面加载时检查登录状态，已登录则跳过登录页 ──
+    (function() {
+        if (sessionStorage.getItem('admin_logged_in') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminScreen').style.display = 'block';
+            // 数据在 DOMContentLoaded 后加载（见页面底部）
+        }
+    })();
+
     // ── 从 GitHub 读取数据（支持公开和私有仓库）──
     async function loadDataFromGithub() {
         try {
-            // 优先使用已保存的 Token（私有仓库必须），公开仓库无 Token 也可读
-            var token = localStorage.getItem('github_token') || EMBEDDED_TOKEN;
+            var token = getToken();
             var headers = { 'Accept': 'application/vnd.github.v3+json' };
             if (token) headers['Authorization'] = 'token ' + token;
 
@@ -384,12 +390,13 @@
                 { headers: headers }
             );
 
-            // 403/404 且没有 Token：提示用户输入
+            // 403/404 且没有 Token：提示用户输入并记住
             if (!resp.ok && !token) {
                 var t = prompt(
                     '读取失败 (' + resp.status + ')。\n\n' +
                     '若仓库为私有，请输入 GitHub Token：\n' +
-                    '（公开仓库无需填写，直接点取消）'
+                    '（公开仓库无需填写，直接点取消）\n\n' +
+                    '💡 提示：也可将 Token 直接写入 admin.html 的 GITHUB_TOKEN_BUILTIN 变量，避免每次输入。'
                 );
                 if (t) {
                     localStorage.setItem('github_token', t);
@@ -449,7 +456,7 @@
 
     // ── 静默推送（无弹窗提示，加载时自动触发用） ──
     async function silentPush(message) {
-        var token = localStorage.getItem('github_token') || EMBEDDED_TOKEN;
+        var token = getToken();
         if (!token) return;  // 未登录 Token 则跳过，等下次手动推送
         try {
             DB.updated = new Date().toISOString().slice(0, 10);
@@ -755,7 +762,7 @@
 
         // 若有待上传的PDF，立即上传到GitHub
         if (pendingPdfFile) {
-            var token = localStorage.getItem('github_token') || EMBEDDED_TOKEN;
+            var token = getToken();
             if (!token) {
                 token = prompt('上传PDF需要 GitHub Token，请输入：');
                 if (token) localStorage.setItem('github_token', token);
@@ -895,7 +902,7 @@
 
     // ── 同步至 GitHub ──
     async function syncToGithub() {
-        var token = localStorage.getItem('github_token') || EMBEDDED_TOKEN;
+        var token = getToken();
         if (!token) {
             token = prompt('请输入 ' + REPO_OWNER + ' 的 GitHub Personal Access Token（PAT）：');
             if (!token) return;
@@ -951,6 +958,12 @@
         if (!s) return '';
         return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     }
+    // ── 页面加载完成后：已登录则自动加载数据 ──
+    document.addEventListener('DOMContentLoaded', function() {
+        if (sessionStorage.getItem('admin_logged_in') === '1') {
+            loadDataFromGithub();
+        }
+    });
 </script>
 </body>
 </html>

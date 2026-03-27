@@ -127,10 +127,24 @@
     .info-item .il{font-size:10.5px;color:var(--muted);margin-bottom:2px}
     .info-item .iv{font-size:13px;color:var(--text)}
     .dl-area{margin-top:18px}
-    .dl-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;padding:13px 20px;border-radius:9px;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(29,78,216,.3);transition:opacity .15s}
+    .dl-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .dl-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(135deg,var(--blue),var(--blue-mid));color:#fff;padding:13px 20px;border-radius:9px;text-decoration:none;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(29,78,216,.3);transition:opacity .15s;cursor:pointer;border:none;font-family:var(--font)}
     .dl-btn:hover{opacity:.88}
+    .preview-btn{background:linear-gradient(135deg,#0369a1,#0284c7)}
     .dl-note{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+    /* 在线预览 iframe 弹窗 */
+    .preview-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+    .preview-overlay.open{display:flex}
+    .preview-box{background:var(--white);border-radius:12px;width:100%;max-width:900px;height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+    .preview-head{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);gap:12px;flex-shrink:0}
+    .preview-head h3{flex:1;font-size:14px;font-weight:600;color:var(--text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .preview-close{width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
+    .preview-close:hover{background:var(--red);border-color:var(--red);color:#fff}
+    .preview-iframe{flex:1;border:none;width:100%;background:#f5f5f5}
+    .preview-loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;flex-direction:column;gap:10px}
+    .preview-nofile{text-align:center;padding:40px 20px;color:var(--muted);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
     @media(max-width:480px){
+      .dl-btns{grid-template-columns:1fr}
       .modal-overlay{padding:0;align-items:flex-end}
       .modal{border-radius:16px 16px 0 0;max-height:92vh}
       .info-grid{grid-template-columns:1fr}
@@ -282,6 +296,22 @@
   </div>
 </footer>
 
+<!-- 在线预览弹窗 -->
+<div class="preview-overlay" id="previewOverlay">
+  <div class="preview-box">
+    <div class="preview-head">
+      <span style="font-size:18px">🔍</span>
+      <h3 id="previewTitle">标准在线预览</h3>
+      <button class="preview-close" onclick="closePreview()">✕</button>
+    </div>
+    <div id="previewContent" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <div class="preview-loading" id="previewLoading">
+        <span class="spinner"></span>加载预览中…
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- 访问频率限制提示 -->
 <div class="rate-toast" id="rateToast">⏱️ 请求过于频繁，请稍后再试</div>
 
@@ -326,9 +356,11 @@
         <div class="info-grid" id="mInfo"></div>
       </div>
       <div class="dl-area">
-        <a class="dl-btn" id="mDownload" href="#" target="_blank">⬇️ 下载标准 PDF 文件</a>
-        <a class="dl-btn" id="mPreview" style="background:#16a34a;margin-top:12px;" href="#" target="_blank">📖 在线预览 PDF</a>
-        <p class="dl-note">若提示文件不存在，该标准 PDF 正在整理收录中，请稍后再试。</p>
+        <div class="dl-btns">
+          <button class="dl-btn preview-btn" id="mPreview">🔍 在线预览</button>
+          <button class="dl-btn" id="mDownload">⬇️ 下载 PDF</button>
+        </div>
+        <p class="dl-note">预览和下载需完成人机验证 · 若 PDF 尚未收录请稍后再试</p>
       </div>
     </div>
   </div>
@@ -658,8 +690,8 @@ function renderPager(){
 }
 function goPage(n){curPage=n;renderGrid();renderPager();document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth',block:'start'});}
 
-// 点击查看标准详情：无需任何验证码（仅在线预览和下载需要验证码）
 function openModal(id){
+  // 点击查看详情不需要验证码，直接打开
   _doOpenModal(id);
 }
 
@@ -668,8 +700,8 @@ function _doOpenModal(id){
   document.getElementById('mCode').textContent=s.code;
   document.getElementById('mTitle').textContent=s.title;
   document.getElementById('mBadges').innerHTML=
-    '<span class="badge b-'+eh(s.type||'')+'">'+eh(s.type||'标准')+'</span>'
-    +'<span class="badge b-'+eh(s.status||'')+'">'+eh(s.status||'现行')+'</span>'
+    '<span class="badge b-'+eh(s.type||'')+'">' +eh(s.type||'标准')+'</span>'
+    +'<span class="badge b-'+eh(s.status||'')+'">' +eh(s.status||'现行')+'</span>'
     +(s.isMandatory?'<span class="badge b-mand">⚡ 强制性标准</span>':'');
   document.getElementById('mSummary').textContent=s.summary||'暂无详细摘要说明。';
   document.getElementById('mAbolished').innerHTML=s.status==='废止'
@@ -681,17 +713,27 @@ function _doOpenModal(id){
     +'<div class="info-item"><div class="il">标准分类</div><div class="iv">'+eh(s.category||'—')+'</div></div>'
     +(s.replaces?'<div class="info-item"><div class="il">替代旧标准</div><div class="iv">'+eh(s.replaces)+'</div></div>':'')
     +(s.replacedBy?'<div class="info-item"><div class="il">已被替代为</div><div class="iv" style="color:var(--red)">'+eh(s.replacedBy)+'</div></div>':'');
-  // 下载按钮：每次下载都需要验证码（防止批量下载）
-  var dlBtn = document.getElementById('mDownload');
+
   var pdfPath = 'downloads/'+s.id+'.pdf';
-  // 混淆：将路径分段存储，不直接暴露完整URL
-  dlBtn.removeAttribute('href');
+
+  // ── 在线预览按钮：需要验证码 ──
+  var previewBtn = document.getElementById('mPreview');
+  previewBtn.setAttribute('data-pdf', btoa(pdfPath));
+  previewBtn.setAttribute('data-title', s.code+' '+s.title);
+  previewBtn.onclick = function(e){
+    e.preventDefault();
+    openCapModal(function(){
+      openPreview(atob(previewBtn.getAttribute('data-pdf')), previewBtn.getAttribute('data-title'));
+    }, '预览前请完成人机验证');
+  };
+
+  // ── 下载按钮：需要验证码 ──
+  var dlBtn = document.getElementById('mDownload');
   dlBtn.setAttribute('data-p1', btoa(pdfPath.slice(0,9)));
   dlBtn.setAttribute('data-p2', btoa(pdfPath.slice(9)));
   dlBtn.onclick = function(e){
     e.preventDefault();
     openCapModal(function(){
-      // 验证通过后还原路径并触发下载
       var p = atob(dlBtn.getAttribute('data-p1')) + atob(dlBtn.getAttribute('data-p2'));
       var a = document.createElement('a');
       a.href = p; a.download = s.code.replace(/[\/\s]/g,'-')+'.pdf';
@@ -702,27 +744,37 @@ function _doOpenModal(id){
     return false;
   };
 
-  // 在线预览按钮：同样需要验证码
-  var previewBtn = document.getElementById('mPreview');
-  previewBtn.removeAttribute('href');
-  previewBtn.setAttribute('data-p1', btoa(pdfPath.slice(0,9)));
-  previewBtn.setAttribute('data-p2', btoa(pdfPath.slice(9)));
-  previewBtn.onclick = function(e){
-    e.preventDefault();
-    openCapModal(function(){
-      var p = atob(previewBtn.getAttribute('data-p1')) + atob(previewBtn.getAttribute('data-p2'));
-      window.open(p, '_blank');
-    }, '在线预览前请完成验证，感谢您的理解');
-    return false;
-  };
-
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
+
+// ── 在线预览弹窗逻辑 ──
+function openPreview(pdfPath, title){
+  document.getElementById('previewTitle').textContent = title || '标准在线预览';
+  var content = document.getElementById('previewContent');
+  content.innerHTML = '<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
+  document.getElementById('previewOverlay').classList.add('open');
+  var iframe = document.createElement('iframe');
+  iframe.className = 'preview-iframe';
+  iframe.title = title;
+  iframe.onload = function(){ content.innerHTML=''; content.appendChild(iframe); };
+  setTimeout(function(){
+    if(content.querySelector('.preview-loading')){ content.innerHTML=''; content.appendChild(iframe); }
+  }, 2000);
+  iframe.src = pdfPath;
+}
+function closePreview(){
+  document.getElementById('previewOverlay').classList.remove('open');
+  document.getElementById('previewContent').innerHTML='<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
+}
 function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect();}
 function closeModalDirect(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModalDirect();});
-
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    if(document.getElementById('previewOverlay').classList.contains('open')){closePreview();return;}
+    closeModalDirect();
+  }
+});
 window.addEventListener('scroll',function(){
   document.getElementById('btt').classList.toggle('show',window.scrollY>400);
 },{passive:true});
