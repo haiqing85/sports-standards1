@@ -532,7 +532,7 @@ def fetch_samr(keyword, page=1):
     return results, total_pages
 
 def fetch_samr_all(keyword):
-    """抓取关键词的全部分页（最多100页=5000条，覆盖体育关键词445+条）"""
+    """抓取关键词的全部分页（最多120页=6000条，覆盖体育关键词445+条）"""
     all_results = []
     seen = set()
 
@@ -544,8 +544,8 @@ def fetch_samr_all(keyword):
 
     if total_pages > 1:
         log(f"         总页数:{total_pages}，继续抓取…")
-    # 最多抓100页，避免无限循环；体育关键词445条约需9页
-    for page in range(2, min(total_pages + 1, 101)):
+    # 最多抓120页，避免无限循环；体育关键词445条约需9页
+    for page in range(2, min(total_pages + 1, 121)):
         time.sleep(0.6)
         results, _ = fetch_samr(keyword, page)
         if not results: break
