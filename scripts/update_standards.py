@@ -7,7 +7,6 @@ v8 修复：
   - 重新验证每个关键词的搜索结果总数
   - 精确过滤：只保留体育建设行业标准
   - 启动时自动清理库中非体育标准
-
 运行方式：
   python scripts/update_standards.py         # 完整抓取
   python scripts/update_standards.py --check # 仅核查状态
@@ -15,24 +14,20 @@ v8 修复：
   python scripts/update_standards.py --debug # 调试模式
   python scripts/update_standards.py --dry   # 预览不写入
 """
-
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
 from pathlib import Path
-
 try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util.retry import Retry
 except ImportError:
     raise SystemExit("请安装依赖: pip install requests urllib3")
-
 ROOT      = Path(__file__).parent.parent
 DATA_FILE = ROOT / 'data' / 'standards.json'
 LOG_FILE  = ROOT / 'data' / 'update_log.txt'
 ENV_FILE  = Path(__file__).parent / '.env'
 DEBUG_MODE = False
-
 def load_env():
     if ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding='utf-8').splitlines():
@@ -40,11 +35,9 @@ def load_env():
             if '=' in line and not line.startswith('#'):
                 k, v = line.split('=', 1)
                 os.environ.setdefault(k.strip(), v.strip())
-
 load_env()
 DEEPSEEK_KEY = os.environ.get('DEEPSEEK_KEY', '')
 QWEN_KEY     = os.environ.get('QWEN_KEY', '')
-
 # ============================================================
 #  自动补全规则一：发布机构推断表
 #  samr API 的 ISSUE_DEPT 字段常为空，根据编号前缀+年份精准推断
@@ -56,7 +49,6 @@ ISSUED_BY_RULES = {
         'by_year': {2018: '国家市场监督管理总局', 2001: '国家质量监督检验检疫总局', 0: '国家技术监督局'}
     },
 }
-
 def infer_issued_by(code, issue_date):
     """
     根据编号前缀+发布年份推断发布机构，API返回为空时使用。
@@ -68,9 +60,7 @@ def infer_issued_by(code, issue_date):
     if issue_date:
         try: year = int(str(issue_date)[:4])
         except: pass
-
     cu = re.sub(r'\s+', '', code).upper()
-
     # 国家标准 GB / GB/T / GB/Z
     if re.match(r'^GB', cu):
         if year >= 2018:
@@ -79,12 +69,10 @@ def infer_issued_by(code, issue_date):
         if year >= 2001: return '国家质量监督检验检疫总局'
         if year >= 1993: return '国家技术监督局'
         return '国家标准化管理委员会'
-
     # 建工行业标准 JGJ / JG/T / CJJ / CJJ/T
     if re.match(r'^(JGJ|JGJT|JGT|CJJ|CJJT)', cu):
         if year >= 2008: return '住房和城乡建设部'
         return '建设部'
-
     # 团体标准
     if cu.startswith('T/SGTAS'): return '中国运动场地联合会'
     if cu.startswith('T/CECS'):  return '中国工程建设标准化协会'
@@ -92,12 +80,9 @@ def infer_issued_by(code, issue_date):
     if cu.startswith('T/CAECS'): return '中国建设教育协会'
     if cu.startswith('T/CSTM'):  return '中关村材料试验技术联盟'
     if cu.startswith('T/'):      return ''  # 其他团标机构各异，不猜
-
     # 地方标准：各省机构各异，不推断
     if cu.startswith('DB'): return ''
-
     return ''
-
 # ============================================================
 #  自动补全规则二：版本替代关系自动发现
 #  策略：同一基础编号的不同年份，自动建立新旧替代链
@@ -120,7 +105,6 @@ def auto_fill_replaces(standards):
             if base not in groups:
                 groups[base] = []
             groups[base].append({'std': s, 'year': year, 'code': code})
-
     updated = 0
     for base, versions in groups.items():
         if len(versions) < 2:
@@ -144,7 +128,6 @@ def auto_fill_replaces(standards):
                 s['status'] = '废止'
                 updated += 1
     return updated
-
 # ============================================================
 #  自动补全规则三：samr 详情页抓取替代关系
 #  在精确查询阶段，访问详情页补全 replaces/replacedBy
@@ -156,20 +139,17 @@ def fetch_replaces_from_detail(code, row, session):
     """
     replaces    = None
     replaced_by = None
-
     # 1. 先尝试从 API 字段直接读取（部分版本的 samr 会返回）
     for fld in ['C_SUPERSEDE_CODE', 'SUPERSEDE_CODE', 'replaceCode', 'substituteCode']:
         v = (row.get(fld) or '').strip()
         if v:
             replaces = clean_code(v)
             break
-
     for fld in ['C_REPLACED_CODE', 'REPLACED_CODE', 'replacedCode', 'newCode']:
         v = (row.get(fld) or '').strip()
         if v:
             replaced_by = clean_code(v)
             break
-
     # 2. 尝试从详情页 HTML 解析（耗时，仅在字段仍为空时执行）
     if not replaces and not replaced_by:
         std_id = row.get('id') or row.get('ID') or row.get('PROJECT_ID') or ''
@@ -196,9 +176,7 @@ def fetch_replaces_from_detail(code, row, session):
                         if codes: replaced_by = '；'.join(codes)
             except Exception:
                 pass
-
     return replaces, replaced_by
-
 # ============================================================
 #  关键词（按品类，精确搜索）
 # ============================================================
@@ -207,7 +185,7 @@ KEYWORDS = [
     "合成材料面层", "塑胶跑道", "合成材料跑道", "聚氨酯跑道",
     "橡胶面层运动场", "中小学合成材料",
     # ── 人造草坪 ──
-    "人造草坪", "人造草皮", "运动场人造草", "人工草坪",
+    "人造草坪", "人造草皮", "运动场人造草", "人工草坪", "人造草",
     # ── 颗粒填充料 ──
     "颗粒填充料", "草坪填充橡胶",
     # ── 灯光照明 ──
@@ -238,19 +216,20 @@ KEYWORDS = [
     # ── 田径 ──
     "田径场地", "田径场",
     # ── 综合场地/设计 ──
-    "体育场地", "运动场地", "体育场馆",
+    "体育场地", "运动场地", "体育场馆", "体育馆",
     "体育建筑", "体育公园", "全民健身",
     "学校操场", "体育设施",
     # ── 宽泛体育（能覆盖445+条，is_sports严格过滤）──
     "体育",
 ]
-
 # ============================================================
 #  体育标准精确过滤词组
 #  ★ 核心原则：只要标准名称含有以下任一词，即认定为体育标准
 #  ★ 已大幅扩充以覆盖全国标准信息公共服务平台"体育"的445个结果
 # ============================================================
 SPORTS_TERMS = [
+    # 新增：体育馆、人造草
+    "体育馆","人造草",
     # 合成材料/塑胶
     "合成材料面层","合成材料跑道","塑胶跑道","聚氨酯跑道","橡胶面层",
     # 人造草坪
@@ -299,13 +278,10 @@ SPORTS_TERMS = [
     # 体育行业通用
     "体育",  # 最后兜底：含"体育"字样均收录
 ]
-
 def is_sports(title):
     if not title: return False
     return any(term in title for term in SPORTS_TERMS)
-
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/121.0.0.0 Safari/537.36'
-
 def make_session():
     s = requests.Session()
     retry = Retry(total=3, backoff_factor=1.5, status_forcelist=[429,500,502,503,504])
@@ -313,9 +289,7 @@ def make_session():
     s.mount('http://',  HTTPAdapter(max_retries=retry))
     s.headers.update({'User-Agent': UA, 'Accept-Language': 'zh-CN,zh;q=0.9'})
     return s
-
 SESSION = make_session()
-
 def log(msg):
     ts = datetime.now().strftime('%H:%M:%S')
     line = f"[{ts}] {msg}"
@@ -326,17 +300,13 @@ def log(msg):
             f.write(line + '\n')
     except Exception:
         pass
-
 def make_id(code):
     return re.sub(r'[^A-Za-z0-9]', '', code)[:30] or hashlib.md5(code.encode()).hexdigest()[:12]
-
 def norm_code(c):
     return re.sub(r'\s+', '', c).upper()
-
 def clean_sacinfo(raw):
     if not raw: return ''
     return re.sub(r'</?sacinfo>', '', raw).strip()
-
 def clean_samr_code(raw):
     if not raw: return ''
     parts = re.findall(r'<sacinfo>(.*?)</sacinfo>', raw)
@@ -347,14 +317,12 @@ def clean_samr_code(raw):
         prefix = slash_map.get(prefix, prefix)
         return f"{prefix} {number}".strip() if prefix else number
     return re.sub(r'<[^>]+>', '', raw).strip()
-
 def norm_status(raw):
     raw = str(raw or '').strip()
     if any(x in raw for x in ['现行','有效','执行','施行']): return '现行'
     if any(x in raw for x in ['废止','作废','撤销','废弃']): return '废止'
     if any(x in raw for x in ['即将','待实施','未实施']):    return '即将实施'
     return '现行'
-
 def norm_date(raw):
     if not raw: return None
     raw = str(raw).strip()
@@ -368,20 +336,17 @@ def norm_date(raw):
     if len(cleaned) >= 8:
         return f"{cleaned[:4]}-{cleaned[4:6]}-{cleaned[6:8]}"
     return None
-
 def is_mandatory(code):
     c = norm_code(code)
     if re.match(r'^GB\d', c) and '/T' not in c: return True
     if c.startswith('JGJ'): return True
     return False
-
 def guess_type(code):
     cu = norm_code(code)
     for prefix, t in [("GB/T","国家标准"),("GB","国家标准"),("JGJ","行业标准"),
                        ("JG/T","行业标准"),("CJJ","行业标准"),("T/","团标"),("DB","地方标准")]:
         if cu.startswith(norm_code(prefix)): return t
     return "国家标准"
-
 def guess_category(text):
     cm = {
         "合成材料":"合成材料面层","塑胶跑道":"合成材料面层",
@@ -399,22 +364,18 @@ def guess_category(text):
     for kw, cat in cm.items():
         if kw in text: return cat
     return "综合"
-
 def guess_tags(text):
     return [t for t in ["体育","运动","塑胶","合成材料","人造草","照明",
                          "木地板","围网","健身","颗粒","游泳","篮球","足球",
                          "网球","田径","排球","羽毛球","跑道","场地","学校"] if t in text][:6]
-
 def build_entry(item):
     code  = item.get('code','')
     title = clean_sacinfo(item.get('title',''))
-
     # ── 自动补全：发布机构 ──────────────────────────────────
     # 优先用 API 返回值，为空时按编号+年份推断
     issued_by = item.get('issuedBy','').strip()
     if not issued_by:
         issued_by = infer_issued_by(code, item.get('issueDate'))
-
     return {
         'id':            make_id(code),
         'code':          code,
@@ -435,17 +396,16 @@ def build_entry(item):
         'scope':         '',
         'localFile':     item.get('localFile') or None,
     }
-
 # ============================================================
 #  来源一：std.samr.gov.cn（关键词精确搜索）
 # ============================================================
 def fetch_samr(keyword, page=1):
     """
     v8修复：使用正确的请求格式，确保关键词有效过滤
+    新增："体育"关键词搜索结果全部采用，跳过is_sports过滤
     """
     results = []
     total_pages = 1
-
     # 方式一：POST JSON（主要方式）
     try:
         resp = SESSION.post(
@@ -488,8 +448,9 @@ def fetch_samr(keyword, page=1):
                             row.get('C_C_NAME') or row.get('STD_NAME') or row.get('stdName') or ''
                         ).strip()
                         if not code or not title: continue
-                        if not is_sports(title): continue
-
+                        # 核心修改：如果关键词是"体育"，则跳过is_sports过滤，全部保留
+                        if keyword != "体育" and not is_sports(title):
+                            continue
                         # ── 发布机构：API返回优先，合并多个机构，为空则推断 ──
                         dept1 = (row.get('ISSUE_DEPT') or row.get('C_ISSUE_DEPT') or '').strip()
                         dept2 = (row.get('ISSUE_UNIT') or row.get('C_ISSUE_UNIT') or
@@ -501,7 +462,6 @@ def fetch_samr(keyword, page=1):
                         issue_date = norm_date(row.get('ISSUE_DATE') or row.get('issueDate'))
                         if not issued_by:
                             issued_by = infer_issued_by(code, issue_date)
-
                         # ── 替代关系：从API字段读取 ──
                         replaces_val = clean_sacinfo(
                             row.get('C_SUPERSEDE_CODE') or row.get('SUPERSEDE_CODE') or
@@ -511,7 +471,6 @@ def fetch_samr(keyword, page=1):
                             row.get('C_REPLACED_CODE') or row.get('REPLACED_CODE') or
                             row.get('replacedCode') or ''
                         ).strip() or None
-
                         results.append({
                             'code':          code,
                             'title':         title,
@@ -528,20 +487,16 @@ def fetch_samr(keyword, page=1):
                     if DEBUG_MODE: log(f"    [DEBUG] samr JSON解析异常: {e}")
     except Exception as e:
         if DEBUG_MODE: log(f"    [DEBUG] samr请求异常: {e}")
-
     return results, total_pages
-
 def fetch_samr_all(keyword):
     """抓取关键词的全部分页（最多120页=6000条，覆盖体育关键词445+条）"""
     all_results = []
     seen = set()
-
     results, total_pages = fetch_samr(keyword, 1)
     for r in results:
         if r['code'] not in seen:
             seen.add(r['code'])
             all_results.append(r)
-
     if total_pages > 1:
         log(f"         总页数:{total_pages}，继续抓取…")
     # 最多抓120页，避免无限循环；体育关键词445条约需9页
@@ -553,9 +508,7 @@ def fetch_samr_all(keyword):
             if r['code'] not in seen:
                 seen.add(r['code'])
                 all_results.append(r)
-
     return all_results
-
 # ============================================================
 #  来源二：ttbz.org.cn 团标平台
 # ============================================================
@@ -595,7 +548,6 @@ def fetch_ttbz(keyword):
     except Exception as e:
         if DEBUG_MODE: log(f"    [DEBUG] ttbz异常: {e}")
     return results
-
 # ============================================================
 #  来源三：dbba.sacinfo.org.cn 地方标准
 # ============================================================
@@ -631,7 +583,6 @@ def fetch_dbba(keyword):
     except Exception as e:
         if DEBUG_MODE: log(f"    [DEBUG] dbba异常: {e}")
     return results
-
 # ============================================================
 #  AI摘要补全
 # ============================================================
@@ -664,7 +615,6 @@ def ai_enrich_standard(std):
     except Exception as e:
         if DEBUG_MODE: log(f"    AI失败: {e}")
     return None
-
 def ai_enrich_batch(standards, force=False):
     provider = 'DeepSeek' if DEEPSEEK_KEY else ('通义千问/百炼' if QWEN_KEY else None)
     if not provider:
@@ -682,7 +632,6 @@ def ai_enrich_batch(standards, force=False):
         time.sleep(0.5)
     log(f"  完成：补全/更新 {enriched} 条摘要")
     return standards
-
 # ============================================================
 #  核查状态
 # ============================================================
@@ -702,7 +651,6 @@ def check_status_online(std):
                     return upd
     except Exception: pass
     return None
-
 # ============================================================
 #  合并
 # ============================================================
@@ -735,7 +683,6 @@ def merge(existing, new_items):
             idx[cn] = len(existing)-1
             added += 1
     return existing, added, updated_n
-
 def load_db():
     if not DATA_FILE.exists():
         log("⚠️  data/standards.json 不存在，从空白开始")
@@ -749,7 +696,6 @@ def load_db():
     except Exception as e:
         log(f"⚠️  文件损坏({e})，从空白开始")
         return {'standards': []}, []
-
 def save_db(db, standards, dry_run):
     today = datetime.now().strftime('%Y-%m-%d')
     db.update({'standards':standards,'updated':today,
@@ -760,7 +706,6 @@ def save_db(db, standards, dry_run):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
     log(f"\n✅ 写入完成：{len(standards)} 条  版本 {today}")
-
 # ============================================================
 #  主流程
 # ============================================================
@@ -771,21 +716,17 @@ def run(dry_run=False, check_only=False, use_ai=False):
     log(f"时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     log(f"AI摘要: {'DeepSeek' if DEEPSEEK_KEY else '通义千问/百炼' if QWEN_KEY else '未配置'}")
     log("="*60)
-
     db, standards = load_db()
-
     # ── 自动清理现有库中非体育标准 ──────────────────────────
     before = len(standards)
     standards = [s for s in standards if is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
         log(f"\n🗑️  自动清理非体育标准：移除 {removed} 条，剩余 {len(standards)} 条")
-
     # ── 清洗 sacinfo 标签 ────────────────────────────────────
     for i, std in enumerate(standards):
         if std.get('title') and '<sacinfo>' in std['title']:
             standards[i]['title'] = clean_sacinfo(std['title'])
-
     if check_only:
         log(f"\n🔍 核查现有 {len(standards)} 条标准状态…")
         changed = 0
@@ -799,42 +740,33 @@ def run(dry_run=False, check_only=False, use_ai=False):
             time.sleep(0.4)
         log(f"  状态变更: {changed} 条")
         save_db(db, standards, dry_run); return
-
     # ── 多源抓取 ─────────────────────────────────────────────
     log(f"\n🌐 开始抓取（{len(KEYWORDS)} 个关键词 × 3个来源）…")
     all_new = []
     total_kw = len(KEYWORDS)
-
     for i, kw in enumerate(KEYWORDS, 1):
         log(f"  [{i:02d}/{total_kw}] 「{kw}」")
-
         # samr（国标/行标，带分页）
         a = fetch_samr_all(kw)
         time.sleep(0.8)
-
         # 团标
         b = fetch_ttbz(kw)
         time.sleep(0.5)
-
         # 地方标准（每3个关键词查一次）
         c = fetch_dbba(kw) if i % 3 == 0 else []
         if c: time.sleep(0.5)
-
         got = len(a) + len(b) + len(c)
         if got:
             all_new.extend(a + b + c)
             log(f"         ✅ 国标/行标:{len(a)}  团标:{len(b)}  地标:{len(c)}")
-
     # ── 合并去重 ─────────────────────────────────────────────
     log(f"\n🔀 合并（原始 {len(all_new)} 条）…")
     before2 = len(standards)
     standards, added, updated_n = merge(standards, all_new)
     log(f"  新增 {added} | 更新 {updated_n} | 原有 {before2} | 最终 {len(standards)}")
-
     if added == 0 and before2 == 0:
         log("\n  ⚠️  未抓取到任何体育标准")
         log("  可能原因：API 返回的标题不包含预设词组，请运行 --debug 查看原始标题")
-
     # ── 自动补全：发布机构（全库扫描，补填推断值）────────────
     log("\n🔧 补全：发布机构…")
     filled_issued = 0
@@ -853,12 +785,10 @@ def run(dry_run=False, check_only=False, use_ai=False):
                 s['issuedBy'] = inferred
                 filled_issued += 1
     log(f"  补填发布机构 {filled_issued} 条")
-
     # ── 自动补全：版本替代关系（全库扫描，同编号不同年份）────
     log("\n🔧 补全：版本替代关系…")
     filled_replaces = auto_fill_replaces(standards)
     log(f"  发现版本替代关系 {filled_replaces} 条")
-
     # ── 摘要：仅配置 AI Key 时生成，不做规则模板（避免内容不相关）──
     # 摘要空白比内容错误更好。只有 --ai 明确触发或配置了 Key 才生成。
     has_key = bool(QWEN_KEY or DEEPSEEK_KEY)
@@ -876,16 +806,12 @@ def run(dry_run=False, check_only=False, use_ai=False):
         if missing_summary > 0:
             log(f"\n💡 {missing_summary} 条标准缺少摘要（不自动生成，避免内容不准确）")
             log("   配置 QWEN_KEY 或 DEEPSEEK_KEY 后运行 --ai 可自动补全")
-
-
     save_db(db, standards, dry_run)
-
     # ── 字段完整性报告 ────────────────────────────────────────
     miss_issued   = sum(1 for s in standards if not s.get('issuedBy'))
     miss_summary  = sum(1 for s in standards if not s.get('summary','').strip())
     miss_replaces = sum(1 for s in standards if
                         s.get('status') == '废止' and not s.get('replacedBy'))
-
     active = sum(1 for s in standards if s.get('status')=='现行')
     abol   = sum(1 for s in standards if s.get('status')=='废止')
     coming = sum(1 for s in standards if s.get('status')=='即将实施')
@@ -894,7 +820,6 @@ def run(dry_run=False, check_only=False, use_ai=False):
     log(f"   缺发布机构: {miss_issued} 条  {'✅' if miss_issued==0 else '⚠️ 建议手动补全'}")
     log(f"   缺标准摘要: {miss_summary} 条  {'✅' if miss_summary==0 else ('⚠️ 配置AI Key可自动补全' if not has_key else '⚠️ 运行 --ai 可重试')}")
     log(f"   废止缺替代: {miss_replaces} 条  {'✅' if miss_replaces==0 else '⚠️ 建议手动补全'}")
-
 if __name__ == '__main__':
     p = argparse.ArgumentParser()
     p.add_argument('--dry',   action='store_true', help='预览，不写入')
