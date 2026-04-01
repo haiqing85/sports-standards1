@@ -1,7 +1,7 @@
 {
   "version": "2026.04.01",
   "updated": "2026-04-01",
-  "total": 430,
+  "total": 429,
   "standards": [
     {
       "id": "GB362462018",
@@ -25,7 +25,8 @@
       "summary": "本标准规定了中小学合成材料面层运动场地的技术要求、试验方法、检验规则及使用维护等内容。适用于新建、改建和扩建的中小学合成材料面层运动场地。标准旨在保障学生健康和运动安全，规范产品质量与施工验收。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 0
     },
     {
       "id": "GBT435642023",
@@ -49,7 +50,8 @@
       "summary": "本标准规定了中小学合成材料面层田径场地的技术要求、试验方法、检验规则及标识等内容。适用于新建、改建和扩建的中小学田径场地的合成材料面层。旨在保障学生运动安全与健康，提升体育设施质量。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 1
     },
     {
       "id": "GBT435652023",
@@ -73,7 +75,8 @@
       "summary": "本标准规定了中小学合成材料面层篮球场地的技术要求、试验方法、检验规则及标识等内容。适用于中小学新建、改建和扩建的篮球场地面层的施工与验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 2
     },
     {
       "id": "GBT390592020",
@@ -97,7 +100,8 @@
       "summary": "本标准规定了运动场地合成材料面层中有害物质释放量的测定方法，采用环境测试舱法进行检测。适用于各类运动场地用合成材料面层产品。主要涵盖挥发性有机化合物等有害物质的释放量评估。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 3
     },
     {
       "id": "GBT19851112005",
@@ -122,7 +126,8 @@
       "summary": "本标准规定了中小学合成材料面层运动场地的技术要求、试验方法、检验规则及标志。适用于中小学各类体育运动场地的合成材料面层设计、施工和验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 4
     },
     {
       "id": "GBT148332020",
@@ -146,7 +151,8 @@
       "summary": "本标准规定了合成材料运动场地面层的技术要求、试验方法、检验规则及标志等内容。适用于以合成材料为面层的各类运动场地，如足球场、田径场等。标准旨在确保运动场地的安全性、耐用性和使用性能。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 5
     },
     {
       "id": "GBT148331993",
@@ -169,7 +175,8 @@
       "summary": "GB/T 14833-1993规定了塑胶跑道的分类、技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于以合成材料为面层，用于体育场馆和学校等场所的全天候塑胶跑道。标准主要针对其物理机械性能和环保要求进行规范。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 6
     },
     {
       "id": "GBT385392020",
@@ -192,7 +199,8 @@
       "summary": "本标准规定了LED在体育照明中的技术要求，包括光照性能、能效、可靠性及安装要求等。适用于各类体育场馆的LED照明系统设计与应用。旨在提高体育照明质量，保障赛事和训练的视觉舒适性与安全性。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 7
     },
     {
       "id": "GBT2251712024",
@@ -216,7 +224,8 @@
       "summary": "本标准规定了综合体育场馆木地板场地的使用要求及检验方法，包括材料性能、结构设计、安装施工和检测验收等内容。适用于各类综合性体育场馆中使用的木地板场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 8
     },
     {
       "id": "GBT1999522005",
@@ -240,7 +249,8 @@
       "summary": "本标准规定了综合体育场馆木地板场地的使用要求及检验方法。主要内容包括材料性能、结构设计、安装施工及验收要求。适用于各类综合体育场馆中使用的木地板场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 9
     },
     {
       "id": "GBT342792017",
@@ -263,7 +273,8 @@
       "summary": "本标准规定了笼式足球场围网设施的安全技术要求、结构设计、材料选用及安装规范。适用于各类笼式足球场围网设施的设计、制造和验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 10
     },
     {
       "id": "GB192722024",
@@ -285,7 +296,8 @@
       "summary": "本标准规定了室外健身器材的安全设计、结构、材料及测试要求。适用于在户外公共场所使用的各类健身器材，确保其使用安全性和耐用性。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 11
     },
     {
       "id": "GB192722011",
@@ -307,7 +319,8 @@
       "summary": "本标准规定了室外健身器材的安全设计、结构、材料及测试方法等通用要求。适用于供公众使用的室外健身器材，确保其在使用过程中的安全性。标准旨在预防使用者在使用过程中可能遇到的伤害风险。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 12
     },
     {
       "id": "GB192722003",
@@ -329,7 +342,8 @@
       "summary": "该标准规定了室外健身器材的安全要求、技术条件和测试方法。适用于在户外公共场所使用的各类健身器材。旨在保障使用者的安全，防止因器材缺陷导致的伤害事故。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 13
     },
     {
       "id": "GBT440902024",
@@ -351,7 +365,8 @@
       "summary": "本标准规定了登山健身步道的基础设施、安全设施、标识系统及环境配套等配置要求。适用于各类登山健身步道的设计、建设与管理。旨在提升步道的安全性、舒适性和功能性。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 14
     },
     {
       "id": "GBT1985112022",
@@ -374,7 +389,8 @@
       "summary": "本标准规定了中小学体育器材的通用技术要求和试验方法，确保器材的安全性、耐用性和适用性。适用于各级各类中小学使用的体育器材设计、生产与检测。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 15
     },
     {
       "id": "GBT529672008",
@@ -396,7 +412,8 @@
       "summary": "本标准规定了体育器材产品使用说明的基本要求和内容，包括产品名称、型号、主要技术参数、使用方法、安全警示等。适用于各类体育器材的使用说明编写与标注，以保障消费者正确、安全地使用产品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 16
     },
     {
       "id": "GBT19851142007",
@@ -419,7 +436,8 @@
       "summary": "本标准规定了中小学体育器材和场地中球网的技术要求、试验方法及检验规则。适用于中小学体育教学和活动中使用的各类球网产品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 17
     },
     {
       "id": "GBT19851152007",
@@ -443,7 +461,8 @@
       "summary": "本标准规定了中小学用足球门的技术要求、试验方法和检验规则。适用于中小学体育教学和活动中使用的足球门。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 18
     },
     {
       "id": "GBT19851192007",
@@ -466,7 +485,8 @@
       "summary": "本标准规定了中小学用垒球的技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于中小学体育教学和课外活动中使用的垒球。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 19
     },
     {
       "id": "GBT19851162007",
@@ -489,7 +509,8 @@
       "summary": "本标准规定了中小学体育器材中跨栏架的技术要求、试验方法和检验规则。适用于中小学体育教学和活动中使用的跨栏架。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 20
     },
     {
       "id": "GBT19851212007",
@@ -512,7 +533,8 @@
       "summary": "本标准规定了中小学使用的毽球和花毽的技术要求、试验方法及检验规则。适用于中小学体育教学和课外活动中使用的毽球和花毽产品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 21
     },
     {
       "id": "GBT19851172007",
@@ -535,7 +557,8 @@
       "summary": "本标准规定了中小学用跳高架的技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于中小学体育教学和课外活动中使用的跳高架。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 22
     },
     {
       "id": "GBT19851182007",
@@ -558,7 +581,8 @@
       "summary": "本标准规定了中小学用实心球的技术要求、试验方法、检验规则及标志、包装、运输和贮存要求。适用于中小学体育教学和课外活动中使用的实心球。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 23
     },
     {
       "id": "GBT19851202007",
@@ -581,7 +605,8 @@
       "summary": "本标准规定了中小学用跳绳的技术要求、试验方法、检验规则及标志、包装、运输和贮存。适用于中小学体育教学和课外活动中使用的跳绳。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 24
     },
     {
       "id": "GBT435662023",
@@ -605,7 +630,8 @@
       "summary": "本标准规定了中小学人造草面层足球场地的技术要求、试验方法、检验规则及标识等内容。适用于中小学新建、改建和扩建的人造草面层足球场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 25
     },
     {
       "id": "GBT2251752024",
@@ -629,7 +655,8 @@
       "summary": "本标准规定了足球场地的使用要求及检验方法，包括场地尺寸、地面材料、设施设备等技术指标。适用于各类人工草皮和天然草皮足球场地的建设与验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 26
     },
     {
       "id": "GBT2003332006",
@@ -654,7 +681,8 @@
       "summary": "本标准规定了人工材料体育场地中足球场地人造草面层的使用要求及检验方法。适用于足球运动专用的人造草面层的设计、施工和质量检测。主要涵盖物理性能、化学性能及安全性能等方面的要求。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 27
     },
     {
       "id": "GBT1999512005",
@@ -678,7 +706,8 @@
       "summary": "本标准规定了天然草足球场地的使用要求及检验方法，包括草面层的生长质量、平整度、排水性能等技术指标。适用于足球比赛用的天然草面层场地的建设与验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 28
     },
     {
       "id": "GBT2251742017",
@@ -702,7 +731,8 @@
       "summary": "本标准规定了合成面层篮球场地的使用要求及检验方法，包括材料性能、物理性能、安装质量等。适用于新建、改建和扩建的室内和室外合成面层篮球场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 29
     },
     {
       "id": "GBT1985142005",
@@ -726,7 +756,8 @@
       "summary": "本标准规定了中小学用篮球器材的技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于中小学教学和体育活动中使用的篮球。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 30
     },
     {
       "id": "GBT1985132005",
@@ -750,7 +781,8 @@
       "summary": "本标准规定了中小学用篮球架的技术要求、试验方法、检验规则及标志、包装、运输和贮存。适用于中小学体育课和课外活动中使用的篮球架。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 31
     },
     {
       "id": "GBT2251772018",
@@ -774,7 +806,8 @@
       "summary": "本标准规定了网球场地的尺寸、构造、表面性能及检验方法。适用于新建、改建和扩建的室内和室外网球场地的验收与检测。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 32
     },
     {
       "id": "GBT2003322005",
@@ -798,7 +831,8 @@
       "summary": "本标准规定了人工材料网球场地的使用要求及检验方法，包括场地结构、表面性能、排水系统等技术指标。适用于新建、改建和扩建的人工材料网球场地的验收与检测。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 33
     },
     {
       "id": "GBT19851102005",
@@ -822,7 +856,8 @@
       "summary": "本标准规定了中小学用网球拍的技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于中小学体育教学和课外活动中使用的网球拍。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 34
     },
     {
       "id": "GBT2251762020",
@@ -846,7 +881,8 @@
       "summary": "本标准规定了田径场地的使用要求及检验方法，包括场地尺寸、表面性能、标志线等技术要求。适用于新建、改建和扩建的田径场地的验收与检测。主要针对田径运动项目对场地的特殊需求进行规范。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 35
     },
     {
       "id": "GBT2251762011",
@@ -870,7 +906,8 @@
       "summary": "本标准规定了田径场地的使用要求及检验方法，包括场地结构、表面性能、尺寸精度等。适用于各类田径运动场地的建设、验收和日常维护。主要针对田径比赛和训练场所的设施质量进行规范。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 36
     },
     {
       "id": "GBT1985152005",
@@ -894,7 +931,8 @@
       "summary": "本标准规定了中小学用排球的技术要求、试验方法和检验规则。适用于中小学体育教学和课外活动中使用的排球器材。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 37
     },
     {
       "id": "GBT1985162005",
@@ -918,7 +956,8 @@
       "summary": "本标准规定了中小学软式排球的技术要求、试验方法、检验规则及标志、包装、运输和贮存要求。适用于中小学使用的软式排球产品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 38
     },
     {
       "id": "GBT19851132007",
@@ -943,7 +982,8 @@
       "summary": "本标准规定了中小学体育用排球网柱、羽毛球网柱和网球网柱的技术要求、试验方法及检验规则。适用于中小学校体育教学和活动中使用的相关网柱产品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 39
     },
     {
       "id": "GBT1985192005",
@@ -966,7 +1006,8 @@
       "summary": "本标准规定了中小学用羽毛球拍的技术要求、试验方法和检验规则。适用于中小学体育教学和课外活动中使用的羽毛球拍。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 40
     },
     {
       "id": "GBT1985182005",
@@ -989,7 +1030,8 @@
       "summary": "本标准规定了中小学用乒乓球器材和场地的技术要求、试验方法及检验规则。适用于中小学体育教学和课外活动中使用的乒乓球器材和场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 41
     },
     {
       "id": "GBT1985172005",
@@ -1012,7 +1054,8 @@
       "summary": "本标准规定了中小学用乒乓球台的技术要求、试验方法、检验规则及标志、包装、运输和贮存。适用于中小学体育教学和课外活动中使用的乒乓球台。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 42
     },
     {
       "id": "GBT2251722024",
@@ -1036,7 +1079,8 @@
       "summary": "本标准规定了游泳场地的使用要求及检验方法，包括水质、水温、池底、池岸等技术指标。适用于各类游泳场馆的建设、验收和日常管理。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 43
     },
     {
       "id": "GBT2251722008",
@@ -1060,7 +1104,8 @@
       "summary": "本标准规定了游泳场地的使用要求及检验方法，包括场地尺寸、水深、水质、设施安全等技术指标。适用于各类游泳场馆的设计、建设、验收和日常管理。主要目的是确保游泳场地的安全性、适用性和卫生条件。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 44
     },
     {
       "id": "GBT289352012",
@@ -1082,7 +1127,8 @@
       "summary": "本标准规定了拆装式游泳池的结构、材料、安装、使用及安全要求。适用于可拆卸、可移动的游泳池产品，不适用于固定式游泳池。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 45
     },
     {
       "id": "GBT289392012",
@@ -1104,7 +1150,8 @@
       "summary": "本标准规定了游泳池拆装式垫层的结构形式、技术要求、试验方法及检验规则。适用于游泳池工程中可拆卸安装的垫层材料与施工质量控制。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 46
     },
     {
       "id": "GB700081997",
@@ -1126,7 +1173,8 @@
       "summary": "本标准规定了游泳池和类似场所用灯具的安全要求，包括防触电、防水、耐腐蚀等技术指标。适用于游泳池、喷水池、浴室等潮湿或水中环境使用的灯具。旨在保障人员安全和设备正常运行。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 47
     },
     {
       "id": "GBT84331998",
@@ -1148,7 +1196,8 @@
       "summary": "本标准规定了纺织品耐氯化水色牢度的试验方法，用于评估纺织品在游泳池水中浸泡后的颜色变化情况。适用于各类纺织织物及其制品。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 48
     },
     {
       "id": "GBT84332013",
@@ -1170,7 +1219,8 @@
       "summary": "本标准规定了纺织品耐氯化水（游泳池水）色牢度的试验方法。适用于各类纺织织物及其制品。主要评估产品在接触氯化水后的颜色变化情况。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 49
     },
     {
       "id": "GBT1820492000",
@@ -1192,7 +1242,8 @@
       "summary": "本标准规定了游泳池水中细菌总数的检验方法，包括采样、培养和计数步骤。适用于游泳池水的微生物质量监测。主要用于评估游泳池水质卫生状况。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 50
     },
     {
       "id": "GBT18204102000",
@@ -1214,7 +1265,8 @@
       "summary": "本标准规定了游泳池水中大肠菌群的检验方法，包括培养基制备、操作步骤和结果判定。适用于游泳池水样的微生物学检测。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 51
     },
     {
       "id": "GBT70002182023",
@@ -1236,7 +1288,8 @@
       "summary": "本标准规定了用于游泳池和类似场所的灯具的特殊安全要求和性能规范。适用于在游泳池、喷泉、水景等潮湿或水中环境中使用的灯具。主要涉及防触电、防水、防腐蚀及安装要求等方面。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 52
     },
     {
       "id": "GB70002182008",
@@ -1258,7 +1311,8 @@
       "summary": "本标准规定了游泳池和类似场所用灯具的特殊安全要求，包括防潮、防腐、电气绝缘及机械强度等。适用于游泳池、喷泉、水景等潮湿或水下环境中使用的灯具。主要目的是确保此类灯具在复杂环境下的使用安全。",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 53
     },
     {
       "id": "GBT16895192017",
@@ -1280,7 +1334,8 @@
       "summary": "本标准规定了游泳池和喷泉等特殊场所低压电气装置的设计、安装和运行要求，以确保电气安全。适用于游泳池、喷泉及其周边区域的电气设备和布线。主要针对防触电、防水和接地保护等方面提出具体措施。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 54
     },
     {
       "id": "GBT3430852024",
@@ -1303,7 +1358,8 @@
       "summary": "本标准规定了体育场地的分类原则、代码结构及编码方法。适用于体育场地信息的采集、处理和共享。适用于各类体育场馆和运动场地的信息化管理。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 55
     },
     {
       "id": "GBT22517122024",
@@ -1326,7 +1382,8 @@
       "summary": "本标准规定了自然攀岩场地的设计、建造、使用要求及检验方法。适用于自然岩石或人工模拟自然岩石的攀岩场地。旨在确保场地的安全性、功能性与适用性。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 56
     },
     {
       "id": "GBT2251782024",
@@ -1350,7 +1407,8 @@
       "summary": "本标准规定了运动冰场的设计、建造、使用及检验方法的要求。适用于室内和室外用于体育比赛和训练的冰场。确保冰场的安全性、适用性和功能性。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 57
     },
     {
       "id": "GBT22517102014",
@@ -1373,7 +1431,8 @@
       "summary": "本标准规定了壁球场地的尺寸、构造、表面性能及检验方法。适用于壁球场地的设计、建造和验收。确保场地符合比赛和训练的安全与使用要求。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 58
     },
     {
       "id": "GBT22517112014",
@@ -1396,7 +1455,8 @@
       "summary": "本标准规定了曲棍球场地的尺寸、构造、表面性能及检验方法。适用于新建、改建和扩建的曲棍球场地的设计与验收。确保场地符合比赛和训练的安全性与功能性要求。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 59
     },
     {
       "id": "GBT302282013",
@@ -1419,7 +1479,8 @@
       "summary": "本标准规定了运动场地地面冲击衰减的安全性能要求和试验方法。适用于各类体育场馆和运动场所的地面材料。旨在确保运动场地在受到冲击时能有效吸收能量，保护运动员安全。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 60
     },
     {
       "id": "GBT221852008",
@@ -1441,7 +1502,8 @@
       "summary": "本标准规定了体育场馆在公共安全方面应满足的基本要求，包括人员疏散、消防设施、安全检查、应急处置等内容。适用于各类体育场馆的建设、运营和管理。旨在保障观众、运动员及工作人员的安全。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 61
     },
     {
       "id": "GBT280492011",
@@ -1463,7 +1525,8 @@
       "summary": "本标准规定了厅堂和体育场馆扩声系统的设计原则、技术要求及施工验收等内容。适用于各类厅堂和体育场馆的扩声系统设计与工程实施。旨在确保扩声系统的声学效果与使用功能。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 62
     },
     {
       "id": "GBT280472011",
@@ -1485,7 +1548,8 @@
       "summary": "本标准规定了厅堂和体育场馆扩声系统听音评价的条件、方法及要求。适用于各类厅堂和体育场馆的扩声系统声学性能评价。旨在确保扩声系统在实际使用中的语言清晰度和音乐丰满度。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 63
     },
     {
       "id": "GBT294582024",
@@ -1507,7 +1571,8 @@
       "summary": "本标准规定了体育场馆LED显示屏的显示性能、环境适应性、安全要求及检验方法。适用于体育场馆内用于赛事信息显示的LED显示屏的设计、生产与检测。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 64
     },
     {
       "id": "GBT294582012",
@@ -1529,7 +1594,8 @@
       "summary": "本标准规定了体育场馆LED显示屏的显示性能、环境适应性、安全要求及检验方法。适用于体育场馆中用于比赛信息显示的LED显示屏。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 65
     },
     {
       "id": "GBT280482011",
@@ -1551,7 +1617,8 @@
       "summary": "本标准规定了厅堂和体育场馆扩声系统的验收要求、测试方法及评价指标。适用于新建或改建的各类厅堂和体育场馆扩声系统的竣工验收。旨在确保扩声系统性能符合使用需求和相关技术规范。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 66
     },
     {
       "id": "GBT440922024",
@@ -1573,7 +1640,8 @@
       "summary": "本标准规定了体育公园在场地设施、功能分区、服务配套等方面的基本配置要求。适用于新建、改建和扩建的体育公园建设与管理。旨在提升体育公园的公共服务水平和使用效能。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 67
     },
     {
       "id": "GBT342812017",
@@ -1595,7 +1663,8 @@
       "summary": "本标准规定了全民健身活动中心的分类原则、配置要求及功能设置。适用于各类全民健身活动中心的建设与管理。旨在促进全民健身设施的规范化和合理化配置。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 68
     },
     {
       "id": "GBT342802017",
@@ -1617,7 +1686,8 @@
       "summary": "本标准规定了全民健身活动中心在管理服务方面的基本要求，包括设施配置、人员配备、服务规范及安全要求等。适用于各类为公众提供健身服务的活动中心。旨在提升全民健身活动中心的服务质量和管理水平。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 69
     },
     {
       "id": "GBT379132019",
@@ -1639,7 +1709,8 @@
       "summary": "本标准规定了公共体育设施的安全使用要求、管理责任和应急处置等内容。适用于各类向公众开放的体育场馆和设施的日常管理和使用。旨在保障使用者安全，提升设施运行管理水平。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 70
     },
     {
       "id": "GBT342842017",
@@ -1662,7 +1733,8 @@
       "summary": "本标准规定了公共体育设施中室外健身设施的应用场所的安全要求，包括选址、布局、标识、防护措施等。适用于各类公共场所设置的室外健身器材及其使用环境。旨在保障使用者的人身安全和设施的正常使用。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 71
     },
     {
       "id": "GBT342902017",
@@ -1685,7 +1757,8 @@
       "summary": "本标准规定了公共体育设施中室外健身设施的配置要求、技术规范及管理措施。适用于各级政府建设的公共场所室外健身设施的规划、安装和管理。旨在提升全民健身服务质量与安全水平。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 72
     },
     {
       "id": "GBT383732019",
@@ -1708,7 +1781,8 @@
       "summary": "本标准规定了体育设施运动面层系统和运动性能的通用术语与定义。适用于各类体育场地运动面层的设计、施工、检测与评价。旨在统一术语，促进技术交流与规范管理。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 73
     },
     {
       "id": "GB96681996",
@@ -1731,7 +1805,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 74
     },
     {
       "id": "GBT202392023",
@@ -1755,7 +1830,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 75
     },
     {
       "id": "GBT202392015",
@@ -1779,7 +1855,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 76
     },
     {
       "id": "GBT202392006",
@@ -1803,7 +1880,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 77
     },
     {
       "id": "GBT203942019",
@@ -1826,7 +1904,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 78
     },
     {
       "id": "GBT203942013",
@@ -1849,7 +1928,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 79
     },
     {
       "id": "GBT203942006",
@@ -1872,7 +1952,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 80
     },
     {
       "id": "GBT181022000",
@@ -1894,7 +1975,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 81
     },
     {
       "id": "GBT181022007",
@@ -1916,7 +1998,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 82
     },
     {
       "id": "GBT181022020",
@@ -1938,7 +2021,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 83
     },
     {
       "id": "GBT289972012",
@@ -1960,7 +2044,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 84
     },
     {
       "id": "GBT202392023",
@@ -1984,7 +2069,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 85
     },
     {
       "id": "GBT202392015",
@@ -2008,7 +2094,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 86
     },
     {
       "id": "GBT202392006",
@@ -2032,7 +2119,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 87
     },
     {
       "id": "GBT415472022",
@@ -2054,7 +2142,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 88
     },
     {
       "id": "GBT245992009",
@@ -2076,7 +2165,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 89
     },
     {
       "id": "GBT202382018",
@@ -2098,7 +2188,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 90
     },
     {
       "id": "GBT263902011",
@@ -2120,7 +2211,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 91
     },
     {
       "id": "GBT202382006",
@@ -2142,7 +2234,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 92
     },
     {
       "id": "GBT356012024",
@@ -2164,7 +2257,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 93
     },
     {
       "id": "GBT356012017",
@@ -2186,7 +2280,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 94
     },
     {
       "id": "GBT330422016",
@@ -2208,7 +2303,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 95
     },
     {
       "id": "GBT202392023",
@@ -2232,7 +2328,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 96
     },
     {
       "id": "GBT202392015",
@@ -2256,7 +2353,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 97
     },
     {
       "id": "GBT202392006",
@@ -2280,7 +2378,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 98
     },
     {
       "id": "GBT1985122005",
@@ -2302,7 +2401,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 99
     },
     {
       "id": "GBT19851222007",
@@ -2324,7 +2424,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 100
     },
     {
       "id": "GBT1985112005",
@@ -2347,7 +2448,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 101
     },
     {
       "id": "GBT19851122025",
@@ -2369,7 +2471,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 102
     },
     {
       "id": "GBT19851122005",
@@ -2391,7 +2494,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 103
     },
     {
       "id": "GBT238682019",
@@ -2413,7 +2517,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 104
     },
     {
       "id": "GBT238682009",
@@ -2435,7 +2540,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 105
     },
     {
       "id": "GBT238662019",
@@ -2457,7 +2563,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 106
     },
     {
       "id": "GB311872014",
@@ -2479,7 +2586,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 107
     },
     {
       "id": "GBT238662009",
@@ -2501,7 +2609,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 108
     },
     {
       "id": "GBT317082015",
@@ -2523,7 +2632,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 109
     },
     {
       "id": "GBT282382011",
@@ -2545,7 +2655,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 110
     },
     {
       "id": "GB442462024",
@@ -2567,7 +2678,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 111
     },
     {
       "id": "GBT3760072019",
@@ -2589,7 +2701,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 112
     },
     {
       "id": "GBT16895192002",
@@ -2609,7 +2722,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 113
     },
     {
       "id": "GBT2251732024",
@@ -2631,7 +2745,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 114
     },
     {
       "id": "GBT2251732008",
@@ -2653,7 +2768,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 115
     },
     {
       "id": "GBT1999532006",
@@ -2676,7 +2792,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 116
     },
     {
       "id": "GB96681996",
@@ -2699,7 +2816,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 117
     },
     {
       "id": "GBT203942019",
@@ -2722,7 +2840,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 118
     },
     {
       "id": "GBT203942013",
@@ -2745,7 +2864,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 119
     },
     {
       "id": "GBT203942006",
@@ -2768,7 +2888,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 120
     },
     {
       "id": "GBT238682019",
@@ -2790,7 +2911,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 121
     },
     {
       "id": "GBT238682009",
@@ -2812,7 +2934,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 122
     },
     {
       "id": "GBT202392023",
@@ -2836,7 +2959,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 123
     },
     {
       "id": "GBT202392015",
@@ -2860,7 +2984,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 124
     },
     {
       "id": "GBT202392006",
@@ -2884,7 +3009,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 125
     },
     {
       "id": "GBT238662019",
@@ -2906,7 +3032,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 126
     },
     {
       "id": "GB311872014",
@@ -2928,7 +3055,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 127
     },
     {
       "id": "GBT238662009",
@@ -2950,7 +3078,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 128
     },
     {
       "id": "GBT317082015",
@@ -2972,7 +3101,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 129
     },
     {
       "id": "GBT282382011",
@@ -2994,7 +3124,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 130
     },
     {
       "id": "GB1907912003",
@@ -3016,7 +3147,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 131
     },
     {
       "id": "GB442462024",
@@ -3038,7 +3170,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 132
     },
     {
       "id": "GBT228922008",
@@ -3058,7 +3191,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 133
     },
     {
       "id": "GBT197062015",
@@ -3078,7 +3212,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 134
     },
     {
       "id": "GBT197062005",
@@ -3098,7 +3233,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 135
     },
     {
       "id": "GBT439832024",
@@ -3120,7 +3256,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 136
     },
     {
       "id": "GBT1462511993",
@@ -3140,7 +3277,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 137
     },
     {
       "id": "GBT1462521993",
@@ -3160,7 +3298,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 138
     },
     {
       "id": "GBT1462551995",
@@ -3180,7 +3319,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 139
     },
     {
       "id": "GBT1462531993",
@@ -3200,7 +3340,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 140
     },
     {
       "id": "GBT1462541995",
@@ -3220,7 +3361,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 141
     },
     {
       "id": "GBT19079322017",
@@ -3243,7 +3385,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 142
     },
     {
       "id": "GBT1462512008",
@@ -3263,7 +3406,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 143
     },
     {
       "id": "GBT1462522008",
@@ -3283,7 +3427,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 144
     },
     {
       "id": "GBT1462542008",
@@ -3303,7 +3448,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 145
     },
     {
       "id": "GBT1462552008",
@@ -3323,7 +3469,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 146
     },
     {
       "id": "GBT1462532008",
@@ -3343,7 +3490,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 147
     },
     {
       "id": "GBT228682008",
@@ -3363,7 +3511,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 148
     },
     {
       "id": "GBT231762008",
@@ -3383,7 +3532,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 149
     },
     {
       "id": "GBZ408362021",
@@ -3403,7 +3553,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 150
     },
     {
       "id": "GBT439862024",
@@ -3425,7 +3576,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 151
     },
     {
       "id": "GBT154921995",
@@ -3447,7 +3599,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 152
     },
     {
       "id": "GBT1462511993",
@@ -3467,7 +3620,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 153
     },
     {
       "id": "GBT1462521993",
@@ -3487,7 +3641,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 154
     },
     {
       "id": "GBT154922009",
@@ -3509,7 +3664,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 155
     },
     {
       "id": "GBT1462551995",
@@ -3529,7 +3685,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 156
     },
     {
       "id": "GBT1462531993",
@@ -3549,7 +3706,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 157
     },
     {
       "id": "GBT1462541995",
@@ -3569,7 +3727,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 158
     },
     {
       "id": "GBT1462512008",
@@ -3589,7 +3748,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 159
     },
     {
       "id": "GBT1462522008",
@@ -3609,7 +3769,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 160
     },
     {
       "id": "GBT1462542008",
@@ -3629,7 +3790,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 161
     },
     {
       "id": "GBT1462552008",
@@ -3649,7 +3811,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 162
     },
     {
       "id": "GBT1462532008",
@@ -3669,7 +3832,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 163
     },
     {
       "id": "GBT227542008",
@@ -3689,7 +3853,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 164
     },
     {
       "id": "GBT441052024",
@@ -3711,7 +3876,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 165
     },
     {
       "id": "GBT326092016",
@@ -3731,7 +3897,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 166
     },
     {
       "id": "GBT228822008",
@@ -3751,7 +3918,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 167
     },
     {
       "id": "GBT241522018",
@@ -3773,7 +3941,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 168
     },
     {
       "id": "GBT241522009",
@@ -3795,7 +3964,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 169
     },
     {
       "id": "GBT440932024",
@@ -3817,7 +3987,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 170
     },
     {
       "id": "GBT157221995",
@@ -3839,7 +4010,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 171
     },
     {
       "id": "GBT1462511993",
@@ -3859,7 +4031,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 172
     },
     {
       "id": "GBT195462004",
@@ -3881,7 +4054,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 173
     },
     {
       "id": "GBT1462521993",
@@ -3901,7 +4075,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 174
     },
     {
       "id": "GBT157222009",
@@ -3923,7 +4098,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 175
     },
     {
       "id": "GBT1462551995",
@@ -3943,7 +4119,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 176
     },
     {
       "id": "GBT1462531993",
@@ -3963,7 +4140,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 177
     },
     {
       "id": "GBT1462541995",
@@ -3983,7 +4161,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 178
     },
     {
       "id": "GBT1462512008",
@@ -4003,7 +4182,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 179
     },
     {
       "id": "GBT1462522008",
@@ -4023,7 +4203,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 180
     },
     {
       "id": "GBT1462542008",
@@ -4043,7 +4224,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 181
     },
     {
       "id": "GBT1462552008",
@@ -4063,7 +4245,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 182
     },
     {
       "id": "GBT1462532008",
@@ -4083,7 +4266,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 183
     },
     {
       "id": "GBT118811989",
@@ -4103,7 +4287,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 184
     },
     {
       "id": "GBT118812006",
@@ -4123,7 +4308,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 185
     },
     {
       "id": "GBT439852024",
@@ -4145,7 +4331,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 186
     },
     {
       "id": "GBT326082016",
@@ -4165,7 +4352,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 187
     },
     {
       "id": "GBT1801998",
@@ -4185,7 +4373,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 188
     },
     {
       "id": "GBT98311988",
@@ -4205,7 +4394,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 189
     },
     {
       "id": "GBT231152008",
@@ -4225,7 +4415,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 190
     },
     {
       "id": "GBT200452005",
@@ -4245,7 +4436,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 191
     },
     {
       "id": "GBT447012024",
@@ -4265,7 +4457,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 192
     },
     {
       "id": "GBT154931995",
@@ -4287,7 +4480,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 193
     },
     {
       "id": "GBT439842024",
@@ -4309,7 +4503,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 194
     },
     {
       "id": "GBT325972016",
@@ -4329,7 +4524,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 195
     },
     {
       "id": "GBT154932009",
@@ -4351,7 +4547,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 196
     },
     {
       "id": "GBT227512008",
@@ -4371,7 +4568,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 197
     },
     {
       "id": "GBT227512008",
@@ -4391,7 +4589,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 198
     },
     {
       "id": "GBT311662014",
@@ -4413,7 +4612,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 199
     },
     {
       "id": "GBT306842014",
@@ -4433,27 +4633,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
-    },
-    {
-      "id": "GBT4286522025",
-      "code": "GB/T 42865.2-2025",
-      "title": "服务业用水定额 第2部分：高尔夫球场",
-      "english": "",
-      "type": "国家标准",
-      "status": "废止",
-      "issueDate": "2025-08-29",
-      "implementDate": null,
-      "abolishDate": null,
-      "replaces": "",
-      "replacedBy": "GB/T 42865.2-2025",
-      "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "综合",
-      "tags": [],
-      "summary": "",
-      "isMandatory": false,
-      "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 200
     },
     {
       "id": "GBT306842014",
@@ -4473,7 +4654,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 201
     },
     {
       "id": "GBT4286522025",
@@ -4493,7 +4675,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 202
     },
     {
       "id": "GBT1826612000",
@@ -4515,7 +4698,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 203
     },
     {
       "id": "GBT19851222007",
@@ -4537,7 +4721,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 204
     },
     {
       "id": "GBT19851222007",
@@ -4559,7 +4744,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 205
     },
     {
       "id": "GBT1462511993",
@@ -4579,7 +4765,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 206
     },
     {
       "id": "GBT1462521993",
@@ -4599,7 +4786,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 207
     },
     {
       "id": "GBT1462551995",
@@ -4619,7 +4807,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 208
     },
     {
       "id": "GBT1462531993",
@@ -4639,7 +4828,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 209
     },
     {
       "id": "GBT1462541995",
@@ -4659,7 +4849,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 210
     },
     {
       "id": "GBT1462512008",
@@ -4679,7 +4870,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 211
     },
     {
       "id": "GBT1462522008",
@@ -4699,7 +4891,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 212
     },
     {
       "id": "GBT1462542008",
@@ -4719,7 +4912,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 213
     },
     {
       "id": "GBT1462552008",
@@ -4739,7 +4933,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 214
     },
     {
       "id": "GBT1462532008",
@@ -4759,7 +4954,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 215
     },
     {
       "id": "GBT423712023",
@@ -4781,7 +4977,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 216
     },
     {
       "id": "GBT4092612021",
@@ -4803,7 +5000,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 217
     },
     {
       "id": "GBT4092632021",
@@ -4825,7 +5023,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 218
     },
     {
       "id": "GBT4092622021",
@@ -4847,7 +5046,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 219
     },
     {
       "id": "GBT4092652021",
@@ -4869,7 +5069,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 220
     },
     {
       "id": "GB19079202013",
@@ -4891,7 +5092,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 221
     },
     {
       "id": "GBT4092642021",
@@ -4913,7 +5115,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 222
     },
     {
       "id": "GB19079202013",
@@ -4935,7 +5138,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 223
     },
     {
       "id": "GBT2251732024",
@@ -4957,7 +5161,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 224
     },
     {
       "id": "GBT2251732008",
@@ -4979,7 +5184,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 225
     },
     {
       "id": "GBT439872024",
@@ -5001,7 +5207,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 226
     },
     {
       "id": "GBT2251732024",
@@ -5023,7 +5230,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 227
     },
     {
       "id": "GBT2251732008",
@@ -5045,7 +5253,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 228
     },
     {
       "id": "GBT2251732024",
@@ -5067,7 +5276,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 229
     },
     {
       "id": "GBT2251732008",
@@ -5089,7 +5299,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 230
     },
     {
       "id": "GBT172561998",
@@ -5111,7 +5322,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 231
     },
     {
       "id": "GBT172562012",
@@ -5133,7 +5345,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 232
     },
     {
       "id": "GB1907992013",
@@ -5155,7 +5368,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 233
     },
     {
       "id": "GB1907992005",
@@ -5177,7 +5391,8 @@
       "summary": "",
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 234
     },
     {
       "id": "GBT1826642025",
@@ -5199,7 +5414,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 235
     },
     {
       "id": "GB1907942025",
@@ -5221,7 +5437,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 236
     },
     {
       "id": "GB19079152025",
@@ -5243,7 +5460,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 237
     },
     {
       "id": "GB1907942014",
@@ -5265,7 +5483,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 238
     },
     {
       "id": "GB19079222013",
@@ -5287,7 +5506,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 239
     },
     {
       "id": "GB1907982013",
@@ -5309,7 +5529,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 240
     },
     {
       "id": "GBZ448592024",
@@ -5329,7 +5550,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 241
     },
     {
       "id": "GBZ448582024",
@@ -5349,7 +5571,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 242
     },
     {
       "id": "GBT441042024",
@@ -5371,7 +5594,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 243
     },
     {
       "id": "GB19079282013",
@@ -5393,7 +5617,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 244
     },
     {
       "id": "GB19079282013",
@@ -5415,7 +5640,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 245
     },
     {
       "id": "GB19079222013",
@@ -5437,7 +5663,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 246
     },
     {
       "id": "GBT441012024",
@@ -5459,7 +5686,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 247
     },
     {
       "id": "GBT342882017",
@@ -5479,7 +5707,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 248
     },
     {
       "id": "GB19079212013",
@@ -5501,7 +5730,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 249
     },
     {
       "id": "GBT231242008",
@@ -5521,7 +5751,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 250
     },
     {
       "id": "GBT231252008",
@@ -5541,7 +5772,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 251
     },
     {
       "id": "GBT231212008",
@@ -5561,7 +5793,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 252
     },
     {
       "id": "GBT282372011",
@@ -5581,7 +5814,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 253
     },
     {
       "id": "GBT326112016",
@@ -5601,7 +5835,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 254
     },
     {
       "id": "GBT440972024",
@@ -5623,7 +5858,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 255
     },
     {
       "id": "GBT282372011",
@@ -5643,7 +5879,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 256
     },
     {
       "id": "GBT441062024",
@@ -5665,7 +5902,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 257
     },
     {
       "id": "GBT326112016",
@@ -5685,7 +5923,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 258
     },
     {
       "id": "GB19079232013",
@@ -5707,7 +5946,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 259
     },
     {
       "id": "GB215362008",
@@ -5729,7 +5969,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 260
     },
     {
       "id": "GBT215362024",
@@ -5751,7 +5992,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 261
     },
     {
       "id": "GBT411742021",
@@ -5773,7 +6015,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 262
     },
     {
       "id": "GBT164331996",
@@ -5795,7 +6038,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 263
     },
     {
       "id": "GBT440962024",
@@ -5817,7 +6061,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 264
     },
     {
       "id": "GBT164332009",
@@ -5839,7 +6084,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 265
     },
     {
       "id": "GB1749862008",
@@ -5861,7 +6107,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 266
     },
     {
       "id": "GB96671996",
@@ -5881,7 +6128,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 267
     },
     {
       "id": "GBT18204282000",
@@ -5901,7 +6149,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 268
     },
     {
       "id": "GBT388022020",
@@ -5921,7 +6170,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 269
     },
     {
       "id": "GBT18204292000",
@@ -5941,7 +6191,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 270
     },
     {
       "id": "GBT452672025",
@@ -5963,7 +6214,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 271
     },
     {
       "id": "GBT440982024",
@@ -5985,7 +6237,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 272
     },
     {
       "id": "GBT18204302000",
@@ -6005,7 +6258,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 273
     },
     {
       "id": "GBT4286512023",
@@ -6025,7 +6279,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 274
     },
     {
       "id": "GB3748932019",
@@ -6045,7 +6300,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 275
     },
     {
       "id": "GB1907912013",
@@ -6067,7 +6323,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 276
     },
     {
       "id": "GB4567022025",
@@ -6087,7 +6344,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 277
     },
     {
       "id": "GBT1826632017",
@@ -6109,7 +6367,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 278
     },
     {
       "id": "GBT231572008",
@@ -6129,7 +6388,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 279
     },
     {
       "id": "GBT4445832024",
@@ -6151,7 +6411,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 280
     },
     {
       "id": "GBT423732023",
@@ -6173,7 +6434,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 281
     },
     {
       "id": "GBT409242021",
@@ -6193,7 +6455,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 282
     },
     {
       "id": "GBT437012024",
@@ -6213,7 +6476,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 283
     },
     {
       "id": "GBT423752023",
@@ -6235,7 +6499,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 284
     },
     {
       "id": "GBT409292021",
@@ -6255,7 +6520,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 285
     },
     {
       "id": "GBT409222021",
@@ -6275,7 +6541,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 286
     },
     {
       "id": "GBT409302021",
@@ -6295,7 +6562,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 287
     },
     {
       "id": "GBT4092322021",
@@ -6315,7 +6583,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 288
     },
     {
       "id": "GBT4092312021",
@@ -6335,7 +6604,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 289
     },
     {
       "id": "GBT409312021",
@@ -6355,7 +6625,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 290
     },
     {
       "id": "GBT238672019",
@@ -6375,7 +6646,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 291
     },
     {
       "id": "GBT238672009",
@@ -6395,7 +6667,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 292
     },
     {
       "id": "GBT423722023",
@@ -6415,7 +6688,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 293
     },
     {
       "id": "GBT311692014",
@@ -6437,7 +6711,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 294
     },
     {
       "id": "GBT423782023",
@@ -6459,7 +6734,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 295
     },
     {
       "id": "GBT411762021",
@@ -6481,7 +6757,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 296
     },
     {
       "id": "GBT437002024",
@@ -6501,7 +6778,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 297
     },
     {
       "id": "GBT439902024",
@@ -6523,7 +6801,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 298
     },
     {
       "id": "GBT423742023",
@@ -6543,7 +6822,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 299
     },
     {
       "id": "GBT409402021",
@@ -6563,7 +6843,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 300
     },
     {
       "id": "GBT409322021",
@@ -6583,7 +6864,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 301
     },
     {
       "id": "GBT400472021",
@@ -6605,7 +6887,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 302
     },
     {
       "id": "GBT306832014",
@@ -6625,7 +6908,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 303
     },
     {
       "id": "GBT409252021",
@@ -6645,7 +6929,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 304
     },
     {
       "id": "GBT437022024",
@@ -6665,7 +6950,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 305
     },
     {
       "id": "GBT437032024",
@@ -6685,7 +6971,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 306
     },
     {
       "id": "GBT455372025",
@@ -6705,7 +6992,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 307
     },
     {
       "id": "GBT409282021",
@@ -6725,7 +7013,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 308
     },
     {
       "id": "GB1907962013",
@@ -6747,7 +7036,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 309
     },
     {
       "id": "GB1907962005",
@@ -6769,7 +7059,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 310
     },
     {
       "id": "GBT4286532025",
@@ -6789,7 +7080,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 311
     },
     {
       "id": "GBT1826652023",
@@ -6811,7 +7103,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 312
     },
     {
       "id": "GBT4152612022",
@@ -6833,7 +7126,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 313
     },
     {
       "id": "GBT423702023",
@@ -6855,7 +7149,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 314
     },
     {
       "id": "GBT440942024",
@@ -6877,7 +7172,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 315
     },
     {
       "id": "GBT423692023",
@@ -6899,7 +7195,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 316
     },
     {
       "id": "GB1907972005",
@@ -6921,7 +7218,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 317
     },
     {
       "id": "GB1907972013",
@@ -6943,7 +7241,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 318
     },
     {
       "id": "GBT423762023",
@@ -6965,7 +7264,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 319
     },
     {
       "id": "GBT423772023",
@@ -6987,7 +7287,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 320
     },
     {
       "id": "GB356522022",
@@ -7007,7 +7308,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 321
     },
     {
       "id": "GBT227902023",
@@ -7027,7 +7329,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 322
     },
     {
       "id": "GBT3188742025",
@@ -7049,7 +7352,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 323
     },
     {
       "id": "GBT3188742023",
@@ -7071,7 +7375,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 324
     },
     {
       "id": "GBT106421989",
@@ -7091,7 +7396,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 325
     },
     {
       "id": "GBT111841989",
@@ -7111,7 +7417,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 326
     },
     {
       "id": "GBT111831989",
@@ -7131,7 +7438,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 327
     },
     {
       "id": "GB172841998",
@@ -7151,7 +7459,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 328
     },
     {
       "id": "GBT35661993",
@@ -7171,7 +7480,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 329
     },
     {
       "id": "GB35651993",
@@ -7191,7 +7501,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 330
     },
     {
       "id": "GBT3188752025",
@@ -7213,7 +7524,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 331
     },
     {
       "id": "GBT3188752023",
@@ -7235,7 +7547,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 332
     },
     {
       "id": "GBT227902008",
@@ -7255,7 +7568,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 333
     },
     {
       "id": "GBT227912008",
@@ -7277,7 +7591,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 334
     },
     {
       "id": "GB35652005",
@@ -7297,7 +7612,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 335
     },
     {
       "id": "GB147461993",
@@ -7317,7 +7633,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 336
     },
     {
       "id": "GB134721992",
@@ -7337,7 +7654,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 337
     },
     {
       "id": "GBT318872015",
@@ -7357,7 +7675,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 338
     },
     {
       "id": "GB147462006",
@@ -7377,7 +7696,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 339
     },
     {
       "id": "GBT328422023",
@@ -7397,7 +7717,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 340
     },
     {
       "id": "GBT328422016",
@@ -7417,7 +7738,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 341
     },
     {
       "id": "GBT199942005",
@@ -7437,7 +7759,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 342
     },
     {
       "id": "GBT35642023",
@@ -7457,7 +7780,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 343
     },
     {
       "id": "GBT35792002",
@@ -7477,7 +7801,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 344
     },
     {
       "id": "GBT35641993",
@@ -7497,7 +7822,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 345
     },
     {
       "id": "GBT127421991",
@@ -7517,7 +7843,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 346
     },
     {
       "id": "GBT35792006",
@@ -7537,7 +7864,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 347
     },
     {
       "id": "GBT35671983",
@@ -7557,7 +7885,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 348
     },
     {
       "id": "GBT147462025",
@@ -7577,7 +7906,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 349
     },
     {
       "id": "GBT427032023",
@@ -7597,7 +7927,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 350
     },
     {
       "id": "GB356522022",
@@ -7617,7 +7948,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 351
     },
     {
       "id": "GBT293482012",
@@ -7637,7 +7969,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 352
     },
     {
       "id": "GBT293472012",
@@ -7657,7 +7990,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 353
     },
     {
       "id": "GB1907982013",
@@ -7679,7 +8013,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 354
     },
     {
       "id": "GB1907982005",
@@ -7701,7 +8036,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 355
     },
     {
       "id": "GBT2634412010",
@@ -7721,7 +8057,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 356
     },
     {
       "id": "GB19079152025",
@@ -7743,7 +8080,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 357
     },
     {
       "id": "GBT343892017",
@@ -7763,7 +8101,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 358
     },
     {
       "id": "GBT428252023",
@@ -7783,7 +8122,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 359
     },
     {
       "id": "GBT439882024",
@@ -7805,7 +8145,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 360
     },
     {
       "id": "GBT389552020",
@@ -7825,7 +8166,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 361
     },
     {
       "id": "GBT465072025",
@@ -7845,7 +8187,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 362
     },
     {
       "id": "GB6675122014",
@@ -7865,7 +8208,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 363
     },
     {
       "id": "GBT404812021",
@@ -7885,7 +8229,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 364
     },
     {
       "id": "GBT345722017",
@@ -7905,7 +8250,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 365
     },
     {
       "id": "GBT2068852014",
@@ -7925,7 +8271,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 366
     },
     {
       "id": "GB405592024",
@@ -7945,7 +8292,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 367
     },
     {
       "id": "GB244292009",
@@ -7967,7 +8315,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 368
     },
     {
       "id": "GBT2755322011",
@@ -7987,7 +8336,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 369
     },
     {
       "id": "GBT2755312011",
@@ -8007,7 +8357,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 370
     },
     {
       "id": "GBT1179812001",
@@ -8027,7 +8378,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 371
     },
     {
       "id": "GBT3914212020",
@@ -8047,7 +8399,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 372
     },
     {
       "id": "GBT2654832017",
@@ -8067,7 +8420,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 373
     },
     {
       "id": "GBT463833012025",
@@ -8087,7 +8441,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 374
     },
     {
       "id": "GBT1826642025",
@@ -8109,7 +8464,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 375
     },
     {
       "id": "GB1907942025",
@@ -8131,7 +8487,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 376
     },
     {
       "id": "GB1907942014",
@@ -8153,7 +8510,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 377
     },
     {
       "id": "GB1907942005",
@@ -8175,7 +8533,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 378
     },
     {
       "id": "GBT200962021",
@@ -8195,7 +8554,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 379
     },
     {
       "id": "GBT200962006",
@@ -8215,7 +8575,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 380
     },
     {
       "id": "GBT441032024",
@@ -8237,7 +8598,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 381
     },
     {
       "id": "GB1907952005",
@@ -8259,7 +8621,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 382
     },
     {
       "id": "GB244292009",
@@ -8281,7 +8644,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 383
     },
     {
       "id": "GBT342892017",
@@ -8304,7 +8668,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 384
     },
     {
       "id": "GB17498102008",
@@ -8327,7 +8692,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 385
     },
     {
       "id": "GB174981998",
@@ -8350,7 +8716,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 386
     },
     {
       "id": "GBT342852017",
@@ -8373,7 +8740,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 387
     },
     {
       "id": "GBT451802024",
@@ -8396,7 +8764,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 388
     },
     {
       "id": "GBT468682025",
@@ -8419,7 +8788,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 389
     },
     {
       "id": "GBT1826622025",
@@ -8442,7 +8812,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 390
     },
     {
       "id": "GBT1000142021",
@@ -8465,7 +8836,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 391
     },
     {
       "id": "GBT1826622002",
@@ -8488,7 +8860,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 392
     },
     {
       "id": "GBT1000142009",
@@ -8511,7 +8884,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 393
     },
     {
       "id": "GB1749812008",
@@ -8534,7 +8908,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 394
     },
     {
       "id": "GBT1000142007",
@@ -8557,7 +8932,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 395
     },
     {
       "id": "GB1749872008",
@@ -8580,7 +8956,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 396
     },
     {
       "id": "GB1749892008",
@@ -8603,7 +8980,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 397
     },
     {
       "id": "GB1749822008",
@@ -8626,7 +9004,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 398
     },
     {
       "id": "GB1749842008",
@@ -8649,7 +9028,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 399
     },
     {
       "id": "GB1749852008",
@@ -8672,7 +9052,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 400
     },
     {
       "id": "GB1749882008",
@@ -8695,7 +9076,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 401
     },
     {
       "id": "GB174981998",
@@ -8718,7 +9100,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 402
     },
     {
       "id": "GBT451802024",
@@ -8741,7 +9124,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 403
     },
     {
       "id": "GBT342892017",
@@ -8764,7 +9148,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 404
     },
     {
       "id": "GB1749812008",
@@ -8787,7 +9172,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 405
     },
     {
       "id": "GB1749872008",
@@ -8810,7 +9196,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 406
     },
     {
       "id": "GB1749892008",
@@ -8833,7 +9220,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 407
     },
     {
       "id": "GB1749822008",
@@ -8856,7 +9244,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 408
     },
     {
       "id": "GB1749842008",
@@ -8879,7 +9268,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 409
     },
     {
       "id": "GB1749852008",
@@ -8902,7 +9292,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 410
     },
     {
       "id": "GB1749882008",
@@ -8925,7 +9316,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 411
     },
     {
       "id": "GB17498102008",
@@ -8948,7 +9340,8 @@
       "summary": null,
       "isMandatory": true,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 412
     },
     {
       "id": "GBT441002024",
@@ -8971,7 +9364,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 413
     },
     {
       "id": "GBT347432017",
@@ -8993,7 +9387,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 414
     },
     {
       "id": "GBT436492024",
@@ -9015,7 +9410,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 415
     },
     {
       "id": "GBT317572015",
@@ -9037,7 +9433,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 416
     },
     {
       "id": "GBT289922012",
@@ -9059,7 +9456,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 417
     },
     {
       "id": "GBT1503612001",
@@ -9081,7 +9479,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 418
     },
     {
       "id": "GBT317452015",
@@ -9103,7 +9502,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 419
     },
     {
       "id": "GBT466812025",
@@ -9125,7 +9525,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 420
     },
     {
       "id": "GBT466842025",
@@ -9147,7 +9548,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 421
     },
     {
       "id": "GBT359132018",
@@ -9169,7 +9571,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 422
     },
     {
       "id": "GBT1503622001",
@@ -9191,7 +9594,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 423
     },
     {
       "id": "GBT1503612018",
@@ -9213,7 +9617,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 424
     },
     {
       "id": "GBT1503612009",
@@ -9235,7 +9640,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 425
     },
     {
       "id": "GBT1503622018",
@@ -9257,7 +9663,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 426
     },
     {
       "id": "GBT1503622009",
@@ -9279,7 +9686,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 427
     },
     {
       "id": "GBT1826622025",
@@ -9302,7 +9710,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 428
     }
   ]
 }
