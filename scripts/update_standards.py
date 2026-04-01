@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v21（最终修复版）
+体育标准数据库 — 自动抓取更新 v22（核心问题修复版）
 修复内容：
-1. 彻底解决「自己替代自己」问题
-2. 彻底解决「同一个标准号多状态」重复问题
-3. 完善木地板/木质地板同义词，搜木地板自动显示木质地板标准
+1. 彻底解决「搜木地板出不来木质地板」双向搜索匹配问题
+2. 新增关键词「合成材料跑道」，全链路适配
+3. 彻底修复替代旧标准号不正确、自替代问题
 4. 保留手动修改保护、发布单位原文、50页限制等所有原有规则
 """
 import json, time, re, argparse, hashlib, os
@@ -36,52 +36,65 @@ load_env()
 DEEPSEEK_KEY = os.environ.get('DEEPSEEK_KEY', '')
 QWEN_KEY     = os.environ.get('QWEN_KEY', '')
 
-# ===================== 修复1：彻底解决自己替代自己 + 版本补全 =====================
+# ===================== 修复1：彻底解决替代标准号不正确问题 =====================
 def auto_fill_replaces(standards):
+    """
+    仅兜底填充：只有官网没抓到真实替代号时，才自动补全
+    严格校验同标准号不同年份，彻底杜绝错误替代、自替代
+    """
     groups = {}
     for s in standards:
         code = s.get('code', '')
-        # 严格拆分标准号+年份，避免自替代
-        m = re.match(r'^(.+?)\s*[－\-–]\s*(\d{4})$', code.strip())
+        # 严格拆分【标准号主体+4位年份】，只匹配GB/T 1234-2024格式
+        m = re.match(r'^([A-Z]+\/?T?\s*\d+(?:\.\d+)?)\s*[－\-–]\s*(\d{4})$', code.strip())
         if m:
             base = re.sub(r'\s+', '', m.group(1)).upper()
-            year = int(m.group(2))
+            try:
+                year = int(m.group(2))
+            except:
+                continue
             if base not in groups:
                 groups[base] = []
             groups[base].append({'std': s, 'year': year, 'code': code})
+    
     updated = 0
     for base, versions in groups.items():
         if len(versions) < 2:
             continue
-        # 严格按年份排序，只在不同年份之间生成替代关系
+        # 严格按年份升序排序，旧版本在前，新版本在后
         versions.sort(key=lambda x: x['year'])
-        # 防护：避免索引越界
         version_count = len(versions)
+        
         for i, ver in enumerate(versions):
             s = ver['std']
-            # 只给新版本加「代替旧版本」，旧版本加「被新版本代替」
+            # 只有官网没抓到真实替代号，才自动填充
             if i > 0 and not s.get('replaces'):
-                # 确保不会自己替代自己（年份不同才会执行）
-                if versions[i-1]['year'] != ver['year']:
+                # 严格校验：年份不同、标准主体完全一致，才生成替代关系
+                if versions[i-1]['year'] != ver['year'] and versions[i-1]['code'] != ver['code']:
                     s['replaces'] = versions[i-1]['code']
                     updated += 1
+            # 只有官网没抓到真实被替代号，才自动填充
             if i < version_count - 1 and not s.get('replacedBy'):
-                if versions[i+1]['year'] != ver['year']:
+                if versions[i+1]['year'] != ver['year'] and versions[i+1]['code'] != ver['code']:
                     s['replacedBy'] = versions[i+1]['code']
                     updated += 1
-            # 只在新版本现行时，标记旧版本为废止（优化条件判断）
-            if (i < version_count - 1 and 
-                s.get('status') == '现行' and 
-                versions[i+1]['std'].get('status') == '现行'):
+            # 只有新版本是现行，才标记旧版本为废止
+            if (i < version_count - 1 
+                and s.get('status') == '现行' 
+                and versions[i+1]['std'].get('status') == '现行'
+                and versions[i+1]['code'] != ver['code']):
                 s['status'] = '废止'
                 updated += 1
     return updated
 
-# ===================== 关键词（已完善木地板/木质地板同义词） =====================
+# ===================== 修复2：新增关键词「合成材料跑道」+ 木地板全量关键词 =====================
 KEYWORDS = [
+    # 新增关键词
+    "合成材料跑道",
+    # 原有核心关键词
     "健身", "健身器材", "五体球",
     "体育馆", "人造草", "木质地板", "木地板",
-    "合成材料面层", "塑胶跑道", "合成材料跑道", "聚氨酯跑道",
+    "合成材料面层", "塑胶跑道", "聚氨酯跑道",
     "橡胶面层运动场", "中小学合成材料",
     "人造草坪", "人造草皮", "运动场人造草", "人工草坪",
     "颗粒填充料", "草坪填充橡胶",
@@ -128,8 +141,11 @@ KEYWORDS = [
     "飞盘", "滑板", "攀岩", "轮滑", "钓鱼", "拔河"
 ]
 
-# ===================== 体育过滤 + 剔除电动自行车 =====================
+# ===================== 体育过滤 + 新增合成材料跑道 + 木地板全量术语 =====================
 SPORTS_TERMS = [
+    # 新增术语
+    "合成材料跑道",
+    # 原有术语
     "健身","健身器材","五体球",
     "体育馆", "人造草", "木质地板", "木地板",
     "合成材料面层","塑胶跑道","聚氨酯跑道","橡胶面层",
@@ -155,16 +171,15 @@ def is_sports(title):
     if not title:
         return False
     title = title.lower()
-    # 增强黑名单匹配（全角/半角兼容）
     title_clean = title.replace('　', ' ').replace('，', ',').replace('。', '.')
     for bk in BLACKLIST:
         if bk.lower() in title_clean:
             return False
-    # 兼容全角字符的术语匹配
     return any(term.lower() in title_clean for term in SPORTS_TERMS)
 
-# ===================== 分类：木质地板 → 木地板 =====================
+# ===================== 修复3：木地板分类+标签强制统一，解决搜索问题 =====================
 def guess_category(text):
+    """所有木质地板相关，强制归为「木地板」，合成材料跑道归为合成材料面层"""
     if not text:
         return "综合"
     cm = {
@@ -174,6 +189,8 @@ def guess_category(text):
         "体育木地板":"木地板",
         "运动木地板":"木地板",
         "体育用木质地板":"木地板",
+        "木地板":"木地板",
+        "合成材料跑道":"合成材料面层",
         "合成材料":"合成材料面层",
         "塑胶跑道":"合成材料面层",
         "照明":"灯光照明",
@@ -186,6 +203,22 @@ def guess_category(text):
             return cat
     return "综合"
 
+def guess_tags(text):
+    """所有木地板/木质地板相关，强制加上双向标签，确保搜索全匹配"""
+    if not text:
+        return []
+    tags_pool = ["体育","运动","健身","健身器材","五体球","体育馆","人造草","木地板","木质地板","塑胶","照明","围网","合成材料跑道"]
+    base_tags = [t for t in tags_pool if t in text][:8]
+    
+    # 强制双向标签：只要有木地板/木质地板，两个标签都加上
+    if "木地板" in text or "木质地板" in text:
+        if "木地板" not in base_tags:
+            base_tags.append("木地板")
+        if "木质地板" not in base_tags:
+            base_tags.append("木质地板")
+    
+    return base_tags
+
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
 
 def make_session():
@@ -194,7 +227,7 @@ def make_session():
         total=5, 
         backoff_factor=1.5, 
         status_forcelist=[429,500,502,503,504],
-        allowed_methods=["GET"]  # 明确允许的方法，避免警告
+        allowed_methods=["GET"]
     )
     s.mount('https://', HTTPAdapter(max_retries=retry))
     s.mount('http://',  HTTPAdapter(max_retries=retry))
@@ -225,15 +258,12 @@ def log(msg):
         print(f"日志写入失败：{e}")
 
 def make_id(code):
-    # 空值防护 + 全角字符处理
     code_clean = re.sub(r'[^A-Za-z0-9]', '', code.strip().replace('　', ''))[:30]
     if code_clean:
         return code_clean
-    # 避免空字符串md5
     return hashlib.md5((code or 'empty').encode()).hexdigest()[:12]
 
 def norm_code(c):
-    # 处理全角字符 + 统一格式
     if not c:
         return ''
     c_clean = c.replace('　', ' ').replace('－', '-').strip()
@@ -245,14 +275,12 @@ def clean_samr_code(raw):
     raw = re.sub(r'<[^>]+>', '', raw).strip()
     raw = re.sub(r'GB(\d)', r'GB \1', raw)
     raw = re.sub(r'GB/T', 'GB/T ', raw)
-    # 处理全角空格和分隔符
     raw = raw.replace('　', ' ').replace('－', '-')
     return re.sub(r'\s+', ' ', raw).strip()
 
 def clean_sacinfo(raw):
     if not raw:
         return ''
-    # 移除所有HTML标签 + 全角字符清理
     raw_clean = re.sub(r'<[^>]+>', '', raw).strip()
     return raw_clean.replace('　', ' ').strip()
 
@@ -272,7 +300,6 @@ def norm_date(raw):
     if not raw:
         return None
     s = str(raw).strip()
-    # 处理全角数字和分隔符
     s_clean = s.replace('０','0').replace('１','1').replace('２','2').replace('３','3').replace('４','4')
     s_clean = s_clean.replace('５','5').replace('６','6').replace('７','7').replace('８','8').replace('９','9')
     s_clean = s_clean.replace('－', '-').replace('　', ' ')
@@ -309,41 +336,38 @@ def guess_type(code):
             return t
     return "国家标准"
 
-def guess_tags(text):
-    if not text:
-        return []
-    tags_pool = ["体育","运动","健身","健身器材","五体球","体育馆","人造草","木地板","塑胶","照明","围网"]
-    return [t for t in tags_pool if t in text][:8]
-
-# ===================== 真实数据补全：官网详情页 =====================
+# ===================== 修复4：详情页真实替代号精准匹配，杜绝错误 =====================
 def fetch_detail_real_info(std_id, domain):
+    """从官网详情页抓取真实的替代号，优先使用，绝不自动生成覆盖"""
     if not std_id or not domain:
         return None, None, None, None
     try:
         url = f"{domain}/gb/search/gbDetailed?id={std_id}"
         resp = SESSION.get(url, timeout=20)
-        resp.raise_for_status()  # 触发HTTP错误
+        resp.raise_for_status()
         html = resp.text
 
         impl_date = None
-        # 增强正则匹配（兼容中英文冒号、全角空格）
         m = re.search(r'实施日期[^：:]*[：:]\s*(\d{4}[-\s]?\d{2}[-\s]?\d{2})', html)
         if m:
             impl_date = norm_date(m.group(1))
 
+        # 精准匹配替代旧标准号，支持多标准号
         replaces = None
-        m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
+        m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,150})', html)
         if m:
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+[-\s]?\d+', m.group(1))
+            # 精准匹配标准号格式：GB/T 1234-2024、GB 1234-2024、JGJ 123-2024
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}', m.group(1))
             if codes:
-                replaces = '；'.join([norm_code(c) for c in codes])
+                replaces = '；'.join([clean_samr_code(c) for c in codes])
 
+        # 精准匹配被新标准替代号
         replaced_by = None
-        m = re.search(r'被.*代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
+        m = re.search(r'被.*代替[^：:]*[：:]\s*([^\n<]{5,150})', html)
         if m:
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+[-\s]?\d+', m.group(1))
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}', m.group(1))
             if codes:
-                replaced_by = '；'.join([norm_code(c) for c in codes])
+                replaced_by = '；'.join([clean_samr_code(c) for c in codes])
 
         summary = None
         m = re.search(r'标准摘要[^：:]*[：:]\s*([^<]{10,600})', html)
@@ -381,7 +405,6 @@ def fetch_samr(keyword, page=1):
                 },
                 timeout=20)
             resp.raise_for_status()
-            # 检查响应是否为JSON
             if 'html' in resp.headers.get('content-type','').lower():
                 continue
 
@@ -402,6 +425,7 @@ def fetch_samr(keyword, page=1):
                 impl_date = norm_date(row.get('IMPL_DATE'))
                 std_id = row.get('id') or row.get('ID') or ''
 
+                # 优先抓取官网真实的替代号、日期、摘要
                 if std_id:
                     d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain)
                     if d_impl:
@@ -434,7 +458,6 @@ def fetch_samr(keyword, page=1):
                     "summary": summary,
                     "isMandatory": is_mandatory(code)
                 })
-            # 第一个domain成功则跳出循环
             break
         except Exception as e:
             if DEBUG_MODE:
@@ -446,7 +469,6 @@ def fetch_samr(keyword, page=1):
 def fetch_samr_all(keyword):
     all_res = []
     seen = set()
-    # 初始页抓取
     try:
         res, tp = fetch_samr(keyword, 1)
         for r in res:
@@ -459,7 +481,6 @@ def fetch_samr_all(keyword):
         return all_res
 
     max_page = 50
-    # 后续页抓取（增强异常处理）
     for p in range(2, min(tp+1, max_page+1)):
         try:
             time.sleep(0.8)
@@ -477,12 +498,11 @@ def fetch_samr_all(keyword):
             continue
     return all_res
 
-# ===================== 修复2：手动修改保护 + 去重 + 状态统一 =====================
+# ===================== 修复5：手动修改保护 + 替代号绝不覆盖手动修改 =====================
 def merge(existing, new_items):
     existing_code_map = { norm_code(s['code']): s for s in existing }
     add, upd = 0, 0
 
-    # 遍历新数据
     for item in new_items:
         code_raw = item.get('code', '')
         nc = norm_code(code_raw)
@@ -490,27 +510,30 @@ def merge(existing, new_items):
             continue
 
         if nc in existing_code_map:
-            # 已存在 → 只更新官网有变动的字段，绝不碰手动修改的内容
             old = existing_code_map[nc]
-            # 优先保留手动修改的状态，只在官网状态更权威时更新
+            # 状态：只有官网是现行，才覆盖手动的废止
             new_status = item.get('status')
             if new_status and old.get('status') != new_status:
-                # 只有当官网状态为「现行」时，才覆盖手动的「废止」
                 if new_status == '现行':
                     old['status'] = new_status
                     upd +=1
-            # 更新其他官网字段（只更新非空值）
-            for f in ['issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
+            # 替代号：只有用户没手动修改，才用官网真实数据
+            for f in ['replaces','replacedBy']:
+                val = item.get(f)
+                if val and not old.get(f):
+                    old[f] = val
+                    upd +=1
+            # 其他字段：非空才更新
+            for f in ['issueDate','implementDate','abolishDate','summary']:
                 val = item.get(f)
                 if val and val != old.get(f):
                     old[f] = val
                     upd +=1
         else:
-            # 全新标准 → 新增
             existing.append(build_entry(item))
             add +=1
 
-    # 修复3：强制去重，同一个标准号只保留1条（优化去重逻辑）
+    # 强制去重，同一个标准号只保留1条
     final_standards = []
     code_set = set()
     for s in existing:
@@ -521,11 +544,9 @@ def merge(existing, new_items):
             code_set.add(nc)
             final_standards.append(s)
         else:
-            # 重复标准，保留状态为「现行」的，删除「废止」的
             replaced = False
             for i, exist_s in enumerate(final_standards):
                 if norm_code(exist_s['code']) == nc:
-                    # 新数据是现行，旧数据非现行 → 替换
                     if s.get('status') == '现行' and exist_s.get('status') != '现行':
                         final_standards[i] = s
                         replaced = True
@@ -566,7 +587,6 @@ def load_db():
     try:
         with open(DATA_FILE,'r',encoding='utf-8') as f:
             db = json.load(f)
-        # 确保standards字段存在
         if 'standards' not in db:
             db['standards'] = []
         return db, db['standards']
@@ -576,14 +596,13 @@ def load_db():
 
 def save_db(db, standards, dry):
     before = len(standards)
-    # 过滤非体育内容
     standards = [s for s in standards if is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
         log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车/重复标准")
 
     db['standards'] = standards
-    db['updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 更精确的更新时间
+    db['updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     db['total'] = len(standards)
     if dry:
         log(f"预览模式：共{len(standards)}条，不保存")
@@ -592,7 +611,7 @@ def save_db(db, standards, dry):
         DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(DATA_FILE,'w',encoding='utf-8') as f:
             json.dump(db, f, ensure_ascii=False, indent=2)
-        log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，重复标准已去重）")
+        log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，替代号已修复）")
     except Exception as e:
         log(f"❌ 保存失败：{str(e)}")
 
@@ -600,8 +619,8 @@ def run(dry=False, debug=False):
     global DEBUG_MODE
     DEBUG_MODE = debug
     log("="*60)
-    log("体育标准抓取工具 v21（最终修复版）")
-    log("已修复：自替代、重复多状态、木地板/木质地板同义词")
+    log("体育标准抓取工具 v22（核心问题修复版）")
+    log("已修复：搜索双向匹配、合成材料跑道关键词、替代标准号错误")
     log("="*60)
 
     db, standards = load_db()
@@ -619,13 +638,13 @@ def run(dry=False, debug=False):
             time.sleep(1)
         except Exception as e:
             log(f"   → 抓取失败：{str(e)}")
-            time.sleep(2)  # 失败后延长等待时间
+            time.sleep(2)
             continue
 
     log(f"\n抓取完成，去重前总数：{len(all_new)}")
-    # 先做版本补全，再合并去重
-    auto_fill_replaces(all_new)
+    # 先合并，再兜底补全替代关系（绝不覆盖官网真实数据）
     standards, add, upd = merge(standards, all_new)
+    auto_fill_replaces(standards)
     log(f"合并结果：新增 {add} 条，更新 {upd} 条，去重后总计 {len(standards)} 条")
 
     save_db(db, standards, dry)
