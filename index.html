@@ -3,8 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="中国体育建设标准查询平台，收录国家标准、行业标准、地方标准、团标，涵盖合成材料跑道、人造草坪、灯光照明、木地板、围网等全品类体育建设标准。">
+  <meta name="description" content="中国体育建设标准查询平台，免费查询国家标准、行业标准、地方标准、团体标准，涵盖合成材料跑道、人造草坪、灯光照明、运动木地板、围网等全品类体育建设标准，支持在线预览与下载。">
+  <meta name="keywords" content="体育建设标准,运动木地板标准,合成材料跑道标准,人造草坪标准,体育照明标准,GB体育标准,国家标准查询,行业标准下载,体育场地标准">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="体育建设标准查询平台">
+  <meta property="og:title" content="中国体育建设标准查询平台 | 最全体育行业标准数据库">
+  <meta property="og:description" content="免费查询体育建设国家标准、行业标准、地方标准，涵盖运动木地板、合成材料跑道、人造草坪等全品类，支持在线预览与 PDF 下载。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="canonical" href="https://www.tiyubiaozhun.com/">
   <title>中国体育建设标准查询平台 | 最全体育行业标准数据库</title>
+  <!-- Google AdSense -->
+  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "中国体育建设标准查询平台",
+    "description": "免费查询体育建设国家标准、行业标准、地方标准，涵盖运动木地板、合成材料跑道、人造草坪等全品类",
+    "url": "https://www.tiyubiaozhun.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://www.tiyubiaozhun.com/?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
   <style>
     :root {
@@ -25,11 +49,6 @@
     .logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
     .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
     .logo-text{font-size:16px;font-weight:700;color:var(--text)}
-    .header-search{flex:1;max-width:480px;position:relative}
-    .header-search input{width:100%;padding:8px 14px 8px 34px;border:1px solid var(--border);border-radius:22px;font-size:13.5px;outline:none;background:var(--bg);color:var(--text);font-family:var(--font);transition:border-color .2s,box-shadow .2s}
-    .header-search input:focus{border-color:var(--blue-light);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-    .header-search input::placeholder{color:var(--muted)}
-    .hs-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
     .header-stats{display:flex;gap:16px;margin-left:auto}
     .hstat{text-align:center}
     .hstat-n{font-size:17px;font-weight:700;color:var(--blue);line-height:1}
@@ -179,7 +198,19 @@
     .rate-toast.show{display:block;animation:fadeup .3s ease}
     @keyframes fadeup{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 
-    /* Footer */
+    /* Search Suggestions */
+    .search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:var(--sh-md);z-index:50;overflow:hidden;animation:mup .15s ease}
+    .suggest-header{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;padding:9px 14px 5px;border-bottom:1px solid var(--border-l);background:#fafbfc}
+    .suggest-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);transition:background .12s}
+    .suggest-item:hover{background:var(--blue-dim)}
+    .suggest-code{font-family:"Courier New",monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--bg);border:1px solid var(--border-l);border-radius:4px;padding:2px 6px;flex-shrink:0}
+    .suggest-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .suggest-status{font-size:10px;flex-shrink:0;padding:1px 6px;border-radius:10px}
+    .suggest-more{font-size:12px;color:var(--blue-mid);padding:8px 14px;text-align:center;cursor:pointer;border-top:1px solid var(--border-l);background:#fafbfc}
+    .suggest-more:hover{background:var(--blue-dim)}
+    /* Ad slots */
+    .ad-slot{width:100%;background:#f8fafc;border:1px dashed var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;margin:16px 0;min-height:90px;overflow:hidden}
+    .ad-slot ins{display:block;width:100%}
     .site-footer{background:#f8fafc;border-top:1px solid var(--border);padding:40px 20px 0;margin-top:56px}
     .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px}
     .footer-col h4{font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
@@ -200,15 +231,11 @@
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="#" class="logo">
+    <a href="javascript:void(0)" class="logo" onclick="goHome()" title="返回首页">
       <div class="logo-icon">🏟</div>
       <span class="logo-text">体育建设标准库</span>
     </a>
-    <div class="header-stats">
-      <div class="hstat"><div class="hstat-n" id="hTotal">—</div><div class="hstat-l">收录标准</div></div>
-      <div class="hstat"><div class="hstat-n" id="hActive" style="color:var(--green)">—</div><div class="hstat-l">现行有效</div></div>
-      <div class="hstat"><div class="hstat-n" id="hAbol" style="color:var(--red)">—</div><div class="hstat-l">已废止</div></div>
-    </div>
+
   </div>
 </header>
 
@@ -219,9 +246,12 @@
   <div class="hero-search">
     <span class="hs-left">🔍</span>
     <input type="text" id="heroSearch"
-      placeholder="输入标准编号（如 GB 36246）或关键词（如 塑胶跑道）…"
-      oninput="syncQ(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
+      placeholder="输入标准编号（如 GB 36246）或关键词（如 塑胶跑道、木地板）…"
+      oninput="syncQ(this.value);showSuggestions(this.value)"
+      onkeydown="handleSuggestKey(event)"
+      autocomplete="off">
     <button class="hero-btn" onclick="doSearch()">查 询</button>
+    <div class="search-suggestions" id="searchSuggestions" style="display:none"></div>
   </div>
   <div class="quick-tags">
     <span class="qtag" onclick="quickSearch('合成材料')">合成材料跑道</span>
@@ -231,11 +261,16 @@
     <span class="qtag" onclick="quickSearch('围网')">体育围网</span>
     <span class="qtag" onclick="quickSearch('健身')">健身器材</span>
     <span class="qtag" onclick="quickSearch('中小学')">中小学场地</span>
-    <span class="qtag" onclick="quickSearch('PVC')">PVC运动地胶</span>
   </div>
 </section>
 
 <div class="main-wrap">
+  <!-- Ad Slot: 横幅广告 -->
+  <div class="ad-slot" id="adSlotTop">
+    <!-- Google AdSense 横幅广告 -->
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+  </div>
   <div class="main-toolbar">
     <div class="result-count">找到 <strong id="resultCount">0</strong> 条标准</div>
     <div class="filter-pills" id="filterPills">
@@ -255,6 +290,14 @@
     <div class="loading"><span class="spinner"></span>正在加载标准数据…</div>
   </div>
   <div class="pagination" id="pagination"></div>
+
+
+  <!-- Ad Slot: 内容底部广告 -->
+  <div class="ad-slot" id="adSlotBottom" style="margin-top:20px">
+    <!-- Google AdSense 内容广告 -->
+    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="YYYYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
+  </div>
 </div>
 
 <footer class="site-footer">
@@ -286,8 +329,9 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>使用说明</h4>
-      <p>搜索标准编号或关键词即可查找，点击标准卡片后可下载对应 PDF 文件，免费获取。</p>
+      <h4>联系我们</h4>
+      <p style="margin-bottom:8px">如发现未收录标准或数据有误，欢迎通过邮件联系我们，我们将尽快核实补充。</p>
+      <a href="mailto:glxbjlt@163.com" style="font-size:13px;color:var(--blue-mid);text-decoration:none">📧 contact@tiyubiaozhun.com</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -596,9 +640,6 @@ function loadData(){
   fetch('data/standards.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
     DB = data.standards||[];
     document.getElementById('footerVer').textContent = data.version||'—';
-    document.getElementById('hTotal').textContent = DB.length;
-    document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
-    document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
     fuse = new Fuse(DB, {
       keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
       threshold:0.3, includeScore:true
@@ -610,25 +651,82 @@ function loadData(){
 }
 
 function syncQ(v){ document.getElementById('heroSearch').value=v; activeQ=v; }
-function doSearch(){ activeQ=document.getElementById('heroSearch').value.trim(); applyAll(); }
-function quickSearch(q){ syncQ(q); applyAll(); document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'}); }
+function doSearch(){ activeQ=document.getElementById('heroSearch').value.trim(); hideSuggestions(); applyAll(); }
+function quickSearch(q){ syncQ(q); hideSuggestions(); applyAll(); document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'}); }
+
+// ── 回到首页 ──
+function goHome(){
+  syncQ('');
+  activeQ=''; activeType='';
+  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
+  var all=document.querySelector('.pill[data-type=""]');
+  if(all) all.classList.add('active');
+  hideSuggestions();
+  applyAll();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── 实时搜索建议 ──
+var _suggestTimer = null;
+var SUGGEST_KEYWORDS = ['木地板','实木','篮球','运动木'];
+
+function showSuggestions(q){
+  clearTimeout(_suggestTimer);
+  var box = document.getElementById('searchSuggestions');
+  if(!q || q.length < 1 || !DB.length){ hideSuggestions(); return; }
+  _suggestTimer = setTimeout(function(){
+    var results = fuse ? fuse.search(q).map(function(r){return r.item;}).slice(0,8) : [];
+    if(!results.length){ hideSuggestions(); return; }
+    var isWoodFloor = /木地板|实木|运动木|木质/.test(q);
+    var header = isWoodFloor ? '🪵 运动木地板相关标准' : '🔍 搜索建议';
+    var html = '<div class="suggest-header">'+header+'</div>';
+    results.slice(0,6).forEach(function(s){
+      var statusClass = s.status==='现行' ? 'b-现行' : (s.status==='废止' ? 'b-废止' : '');
+      var statusText = s.status || '现行';
+      html += '<div class="suggest-item" onclick="selectSuggest(\''+eh(s.id)+'\')">'
+        +'<span class="suggest-code">'+eh(s.code)+'</span>'
+        +'<span class="suggest-title">'+eh(s.title)+'</span>'
+        +'<span class="suggest-status badge '+statusClass+'">'+statusText+'</span>'
+        +'</div>';
+    });
+    if(results.length > 6){
+      html += '<div class="suggest-more" onclick="doSearch()">查看全部 '+results.length+' 条结果 →</div>';
+    }
+    box.innerHTML = html;
+    box.style.display = 'block';
+  }, 180);
+}
+
+function hideSuggestions(){
+  document.getElementById('searchSuggestions').style.display='none';
+}
+
+function selectSuggest(id){
+  hideSuggestions();
+  openModal(id);
+}
+
+function handleSuggestKey(e){
+  if(e.key==='Enter'){ doSearch(); }
+  if(e.key==='Escape'){ hideSuggestions(); }
+}
+
+document.addEventListener('click', function(e){
+  if(!e.target.closest('.hero-search')) hideSuggestions();
+});
 
 // 动态年份
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-// ── 实时轮询：每60秒自动重新加载数据（后台更新后首页自动同步）
+// ── 实时轮询：每60秒自动重新加载数据
 setInterval(function(){
   fetch('data/standards.json?t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(data){
       var newList = data.standards||[];
-      // 只在数据有变化时才更新（对比总数和版本号）
       if(newList.length !== DB.length || (data.version && data.version !== document.getElementById('footerVer').textContent)){
         DB = newList;
         document.getElementById('footerVer').textContent = data.version||'—';
-        document.getElementById('hTotal').textContent = DB.length;
-        document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
-        document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
         fuse = new Fuse(DB, {
           keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
           threshold:0.3, includeScore:true
