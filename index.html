@@ -29,7 +29,37 @@
     }
   }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script>
+  // 动态加载 Fuse.js，支持多 CDN 备用，加载完成后启动应用
+  (function(){
+    var CDNs = [
+      'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js',
+      'https://unpkg.com/fuse.js@7.0.0/dist/fuse.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js'
+    ];
+    var idx = 0;
+    function tryLoad(){
+      if(idx >= CDNs.length){
+        // 全部失败，显示错误
+        document.addEventListener('DOMContentLoaded', function(){
+          var g = document.getElementById('standardsGrid');
+          if(g) g.innerHTML = '<div class="empty-state"><div class="ei">⚠️</div><h3>脚本加载失败</h3><p>请检查网络连接后刷新页面</p></div>';
+        });
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = CDNs[idx];
+      s.onload = function(){
+        // 脚本就绪后再触发应用初始化
+        if(typeof window._appReady === 'function') window._appReady();
+        else window._fuseLoaded = true;
+      };
+      s.onerror = function(){ idx++; tryLoad(); };
+      document.head.appendChild(s);
+    }
+    tryLoad();
+  })();
+  </script>
   <style>
     :root {
       --blue:#1a56c4; --blue-mid:#2563eb; --blue-light:#3b82f6;
@@ -303,8 +333,8 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-col">
-      <h4>关于平台</h4>
-      <p>专注于体育建设行业标准整理与查询，覆盖全品类体育建设标准，文件可在本站免费下载，如发现未收录标准或数据有误，欢迎通过邮件联系我们，我们将尽快核实补充。</p>
+      <h4>关于本站</h4>
+      <p>本站专注于体育建设行业标准整理与查询，覆盖全品类体育建设标准，文件可在本站免费下载，如发现未收录标准或数据有误，欢迎通过邮件联系我们，我们将尽快核实补充。</p>
     </div>
     <div class="footer-col">
       <h4>标准分类</h4>
@@ -328,7 +358,7 @@
         <li><a onclick="quickSearch('中小学')">中小学场地</a></li>
       </ul>
     </div>
-  <div class="footer-col">
+   <div class="footer-col">
     <h4>支持中心</h4>
     <ul style="list-style:none; padding:0; font-size:13px; line-height:2.2">
         <li><a href="about.html" style="text-decoration:none; color:inherit">关于平台</a></li>
@@ -336,8 +366,6 @@
         <li><a href="disclaimer.html" style="text-decoration:none; color:inherit">法律声明</a></li>
     </ul>
 </div>
-
-    </div>
   </div>
   <div class="footer-bottom">
     <p>© <span id="footerYear"></span> 体育建设标准查询平台</p>
@@ -884,7 +912,18 @@ window.addEventListener('scroll',function(){
 
 function eh(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-window.onload=loadData;
+// 等待 Fuse.js 加载完成再初始化，避免 CDN 延迟导致空白页
+window._appReady = function(){
+  if(typeof Fuse === 'undefined'){
+    setTimeout(window._appReady, 50); return;
+  }
+  loadData();
+};
+// 如果 Fuse 已经先于此脚本加载完毕（刷新时有缓存），直接启动
+if(window._fuseLoaded || typeof Fuse !== 'undefined'){
+  window._appReady();
+}
+// 否则等 CDN 脚本的 onload 回调来触发 _appReady
 </script>
 </body>
 </html>
