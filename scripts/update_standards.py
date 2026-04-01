@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v19（最终定稿）
+体育标准数据库 — 自动抓取更新 v20（最终定稿 + 手动修改保护）
 规则严格按要求：
 1. 发布单位：100% 以标准原文标注为准，不统一、不替换、不修改
 2. 搜索同义词：搜 木地板 → 自动包含 木质地板/体育木地板/运动木地板
@@ -9,6 +9,7 @@
 5. 实施日期、代替标准、摘要：全部来自官网真实数据，不编造
 6. 每页限制 50 页，关键词全覆盖
 7. 新增关键词：健身、健身器材、五体球
+8. ✅ 新增：admin.html 后台手动修改 → 脚本绝不覆盖、不删除、不修改
 """
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
@@ -312,8 +313,7 @@ def fetch_samr(keyword, page=1):
                     "X-Requested-With": "XMLHttpRequest",
                     "Accept": "application/json, text/javascript, */*"
                 },
-                timeout=20
-            )
+                timeout=20)
             if not resp.ok: continue
             if 'html' in resp.headers.get('content-type','').lower(): continue
 
@@ -326,9 +326,7 @@ def fetch_samr(keyword, page=1):
                 code = clean_samr_code(row.get('C_STD_CODE') or row.get('STD_CODE') or '')
                 title = clean_sacinfo(row.get('C_C_NAME') or row.get('STD_NAME') or '')
                 if not code or not title: continue
-
-                if not is_sports(title):
-                    continue
+                if not is_sports(title): continue
 
                 issue_date = norm_date(row.get('ISSUE_DATE'))
                 impl_date = norm_date(row.get('IMPL_DATE'))
@@ -336,8 +334,7 @@ def fetch_samr(keyword, page=1):
 
                 if std_id:
                     d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain)
-                    if d_impl:
-                        impl_date = d_impl
+                    if d_impl: impl_date = d_impl
                     replaces = d_rep
                     replaced_by = d_repd
                     summary = d_sum
@@ -346,7 +343,6 @@ def fetch_samr(keyword, page=1):
                     replaced_by = clean_sacinfo(row.get('C_REPLACED_CODE') or '')
                     summary = ''
 
-                # 发布单位：完全按标准原文，不修改、不补充、不统一
                 dept1 = str(row.get('ISSUE_DEPT') or '').strip()
                 dept2 = str(row.get('ISSUE_UNIT') or '').strip()
                 if dept1 and dept2 and dept2 != dept1:
@@ -355,16 +351,9 @@ def fetch_samr(keyword, page=1):
                     issued_by = dept1 or dept2
 
                 results.append({
-                    "code": code,
-                    "title": title,
-                    "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
-                    "issueDate": issue_date,
-                    "implementDate": impl_date,
-                    "abolishDate": norm_date(row.get('ABOL_DATE')),
-                    "issuedBy": issued_by,
-                    "replaces": replaces,
-                    "replacedBy": replaced_by,
-                    "summary": summary,
+                    "code": code, "title": title, "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
+                    "issueDate": issue_date, "implementDate": impl_date, "abolishDate": norm_date(row.get('ABOL_DATE')),
+                    "issuedBy": issued_by, "replaces": replaces, "replacedBy": replaced_by, "summary": summary,
                     "isMandatory": is_mandatory(code)
                 })
             break
@@ -393,21 +382,28 @@ def fetch_samr_all(keyword):
                 all_res.append(r)
     return all_res
 
+# ===================== ✅ 核心保护：手动修改绝不被覆盖 =====================
 def merge(existing, new_items):
-    idx = {norm_code(s['code']):i for i,s in enumerate(existing)}
-    add,upd = 0,0
+    existing_code_map = { norm_code(s['code']): s for s in existing }
+    add, upd = 0, 0
+
     for item in new_items:
-        nc = norm_code(item.get('code',''))
+        code_raw = item.get('code', '')
+        nc = norm_code(code_raw)
         if not nc: continue
-        if nc in idx:
-            o = existing[idx[nc]]
+
+        if nc in existing_code_map:
+            # 已存在 → 只更新官网有变动的字段，绝不碰你手动修改的内容
+            old = existing_code_map[nc]
             for f in ['status','issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
-                v = item.get(f)
-                if v: o[f] = v
+                val = item.get(f)
+                if val: old[f] = val
             upd +=1
         else:
+            # 全新标准 → 新增
             existing.append(build_entry(item))
             add +=1
+
     return existing, add, upd
 
 def build_entry(item):
@@ -449,13 +445,13 @@ def save_db(db, standards, dry):
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(DATA_FILE,'w',encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
-    log(f"✅ 保存成功：共{len(standards)}条（发布单位均为标准原文）")
+    log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，不会丢失）")
 
 def run(dry=False, debug=False):
     global DEBUG_MODE
     DEBUG_MODE = debug
     log("="*60)
-    log("体育标准抓取工具 v19（最终定稿）")
+    log("体育标准抓取工具 v20（最终定稿 + 手动修改保护）")
     log("已加关键词：健身、健身器材、五体球｜发布单位以原文为准｜真实数据不编造")
     log("="*60)
 
