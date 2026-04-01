@@ -1,7 +1,7 @@
 {
   "version": "2026.04.01",
-  "updated": "2026-04-01 12:33:24",
-  "total": 346,
+  "updated": "2026-04-01 14:38:55",
+  "total": 347,
   "standards": [
     {
       "id": "GB362462018",
@@ -7834,6 +7834,28 @@
       "tags": [
         "健身",
         "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT148332011",
+      "code": "GB/T 14833-2011",
+      "title": "合成材料跑道面层",
+      "english": "",
+      "type": "国家标准",
+      "status": "废止",
+      "issueDate": "2011-09-14",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": "GB/T 14833-1993",
+      "replacedBy": "GB/T 14833-2020",
+      "issuedBy": "",
+      "category": "合成材料面层",
+      "tags": [
+        "合成材料跑道"
       ],
       "summary": null,
       "isMandatory": false,
