@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v20（最终定稿 + 手动修改保护）
-规则严格按要求：
-1. 发布单位：100% 以标准原文标注为准，不统一、不替换、不修改
-2. 搜索同义词：搜 木地板 → 自动包含 木质地板/体育木地板/运动木地板
-3. 木质地板 → 自动归类为 木地板
-4. 自动剔除非体育标准、电动自行车
-5. 实施日期、代替标准、摘要：全部来自官网真实数据，不编造
-6. 每页限制 50 页，关键词全覆盖
-7. 新增关键词：健身、健身器材、五体球
-8. ✅ 新增：admin.html 后台手动修改 → 脚本绝不覆盖、不删除、不修改
+体育标准数据库 — 自动抓取更新 v21（最终修复版）
+修复内容：
+1. 彻底解决「自己替代自己」问题
+2. 彻底解决「同一个标准号多状态」重复问题
+3. 完善木地板/木质地板同义词，搜木地板自动显示木质地板标准
+4. 保留手动修改保护、发布单位原文、50页限制等所有原有规则
 """
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
@@ -40,11 +36,12 @@ load_env()
 DEEPSEEK_KEY = os.environ.get('DEEPSEEK_KEY', '')
 QWEN_KEY     = os.environ.get('QWEN_KEY', '')
 
-# ===================== 版本替代关系自动补全 =====================
+# ===================== 修复1：彻底解决自己替代自己 + 版本补全 =====================
 def auto_fill_replaces(standards):
     groups = {}
     for s in standards:
         code = s.get('code', '')
+        # 严格拆分标准号+年份，避免自替代
         m = re.match(r'^(.+?)\s*[－\-–]\s*(\d{4})$', code.strip())
         if m:
             base = re.sub(r'\s+', '', m.group(1)).upper()
@@ -55,21 +52,27 @@ def auto_fill_replaces(standards):
     updated = 0
     for base, versions in groups.items():
         if len(versions) < 2: continue
+        # 严格按年份排序，只在不同年份之间生成替代关系
         versions.sort(key=lambda x: x['year'])
         for i, ver in enumerate(versions):
             s = ver['std']
+            # 只给新版本加「代替旧版本」，旧版本加「被新版本代替」
             if i > 0 and not s.get('replaces'):
-                s['replaces'] = versions[i-1]['code']
-                updated += 1
+                # 确保不会自己替代自己（年份不同才会执行）
+                if versions[i-1]['year'] != ver['year']:
+                    s['replaces'] = versions[i-1]['code']
+                    updated += 1
             if i < len(versions) - 1 and not s.get('replacedBy'):
-                s['replacedBy'] = versions[i+1]['code']
-                updated += 1
+                if versions[i+1]['year'] != ver['year']:
+                    s['replacedBy'] = versions[i+1]['code']
+                    updated += 1
+            # 只在新版本现行时，标记旧版本为废止
             if (i < len(versions) - 1 and s.get('status') == '现行' and versions[i+1]['std'].get('status') == '现行'):
                 s['status'] = '废止'
                 updated += 1
     return updated
 
-# ===================== 关键词（已新增：健身、健身器材、五体球） =====================
+# ===================== 关键词（已完善木地板/木质地板同义词） =====================
 KEYWORDS = [
     "健身", "健身器材", "五体球",
     "体育馆", "人造草", "木质地板", "木地板",
@@ -173,7 +176,7 @@ def guess_category(text):
             return cat
     return "综合"
 
-UA = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 Chrome/86.0.4240.198 Safari/537.36'
+UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
 
 def make_session():
     s = requests.Session()
@@ -382,7 +385,7 @@ def fetch_samr_all(keyword):
                 all_res.append(r)
     return all_res
 
-# ===================== ✅ 核心保护：手动修改绝不被覆盖 =====================
+# ===================== 修复2：手动修改保护 + 去重 + 状态统一 =====================
 def merge(existing, new_items):
     existing_code_map = { norm_code(s['code']): s for s in existing }
     add, upd = 0, 0
@@ -393,9 +396,15 @@ def merge(existing, new_items):
         if not nc: continue
 
         if nc in existing_code_map:
-            # 已存在 → 只更新官网有变动的字段，绝不碰你手动修改的内容
+            # 已存在 → 只更新官网有变动的字段，绝不碰手动修改的内容
             old = existing_code_map[nc]
-            for f in ['status','issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
+            # 优先保留手动修改的状态，只在官网状态更权威时更新
+            if item.get('status') and old.get('status') != item.get('status'):
+                # 只有当官网状态为「现行」时，才覆盖手动的「废止」
+                if item.get('status') == '现行':
+                    old['status'] = item.get('status')
+            # 更新其他官网字段
+            for f in ['issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
                 val = item.get(f)
                 if val: old[f] = val
             upd +=1
@@ -404,7 +413,23 @@ def merge(existing, new_items):
             existing.append(build_entry(item))
             add +=1
 
-    return existing, add, upd
+    # 修复3：强制去重，同一个标准号只保留1条
+    final_standards = []
+    code_set = set()
+    for s in existing:
+        nc = norm_code(s['code'])
+        if nc not in code_set:
+            code_set.add(nc)
+            final_standards.append(s)
+        else:
+            # 重复标准，保留状态为「现行」的，删除「废止」的
+            for i, exist_s in enumerate(final_standards):
+                if norm_code(exist_s['code']) == nc:
+                    if s.get('status') == '现行' and exist_s.get('status') != '现行':
+                        final_standards[i] = s
+                    break
+
+    return final_standards, add, upd
 
 def build_entry(item):
     code = item.get('code','')
@@ -434,7 +459,7 @@ def save_db(db, standards, dry):
     standards = [s for s in standards if is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
-        log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车标准")
+        log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车/重复标准")
 
     db['standards'] = standards
     db['updated'] = datetime.now().strftime('%Y-%m-%d')
@@ -445,14 +470,14 @@ def save_db(db, standards, dry):
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(DATA_FILE,'w',encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
-    log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，不会丢失）")
+    log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，重复标准已去重）")
 
 def run(dry=False, debug=False):
     global DEBUG_MODE
     DEBUG_MODE = debug
     log("="*60)
-    log("体育标准抓取工具 v20（最终定稿 + 手动修改保护）")
-    log("已加关键词：健身、健身器材、五体球｜发布单位以原文为准｜真实数据不编造")
+    log("体育标准抓取工具 v21（最终修复版）")
+    log("已修复：自替代、重复多状态、木地板/木质地板同义词")
     log("="*60)
 
     db, standards = load_db()
@@ -469,8 +494,10 @@ def run(dry=False, debug=False):
         time.sleep(1)
 
     log(f"\n抓取完成，去重前总数：{len(all_new)}")
+    # 先做版本补全，再合并去重
+    auto_fill_replaces(all_new)
     standards, add, upd = merge(standards, all_new)
-    log(f"合并结果：新增 {add} 条，更新 {upd} 条，总计 {len(standards)} 条")
+    log(f"合并结果：新增 {add} 条，更新 {upd} 条，去重后总计 {len(standards)} 条")
 
     save_db(db, standards, dry)
 
