@@ -51,9 +51,12 @@ def auto_fill_replaces(standards):
             groups[base].append({'std': s, 'year': year, 'code': code})
     updated = 0
     for base, versions in groups.items():
-        if len(versions) < 2: continue
+        if len(versions) < 2:
+            continue
         # 严格按年份排序，只在不同年份之间生成替代关系
         versions.sort(key=lambda x: x['year'])
+        # 防护：避免索引越界
+        version_count = len(versions)
         for i, ver in enumerate(versions):
             s = ver['std']
             # 只给新版本加「代替旧版本」，旧版本加「被新版本代替」
@@ -62,12 +65,14 @@ def auto_fill_replaces(standards):
                 if versions[i-1]['year'] != ver['year']:
                     s['replaces'] = versions[i-1]['code']
                     updated += 1
-            if i < len(versions) - 1 and not s.get('replacedBy'):
+            if i < version_count - 1 and not s.get('replacedBy'):
                 if versions[i+1]['year'] != ver['year']:
                     s['replacedBy'] = versions[i+1]['code']
                     updated += 1
-            # 只在新版本现行时，标记旧版本为废止
-            if (i < len(versions) - 1 and s.get('status') == '现行' and versions[i+1]['std'].get('status') == '现行'):
+            # 只在新版本现行时，标记旧版本为废止（优化条件判断）
+            if (i < version_count - 1 and 
+                s.get('status') == '现行' and 
+                versions[i+1]['std'].get('status') == '现行'):
                 s['status'] = '废止'
                 updated += 1
     return updated
@@ -150,13 +155,18 @@ def is_sports(title):
     if not title:
         return False
     title = title.lower()
+    # 增强黑名单匹配（全角/半角兼容）
+    title_clean = title.replace('　', ' ').replace('，', ',').replace('。', '.')
     for bk in BLACKLIST:
-        if bk in title:
+        if bk.lower() in title_clean:
             return False
-    return any(term.lower() in title for term in SPORTS_TERMS)
+    # 兼容全角字符的术语匹配
+    return any(term.lower() in title_clean for term in SPORTS_TERMS)
 
 # ===================== 分类：木质地板 → 木地板 =====================
 def guess_category(text):
+    if not text:
+        return "综合"
     cm = {
         "体育馆":"场地设计",
         "人造草":"人造草坪",
@@ -180,7 +190,12 @@ UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.
 
 def make_session():
     s = requests.Session()
-    retry = Retry(total=5, backoff_factor=1.5, status_forcelist=[429,500,502,503,504])
+    retry = Retry(
+        total=5, 
+        backoff_factor=1.5, 
+        status_forcelist=[429,500,502,503,504],
+        allowed_methods=["GET"]  # 明确允许的方法，避免警告
+    )
     s.mount('https://', HTTPAdapter(max_retries=retry))
     s.mount('http://',  HTTPAdapter(max_retries=retry))
     s.headers.update({
@@ -192,8 +207,8 @@ def make_session():
     try:
         s.get("https://std.samr.gov.cn/", timeout=10)
         s.get("https://openstd.samr.gov.cn/", timeout=10)
-    except:
-        pass
+    except Exception as e:
+        log(f"会话初始化警告：{str(e)}")
     return s
 
 SESSION = make_session()
@@ -206,83 +221,129 @@ def log(msg):
         LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(line + '\n')
-    except:
-        pass
+    except Exception as e:
+        print(f"日志写入失败：{e}")
 
 def make_id(code):
-    return re.sub(r'[^A-Za-z0-9]', '', code)[:30] or hashlib.md5(code.encode()).hexdigest()[:12]
+    # 空值防护 + 全角字符处理
+    code_clean = re.sub(r'[^A-Za-z0-9]', '', code.strip().replace('　', ''))[:30]
+    if code_clean:
+        return code_clean
+    # 避免空字符串md5
+    return hashlib.md5((code or 'empty').encode()).hexdigest()[:12]
 
 def norm_code(c):
-    return re.sub(r'\s+', '', c).upper()
+    # 处理全角字符 + 统一格式
+    if not c:
+        return ''
+    c_clean = c.replace('　', ' ').replace('－', '-').strip()
+    return re.sub(r'\s+', '', c_clean).upper()
 
 def clean_samr_code(raw):
-    if not raw: return ''
+    if not raw:
+        return ''
     raw = re.sub(r'<[^>]+>', '', raw).strip()
     raw = re.sub(r'GB(\d)', r'GB \1', raw)
     raw = re.sub(r'GB/T', 'GB/T ', raw)
+    # 处理全角空格和分隔符
+    raw = raw.replace('　', ' ').replace('－', '-')
     return re.sub(r'\s+', ' ', raw).strip()
 
 def clean_sacinfo(raw):
-    if not raw: return ''
-    return re.sub(r'<[^>]+>', '', raw).strip()
+    if not raw:
+        return ''
+    # 移除所有HTML标签 + 全角字符清理
+    raw_clean = re.sub(r'<[^>]+>', '', raw).strip()
+    return raw_clean.replace('　', ' ').strip()
 
 def norm_status(raw):
-    r = str(raw or '').strip()
-    if any(x in r for x in ['现行','有效']): return '现行'
-    if any(x in r for x in ['废止','作废']): return '废止'
-    if any(x in r for x in ['即将','待实施']): return '即将实施'
+    if not raw:
+        return '现行'
+    r = str(raw).strip().lower()
+    if any(x in r for x in ['现行','有效']):
+        return '现行'
+    if any(x in r for x in ['废止','作废']):
+        return '废止'
+    if any(x in r for x in ['即将','待实施']):
+        return '即将实施'
     return '现行'
 
 def norm_date(raw):
-    if not raw: return None
+    if not raw:
+        return None
     s = str(raw).strip()
-    d = re.sub(r'[^\d]', '', s)
+    # 处理全角数字和分隔符
+    s_clean = s.replace('０','0').replace('１','1').replace('２','2').replace('３','3').replace('４','4')
+    s_clean = s_clean.replace('５','5').replace('６','6').replace('７','7').replace('８','8').replace('９','9')
+    s_clean = s_clean.replace('－', '-').replace('　', ' ')
+    d = re.sub(r'[^\d]', '', s_clean)
     if len(d)>=8:
         return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
     return None
 
 def is_mandatory(code):
     c = norm_code(code)
-    if re.match(r'^GB\d', c) and '/T' not in c: return True
-    if c.startswith('JGJ'): return True
+    if not c:
+        return False
+    if re.match(r'^GB\d', c) and '/T' not in c:
+        return True
+    if c.startswith('JGJ'):
+        return True
     return False
 
 def guess_type(code):
     cu = norm_code(code)
-    for p,t in [("GB/T","国家标准"),("GB","国家标准"),("JGJ","行业标准"),("JG/T","行业标准"),("CJJ","行业标准"),("T/","团体标准"),("DB","地方标准")]:
-        if cu.startswith(norm_code(p)): return t
+    if not cu:
+        return "国家标准"
+    type_map = [
+        ("GB/T","国家标准"),
+        ("GB","国家标准"),
+        ("JGJ","行业标准"),
+        ("JG/T","行业标准"),
+        ("CJJ","行业标准"),
+        ("T/","团体标准"),
+        ("DB","地方标准")
+    ]
+    for p,t in type_map:
+        if cu.startswith(norm_code(p)):
+            return t
     return "国家标准"
 
 def guess_tags(text):
-    return [t for t in ["体育","运动","健身","健身器材","五体球","体育馆","人造草","木地板","塑胶","照明","围网"] if t in text][:8]
+    if not text:
+        return []
+    tags_pool = ["体育","运动","健身","健身器材","五体球","体育馆","人造草","木地板","塑胶","照明","围网"]
+    return [t for t in tags_pool if t in text][:8]
 
 # ===================== 真实数据补全：官网详情页 =====================
 def fetch_detail_real_info(std_id, domain):
+    if not std_id or not domain:
+        return None, None, None, None
     try:
         url = f"{domain}/gb/search/gbDetailed?id={std_id}"
         resp = SESSION.get(url, timeout=20)
-        if not resp.ok:
-            return None, None, None, None
+        resp.raise_for_status()  # 触发HTTP错误
         html = resp.text
 
         impl_date = None
-        m = re.search(r'实施日期[^：:]*[：:]\s*(\d{4}-\d{2}-\d{2})', html)
+        # 增强正则匹配（兼容中英文冒号、全角空格）
+        m = re.search(r'实施日期[^：:]*[：:]\s*(\d{4}[-\s]?\d{2}[-\s]?\d{2})', html)
         if m:
-            impl_date = m.group(1)
+            impl_date = norm_date(m.group(1))
 
         replaces = None
         m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
         if m:
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+-\d+', m.group(1))
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+[-\s]?\d+', m.group(1))
             if codes:
-                replaces = '；'.join(codes)
+                replaces = '；'.join([norm_code(c) for c in codes])
 
         replaced_by = None
         m = re.search(r'被.*代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
         if m:
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+-\d+', m.group(1))
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+[-\s]?\d+', m.group(1))
             if codes:
-                replaced_by = '；'.join(codes)
+                replaced_by = '；'.join([norm_code(c) for c in codes])
 
         summary = None
         m = re.search(r'标准摘要[^：:]*[：:]\s*([^<]{10,600})', html)
@@ -290,7 +351,9 @@ def fetch_detail_real_info(std_id, domain):
             summary = clean_sacinfo(m.group(1)).strip()
 
         return impl_date, replaces, replaced_by, summary
-    except Exception:
+    except Exception as e:
+        if DEBUG_MODE:
+            log(f"详情页抓取失败 {std_id}@{domain}：{str(e)}")
         return None, None, None, None
 
 # ===================== 抓取接口 =====================
@@ -317,8 +380,10 @@ def fetch_samr(keyword, page=1):
                     "Accept": "application/json, text/javascript, */*"
                 },
                 timeout=20)
-            if not resp.ok: continue
-            if 'html' in resp.headers.get('content-type','').lower(): continue
+            resp.raise_for_status()
+            # 检查响应是否为JSON
+            if 'html' in resp.headers.get('content-type','').lower():
+                continue
 
             data = resp.json()
             rows = data.get('rows', [])
@@ -328,8 +393,10 @@ def fetch_samr(keyword, page=1):
             for row in rows:
                 code = clean_samr_code(row.get('C_STD_CODE') or row.get('STD_CODE') or '')
                 title = clean_sacinfo(row.get('C_C_NAME') or row.get('STD_NAME') or '')
-                if not code or not title: continue
-                if not is_sports(title): continue
+                if not code or not title:
+                    continue
+                if not is_sports(title):
+                    continue
 
                 issue_date = norm_date(row.get('ISSUE_DATE'))
                 impl_date = norm_date(row.get('IMPL_DATE'))
@@ -337,7 +404,8 @@ def fetch_samr(keyword, page=1):
 
                 if std_id:
                     d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain)
-                    if d_impl: impl_date = d_impl
+                    if d_impl:
+                        impl_date = d_impl
                     replaces = d_rep
                     replaced_by = d_repd
                     summary = d_sum
@@ -354,13 +422,23 @@ def fetch_samr(keyword, page=1):
                     issued_by = dept1 or dept2
 
                 results.append({
-                    "code": code, "title": title, "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
-                    "issueDate": issue_date, "implementDate": impl_date, "abolishDate": norm_date(row.get('ABOL_DATE')),
-                    "issuedBy": issued_by, "replaces": replaces, "replacedBy": replaced_by, "summary": summary,
+                    "code": code, 
+                    "title": title, 
+                    "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
+                    "issueDate": issue_date, 
+                    "implementDate": impl_date, 
+                    "abolishDate": norm_date(row.get('ABOL_DATE')),
+                    "issuedBy": issued_by, 
+                    "replaces": replaces, 
+                    "replacedBy": replaced_by, 
+                    "summary": summary,
                     "isMandatory": is_mandatory(code)
                 })
+            # 第一个domain成功则跳出循环
             break
-        except:
+        except Exception as e:
+            if DEBUG_MODE:
+                log(f"抓取失败 {domain} 关键词:{keyword} 页码:{page}：{str(e)}")
             continue
     return results, total_pages
 
@@ -368,21 +446,35 @@ def fetch_samr(keyword, page=1):
 def fetch_samr_all(keyword):
     all_res = []
     seen = set()
-    res, tp = fetch_samr(keyword, 1)
-    for r in res:
-        if r['code'] not in seen:
-            seen.add(r['code'])
-            all_res.append(r)
+    # 初始页抓取
+    try:
+        res, tp = fetch_samr(keyword, 1)
+        for r in res:
+            nc = norm_code(r['code'])
+            if nc not in seen:
+                seen.add(nc)
+                all_res.append(r)
+    except Exception as e:
+        log(f"关键词 {keyword} 初始页抓取失败：{str(e)}")
+        return all_res
 
     max_page = 50
+    # 后续页抓取（增强异常处理）
     for p in range(2, min(tp+1, max_page+1)):
-        time.sleep(0.8)
-        res,_ = fetch_samr(keyword, p)
-        if not res: break
-        for r in res:
-            if r['code'] not in seen:
-                seen.add(r['code'])
-                all_res.append(r)
+        try:
+            time.sleep(0.8)
+            res,_ = fetch_samr(keyword, p)
+            if not res:
+                break
+            for r in res:
+                nc = norm_code(r['code'])
+                if nc not in seen:
+                    seen.add(nc)
+                    all_res.append(r)
+        except Exception as e:
+            if DEBUG_MODE:
+                log(f"关键词 {keyword} 页码 {p} 抓取失败：{str(e)}")
+            continue
     return all_res
 
 # ===================== 修复2：手动修改保护 + 去重 + 状态统一 =====================
@@ -390,44 +482,56 @@ def merge(existing, new_items):
     existing_code_map = { norm_code(s['code']): s for s in existing }
     add, upd = 0, 0
 
+    # 遍历新数据
     for item in new_items:
         code_raw = item.get('code', '')
         nc = norm_code(code_raw)
-        if not nc: continue
+        if not nc:
+            continue
 
         if nc in existing_code_map:
             # 已存在 → 只更新官网有变动的字段，绝不碰手动修改的内容
             old = existing_code_map[nc]
             # 优先保留手动修改的状态，只在官网状态更权威时更新
-            if item.get('status') and old.get('status') != item.get('status'):
+            new_status = item.get('status')
+            if new_status and old.get('status') != new_status:
                 # 只有当官网状态为「现行」时，才覆盖手动的「废止」
-                if item.get('status') == '现行':
-                    old['status'] = item.get('status')
-            # 更新其他官网字段
+                if new_status == '现行':
+                    old['status'] = new_status
+                    upd +=1
+            # 更新其他官网字段（只更新非空值）
             for f in ['issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
                 val = item.get(f)
-                if val: old[f] = val
-            upd +=1
+                if val and val != old.get(f):
+                    old[f] = val
+                    upd +=1
         else:
             # 全新标准 → 新增
             existing.append(build_entry(item))
             add +=1
 
-    # 修复3：强制去重，同一个标准号只保留1条
+    # 修复3：强制去重，同一个标准号只保留1条（优化去重逻辑）
     final_standards = []
     code_set = set()
     for s in existing:
         nc = norm_code(s['code'])
+        if not nc:
+            continue
         if nc not in code_set:
             code_set.add(nc)
             final_standards.append(s)
         else:
             # 重复标准，保留状态为「现行」的，删除「废止」的
+            replaced = False
             for i, exist_s in enumerate(final_standards):
                 if norm_code(exist_s['code']) == nc:
+                    # 新数据是现行，旧数据非现行 → 替换
                     if s.get('status') == '现行' and exist_s.get('status') != '现行':
                         final_standards[i] = s
+                        replaced = True
                     break
+            if replaced:
+                upd +=1
 
     return final_standards, add, upd
 
@@ -435,42 +539,62 @@ def build_entry(item):
     code = item.get('code','')
     title = clean_sacinfo(item.get('title',''))
     return {
-        'id': make_id(code), 'code': code, 'title': title, 'english': '',
+        'id': make_id(code), 
+        'code': code, 
+        'title': title, 
+        'english': '',
         'type': item.get('type') or guess_type(code),
         'status': item.get('status','现行'),
-        'issueDate': item.get('issueDate'), 'implementDate': item.get('implementDate'),
-        'abolishDate': item.get('abolishDate'), 'replaces': item.get('replaces'),
-        'replacedBy': item.get('replacedBy'), 'issuedBy': item.get('issuedBy',''),
-        'category': guess_category(title), 'tags': guess_tags(title),
-        'summary': item.get('summary',''), 'isMandatory': is_mandatory(code),
-        'scope': '', 'localFile': None
+        'issueDate': item.get('issueDate'), 
+        'implementDate': item.get('implementDate'),
+        'abolishDate': item.get('abolishDate'), 
+        'replaces': item.get('replaces'),
+        'replacedBy': item.get('replacedBy'), 
+        'issuedBy': item.get('issuedBy',''),
+        'category': guess_category(title), 
+        'tags': guess_tags(title),
+        'summary': item.get('summary',''), 
+        'isMandatory': is_mandatory(code),
+        'scope': '', 
+        'localFile': None
     }
 
 def load_db():
     if not DATA_FILE.exists():
         log("新建标准库")
         return {'standards':[]}, []
-    with open(DATA_FILE,'r',encoding='utf-8') as f:
-        db = json.load(f)
-    return db, db.get('standards',[])
+    try:
+        with open(DATA_FILE,'r',encoding='utf-8') as f:
+            db = json.load(f)
+        # 确保standards字段存在
+        if 'standards' not in db:
+            db['standards'] = []
+        return db, db['standards']
+    except Exception as e:
+        log(f"加载标准库失败，新建空库：{str(e)}")
+        return {'standards':[]}, []
 
 def save_db(db, standards, dry):
     before = len(standards)
+    # 过滤非体育内容
     standards = [s for s in standards if is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
         log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车/重复标准")
 
     db['standards'] = standards
-    db['updated'] = datetime.now().strftime('%Y-%m-%d')
+    db['updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # 更精确的更新时间
     db['total'] = len(standards)
     if dry:
         log(f"预览模式：共{len(standards)}条，不保存")
         return
-    DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(DATA_FILE,'w',encoding='utf-8') as f:
-        json.dump(db, f, ensure_ascii=False, indent=2)
-    log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，重复标准已去重）")
+    try:
+        DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(DATA_FILE,'w',encoding='utf-8') as f:
+            json.dump(db, f, ensure_ascii=False, indent=2)
+        log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，重复标准已去重）")
+    except Exception as e:
+        log(f"❌ 保存失败：{str(e)}")
 
 def run(dry=False, debug=False):
     global DEBUG_MODE
@@ -488,10 +612,15 @@ def run(dry=False, debug=False):
     total_kw = len(KEYWORDS)
     for i, kw in enumerate(KEYWORDS,1):
         log(f"[{i}/{total_kw}] 关键词: {kw}")
-        res = fetch_samr_all(kw)
-        log(f"   → 抓到 {len(res)} 条")
-        all_new.extend(res)
-        time.sleep(1)
+        try:
+            res = fetch_samr_all(kw)
+            log(f"   → 抓到 {len(res)} 条")
+            all_new.extend(res)
+            time.sleep(1)
+        except Exception as e:
+            log(f"   → 抓取失败：{str(e)}")
+            time.sleep(2)  # 失败后延长等待时间
+            continue
 
     log(f"\n抓取完成，去重前总数：{len(all_new)}")
     # 先做版本补全，再合并去重
