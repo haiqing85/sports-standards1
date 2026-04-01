@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v17（最终定稿）
+体育标准数据库 — 自动抓取更新 v19（最终定稿）
 规则严格按要求：
 1. 发布单位：100% 以标准原文标注为准，不统一、不替换、不修改
 2. 搜索同义词：搜 木地板 → 自动包含 木质地板/体育木地板/运动木地板
@@ -8,6 +8,7 @@
 4. 自动剔除非体育标准、电动自行车
 5. 实施日期、代替标准、摘要：全部来自官网真实数据，不编造
 6. 每页限制 50 页，关键词全覆盖
+7. 新增关键词：健身、健身器材、五体球
 """
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
@@ -67,8 +68,9 @@ def auto_fill_replaces(standards):
                 updated += 1
     return updated
 
-# ===================== 关键词 =====================
+# ===================== 关键词（已新增：健身、健身器材、五体球） =====================
 KEYWORDS = [
+    "健身", "健身器材", "五体球",
     "体育馆", "人造草", "木质地板", "木地板",
     "合成材料面层", "塑胶跑道", "合成材料跑道", "聚氨酯跑道",
     "橡胶面层运动场", "中小学合成材料",
@@ -119,13 +121,14 @@ KEYWORDS = [
 
 # ===================== 体育过滤 + 剔除电动自行车 =====================
 SPORTS_TERMS = [
+    "健身","健身器材","五体球",
     "体育馆", "人造草", "木质地板", "木地板",
     "合成材料面层","塑胶跑道","聚氨酯跑道","橡胶面层",
     "人造草坪","人造草皮","人工草坪",
     "体育照明","运动场照明",
     "运动地胶","PVC运动地板","运动地板",
     "体育围网","运动场围网","球场围网",
-    "健身器材","健身路径","健身步道",
+    "健身路径","健身步道",
     "体育器材","体育用品",
     "体育场地","运动场地","体育场馆",
     "足球","篮球","网球","排球","羽毛球","乒乓球","田径",
@@ -161,14 +164,15 @@ def guess_category(text):
         "塑胶跑道":"合成材料面层",
         "照明":"灯光照明",
         "围网":"围网",
-        "健身":"健身路径"
+        "健身":"健身器材",
+        "健身器材":"健身器材"
     }
     for kw, cat in cm.items():
         if kw in text:
             return cat
     return "综合"
 
-UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
+UA = 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 Chrome/86.0.4240.198 Safari/537.36'
 
 def make_session():
     s = requests.Session()
@@ -246,7 +250,7 @@ def guess_type(code):
     return "国家标准"
 
 def guess_tags(text):
-    return [t for t in ["体育","运动","体育馆","人造草","木地板","塑胶","照明","围网","健身"] if t in text][:6]
+    return [t for t in ["体育","运动","健身","健身器材","五体球","体育馆","人造草","木地板","塑胶","照明","围网"] if t in text][:8]
 
 # ===================== 真实数据补全：官网详情页 =====================
 def fetch_detail_real_info(std_id, domain):
@@ -342,9 +346,7 @@ def fetch_samr(keyword, page=1):
                     replaced_by = clean_sacinfo(row.get('C_REPLACED_CODE') or '')
                     summary = ''
 
-                # ===================== 重要！！！=====================
                 # 发布单位：完全按标准原文，不修改、不补充、不统一
-                # ===================== 重要！！！=====================
                 dept1 = str(row.get('ISSUE_DEPT') or '').strip()
                 dept2 = str(row.get('ISSUE_UNIT') or '').strip()
                 if dept1 and dept2 and dept2 != dept1:
@@ -359,7 +361,7 @@ def fetch_samr(keyword, page=1):
                     "issueDate": issue_date,
                     "implementDate": impl_date,
                     "abolishDate": norm_date(row.get('ABOL_DATE')),
-                    "issuedBy": issued_by,  # 原文原样保存
+                    "issuedBy": issued_by,
                     "replaces": replaces,
                     "replacedBy": replaced_by,
                     "summary": summary,
@@ -453,8 +455,8 @@ def run(dry=False, debug=False):
     global DEBUG_MODE
     DEBUG_MODE = debug
     log("="*60)
-    log("体育标准抓取工具 v17（最终定稿）")
-    log("规则：发布单位以标准原文为准 | 木地板同义词搜索 | 真实数据不编造")
+    log("体育标准抓取工具 v19（最终定稿）")
+    log("已加关键词：健身、健身器材、五体球｜发布单位以原文为准｜真实数据不编造")
     log("="*60)
 
     db, standards = load_db()
