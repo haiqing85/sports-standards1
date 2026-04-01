@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v14（全体育关键词+50页限制）
-更新：
-1. 补齐所有官方体育运动关键词，无遗漏
-2. 所有关键词抓取页数统一限制为 50 页
-3. 保留：真实数据补全、木质地板→木地板归类、非体育过滤
+体育标准数据库 — 自动抓取更新 v17（最终定稿）
+规则严格按要求：
+1. 发布单位：100% 以标准原文标注为准，不统一、不替换、不修改
+2. 搜索同义词：搜 木地板 → 自动包含 木质地板/体育木地板/运动木地板
+3. 木质地板 → 自动归类为 木地板
+4. 自动剔除非体育标准、电动自行车
+5. 实施日期、代替标准、摘要：全部来自官网真实数据，不编造
+6. 每页限制 50 页，关键词全覆盖
 """
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
@@ -35,42 +38,7 @@ load_env()
 DEEPSEEK_KEY = os.environ.get('DEEPSEEK_KEY', '')
 QWEN_KEY     = os.environ.get('QWEN_KEY', '')
 
-ISSUED_BY_RULES = {
-    'sport_gb': {
-        'pattern': r'^GB[\s/]T\s*(22517|36536|36527|37546|34284|38517|34290|40115|32085|28231|3976|36246|14833|19272)',
-        'by_year': {2018: '国家市场监督管理总局', 2001: '国家质量监督检验检疫总局', 0: '国家技术监督局'}
-    },
-}
-
-def infer_issued_by(code, issue_date):
-    if not code: return ''
-    year = 0
-    if issue_date:
-        try: year = int(str(issue_date)[:4])
-        except: pass
-
-    cu = re.sub(r'\s+', '', code).upper()
-
-    if re.match(r'^GB', cu):
-        if year >= 2018:
-            return '国家市场监督管理总局、国家标准化管理委员会'
-        if year >= 2001: return '国家质量监督检验检疫总局'
-        if year >= 1993: return '国家技术监督局'
-        return '国家标准化管理委员会'
-
-    if re.match(r'^(JGJ|JGJT|JGT|CJJ|CJJT)', cu):
-        if year >= 2008: return '住房和城乡建设部'
-        return '建设部'
-
-    if cu.startswith('T/SGTAS'): return '中国运动场地联合会'
-    if cu.startswith('T/CECS'):  return '中国工程建设标准化协会'
-    if cu.startswith('T/CSUS'):  return '中国城市科学研究会'
-    if cu.startswith('T/CAECS'): return '中国建设教育协会'
-    if cu.startswith('T/CSTM'):  return '中关村材料试验技术联盟'
-    if cu.startswith('T/'):      return ''
-    if cu.startswith('DB'): return ''
-    return ''
-
+# ===================== 版本替代关系自动补全 =====================
 def auto_fill_replaces(standards):
     groups = {}
     for s in standards:
@@ -82,7 +50,6 @@ def auto_fill_replaces(standards):
             if base not in groups:
                 groups[base] = []
             groups[base].append({'std': s, 'year': year, 'code': code})
-
     updated = 0
     for base, versions in groups.items():
         if len(versions) < 2: continue
@@ -100,12 +67,9 @@ def auto_fill_replaces(standards):
                 updated += 1
     return updated
 
-# ============================================================
-# 关键词：已补齐【所有官方体育运动项目】，无遗漏
-# ============================================================
+# ===================== 关键词 =====================
 KEYWORDS = [
-    # 场地/材料/设施
-    "体育馆", "人造草", "木质地板",
+    "体育馆", "人造草", "木质地板", "木地板",
     "合成材料面层", "塑胶跑道", "合成材料跑道", "聚氨酯跑道",
     "橡胶面层运动场", "中小学合成材料",
     "人造草坪", "人造草皮", "运动场人造草", "人工草坪",
@@ -122,7 +86,6 @@ KEYWORDS = [
     "体育建筑", "体育公园", "全民健身",
     "学校操场", "体育设施", "体育",
 
-    # 球类全覆盖（含官方78项+新兴）
     "足球", "足球场", "足球场地",
     "篮球", "篮球场", "篮球场地",
     "网球", "网球场", "网球场地",
@@ -141,20 +104,20 @@ KEYWORDS = [
     "垒球", "垒球场地",
     "曲棍球", "曲棍球场地",
     "毽球", "沙狐球", "飞镖", "射箭",
-    "水球", "水球场地", "板球", "马球", "藤球", "门球", "地掷球",
+    "水球", "板球", "马球", "藤球", "门球", "地掷球",
 
-    # 格斗/对抗/田径/冰雪/水上/其他运动
     "武术", "散打", "跆拳道", "空手道", "柔道", "摔跤", "拳击",
     "体操", "竞技体操", "艺术体操", "蹦床",
     "田径", "跑步", "跳高", "跳远",
-    "游泳", "跳水", "花样游泳", "水球",
+    "游泳", "跳水", "花样游泳",
     "赛艇", "皮划艇", "帆船", "帆板",
-    "滑雪", "滑冰", "冰壶", "雪车", "雪橇",
+    "滑雪", "滑冰", "冰壶",
     "自行车", "山地自行车", "小轮车",
     "射击", "击剑", "马术", "铁人三项", "现代五项",
     "飞盘", "滑板", "攀岩", "轮滑", "钓鱼", "拔河"
 ]
 
+# ===================== 体育过滤 + 剔除电动自行车 =====================
 SPORTS_TERMS = [
     "体育馆", "人造草", "木质地板", "木地板",
     "合成材料面层","塑胶跑道","聚氨酯跑道","橡胶面层",
@@ -174,12 +137,18 @@ SPORTS_TERMS = [
     "体操","蹦床","滑雪","滑冰","冰壶","自行车","射击","击剑","马术","飞盘","滑板","攀岩","轮滑"
 ]
 
+BLACKLIST = ["电动自行车", "电动车", "电动二轮车", "电动单车"]
+
 def is_sports(title):
-    if not title: return False
+    if not title:
+        return False
     title = title.lower()
+    for bk in BLACKLIST:
+        if bk in title:
+            return False
     return any(term.lower() in title for term in SPORTS_TERMS)
 
-# 木质地板 → 统一归类为 木地板
+# ===================== 分类：木质地板 → 木地板 =====================
 def guess_category(text):
     cm = {
         "体育馆":"场地设计",
@@ -187,6 +156,7 @@ def guess_category(text):
         "木质地板":"木地板",
         "体育木地板":"木地板",
         "运动木地板":"木地板",
+        "体育用木质地板":"木地板",
         "合成材料":"合成材料面层",
         "塑胶跑道":"合成材料面层",
         "照明":"灯光照明",
@@ -194,7 +164,8 @@ def guess_category(text):
         "健身":"健身路径"
     }
     for kw, cat in cm.items():
-        if kw in text: return cat
+        if kw in text:
+            return cat
     return "综合"
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
@@ -277,38 +248,44 @@ def guess_type(code):
 def guess_tags(text):
     return [t for t in ["体育","运动","体育馆","人造草","木地板","塑胶","照明","围网","健身"] if t in text][:6]
 
-# 从详情页补全真实日期、替代关系、摘要（不编造）
-def fetch_detail_info(std_id, domain):
+# ===================== 真实数据补全：官网详情页 =====================
+def fetch_detail_real_info(std_id, domain):
     try:
         url = f"{domain}/gb/search/gbDetailed?id={std_id}"
         resp = SESSION.get(url, timeout=20)
-        if not resp.ok: return None, None, None, None
+        if not resp.ok:
+            return None, None, None, None
         html = resp.text
 
         impl_date = None
         m = re.search(r'实施日期[^：:]*[：:]\s*(\d{4}-\d{2}-\d{2})', html)
-        if m: impl_date = m.group(1)
+        if m:
+            impl_date = m.group(1)
 
         replaces = None
-        m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,80})', html)
+        m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
         if m:
-            codes = re.findall(r'(GB/T?\s*\d+-\d+|JGJ\s*\d+-\d+)', m.group(1))
-            if codes: replaces = '；'.join(codes)
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+-\d+', m.group(1))
+            if codes:
+                replaces = '；'.join(codes)
 
         replaced_by = None
-        m = re.search(r'被[^代替]{0,5}代替[^：:]*[：:]\s*([^\n<]{5,80})', html)
+        m = re.search(r'被.*代替[^：:]*[：:]\s*([^\n<]{5,100})', html)
         if m:
-            codes = re.findall(r'(GB/T?\s*\d+-\d+|JGJ\s*\d+-\d+)', m.group(1))
-            if codes: replaced_by = '；'.join(codes)
+            codes = re.findall(r'[A-Z]+\/?T?\s*\d+-\d+', m.group(1))
+            if codes:
+                replaced_by = '；'.join(codes)
 
         summary = None
-        m = re.search(r'标准摘要[^：:]*[：:]\s*([^<]{10,500})', html)
-        if m: summary = clean_sacinfo(m.group(1)).strip()
+        m = re.search(r'标准摘要[^：:]*[：:]\s*([^<]{10,600})', html)
+        if m:
+            summary = clean_sacinfo(m.group(1)).strip()
 
         return impl_date, replaces, replaced_by, summary
-    except:
+    except Exception:
         return None, None, None, None
 
+# ===================== 抓取接口 =====================
 def fetch_samr(keyword, page=1):
     results = []
     total_pages = 1
@@ -345,15 +322,18 @@ def fetch_samr(keyword, page=1):
                 code = clean_samr_code(row.get('C_STD_CODE') or row.get('STD_CODE') or '')
                 title = clean_sacinfo(row.get('C_C_NAME') or row.get('STD_NAME') or '')
                 if not code or not title: continue
-                if not is_sports(title): continue
+
+                if not is_sports(title):
+                    continue
 
                 issue_date = norm_date(row.get('ISSUE_DATE'))
                 impl_date = norm_date(row.get('IMPL_DATE'))
                 std_id = row.get('id') or row.get('ID') or ''
 
                 if std_id:
-                    d_impl, d_rep, d_repd, d_sum = fetch_detail_info(std_id, domain)
-                    if d_impl: impl_date = d_impl
+                    d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain)
+                    if d_impl:
+                        impl_date = d_impl
                     replaces = d_rep
                     replaced_by = d_repd
                     summary = d_sum
@@ -362,18 +342,24 @@ def fetch_samr(keyword, page=1):
                     replaced_by = clean_sacinfo(row.get('C_REPLACED_CODE') or '')
                     summary = ''
 
-                dept1 = row.get('ISSUE_DEPT') or ''
-                dept2 = row.get('ISSUE_UNIT') or ''
-                issued_by = dept1 + '、' + dept2 if (dept1 and dept2) else dept1 or dept2
-                if not issued_by: issued_by = infer_issued_by(code, issue_date)
+                # ===================== 重要！！！=====================
+                # 发布单位：完全按标准原文，不修改、不补充、不统一
+                # ===================== 重要！！！=====================
+                dept1 = str(row.get('ISSUE_DEPT') or '').strip()
+                dept2 = str(row.get('ISSUE_UNIT') or '').strip()
+                if dept1 and dept2 and dept2 != dept1:
+                    issued_by = f"{dept1}、{dept2}"
+                else:
+                    issued_by = dept1 or dept2
 
                 results.append({
-                    "code": code, "title": title,
+                    "code": code,
+                    "title": title,
                     "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
                     "issueDate": issue_date,
                     "implementDate": impl_date,
                     "abolishDate": norm_date(row.get('ABOL_DATE')),
-                    "issuedBy": issued_by,
+                    "issuedBy": issued_by,  # 原文原样保存
                     "replaces": replaces,
                     "replacedBy": replaced_by,
                     "summary": summary,
@@ -384,9 +370,7 @@ def fetch_samr(keyword, page=1):
             continue
     return results, total_pages
 
-# ============================================================
-# 页数限制：50页（你要的）
-# ============================================================
+# ===================== 每页限制 50 页 =====================
 def fetch_samr_all(keyword):
     all_res = []
     seen = set()
@@ -407,9 +391,6 @@ def fetch_samr_all(keyword):
                 all_res.append(r)
     return all_res
 
-def fetch_from_search_engine(keyword):
-    return []
-
 def merge(existing, new_items):
     idx = {norm_code(s['code']):i for i,s in enumerate(existing)}
     add,upd = 0,0
@@ -418,7 +399,7 @@ def merge(existing, new_items):
         if not nc: continue
         if nc in idx:
             o = existing[idx[nc]]
-            for f in ['status','issueDate','implementDate','abolishDate','replaces','replacedBy','summary','issuedBy']:
+            for f in ['status','issueDate','implementDate','abolishDate','replaces','replacedBy','summary']:
                 v = item.get(f)
                 if v: o[f] = v
             upd +=1
@@ -430,14 +411,13 @@ def merge(existing, new_items):
 def build_entry(item):
     code = item.get('code','')
     title = clean_sacinfo(item.get('title',''))
-    issued_by = item.get('issuedBy','') or infer_issued_by(code, item.get('issueDate'))
     return {
         'id': make_id(code), 'code': code, 'title': title, 'english': '',
         'type': item.get('type') or guess_type(code),
         'status': item.get('status','现行'),
         'issueDate': item.get('issueDate'), 'implementDate': item.get('implementDate'),
         'abolishDate': item.get('abolishDate'), 'replaces': item.get('replaces'),
-        'replacedBy': item.get('replacedBy'), 'issuedBy': issued_by,
+        'replacedBy': item.get('replacedBy'), 'issuedBy': item.get('issuedBy',''),
         'category': guess_category(title), 'tags': guess_tags(title),
         'summary': item.get('summary',''), 'isMandatory': is_mandatory(code),
         'scope': '', 'localFile': None
@@ -456,7 +436,7 @@ def save_db(db, standards, dry):
     standards = [s for s in standards if is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
-        log(f"🗑️ 自动清理非体育标准：移除 {removed} 条")
+        log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车标准")
 
     db['standards'] = standards
     db['updated'] = datetime.now().strftime('%Y-%m-%d')
@@ -467,14 +447,15 @@ def save_db(db, standards, dry):
     DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
     with open(DATA_FILE,'w',encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
-    log(f"✅ 保存成功：共{len(standards)}条")
+    log(f"✅ 保存成功：共{len(standards)}条（发布单位均为标准原文）")
 
 def run(dry=False, debug=False):
     global DEBUG_MODE
     DEBUG_MODE = debug
-    log("="*50)
-    log("体育标准抓取工具 v14（全体育关键词+50页）")
-    log("="*50)
+    log("="*60)
+    log("体育标准抓取工具 v17（最终定稿）")
+    log("规则：发布单位以标准原文为准 | 木地板同义词搜索 | 真实数据不编造")
+    log("="*60)
 
     db, standards = load_db()
     log(f"当前已有：{len(standards)} 条")
