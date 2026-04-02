@@ -40,7 +40,7 @@ jobs:
       - name: 完整抓取
         if: ${{ github.event.inputs.mode == 'full' || github.event.inputs.mode == '' }}
         run: python scripts/update_standards.py
-        timeout-minutes: 45
+        timeout-minutes: 90
 
       - name: 核查标准状态
         if: ${{ github.event.inputs.mode == 'check' }}
