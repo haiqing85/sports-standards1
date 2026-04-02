@@ -3,61 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="中国体育建设标准查询平台，免费查询国家标准、行业标准、地方标准、团体标准，涵盖合成材料跑道、人造草坪、灯光照明、运动木地板、围网等全品类体育建设标准，支持在线预览与下载。">
-  <meta name="keywords" content="体育建设标准,运动木地板标准,合成材料跑道标准,人造草坪标准,体育照明标准,GB体育标准,国家标准查询,行业标准下载,体育场地标准">
-  <meta name="robots" content="index, follow">
-  <meta name="author" content="体育建设标准查询平台">
-  <meta property="og:title" content="中国体育建设标准查询平台 | 最全体育行业标准数据库">
-  <meta property="og:description" content="免费查询体育建设国家标准、行业标准、地方标准，涵盖运动木地板、合成材料跑道、人造草坪等全品类，支持在线预览与 PDF 下载。">
-  <meta property="og:type" content="website">
-  <meta property="og:locale" content="zh_CN">
-  <link rel="canonical" href="https://www.tiyubiaozhun.com/">
+  <meta name="description" content="中国体育建设标准查询平台，收录国家标准、行业标准、地方标准、团标，涵盖合成材料跑道、人造草坪、灯光照明、木地板、围网等全品类体育建设标准。">
   <title>中国体育建设标准查询平台 | 最全体育行业标准数据库</title>
-  <!-- Google AdSense -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script> -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "中国体育建设标准查询平台",
-    "description": "免费查询体育建设国家标准、行业标准、地方标准，涵盖运动木地板、合成材料跑道、人造草坪等全品类",
-    "url": "https://www.tiyubiaozhun.com/",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://www.tiyubiaozhun.com/?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <!-- ★ 广告/SEO 注入引擎（HEAD 部分）：优先用 localStorage 缓存快速注入，同时异步拉取 GitHub 最新配置更新缓存 -->
   <script>
-  // 动态加载 Fuse.js，支持多 CDN 备用，加载完成后启动应用
   (function(){
-    var CDNs = [
-      'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js',
-      'https://unpkg.com/fuse.js@7.0.0/dist/fuse.min.js',
-      'https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js'
-    ];
-    var idx = 0;
-    function tryLoad(){
-      if(idx >= CDNs.length){
-        // 全部失败，显示错误
-        document.addEventListener('DOMContentLoaded', function(){
-          var g = document.getElementById('standardsGrid');
-          if(g) g.innerHTML = '<div class="empty-state"><div class="ei">⚠️</div><h3>脚本加载失败</h3><p>请检查网络连接后刷新页面</p></div>';
+    var CFG_URL = 'data/site-config.json';
+    var CACHE_KEY = 'siteInjections';
+    var HEAD_SLOTS = ['ga4','baidu-stat','gsc','baidu-verify','bing','custom-head','adsense-script'];
+
+    function injectHeadSlots(cfg) {
+      HEAD_SLOTS.forEach(function(k){
+        if(!cfg['en-'+k] || !cfg['code-'+k]) return;
+        var tmp = document.createElement('div');
+        tmp.innerHTML = cfg['code-'+k];
+        tmp.querySelectorAll('script,meta,link,style').forEach(function(node){
+          var el;
+          if(node.tagName === 'SCRIPT'){
+            el = document.createElement('script');
+            if(node.src){ el.src=node.src; el.async=true; }
+            else { el.textContent = node.textContent; }
+          } else { el = node.cloneNode(true); }
+          document.head.appendChild(el);
         });
-        return;
-      }
-      var s = document.createElement('script');
-      s.src = CDNs[idx];
-      s.onload = function(){
-        // 脚本就绪后再触发应用初始化
-        if(typeof window._appReady === 'function') window._appReady();
-        else window._fuseLoaded = true;
-      };
-      s.onerror = function(){ idx++; tryLoad(); };
-      document.head.appendChild(s);
+      });
     }
-    tryLoad();
+
+    // 立即用缓存注入（速度快，不阻塞渲染）
+    try {
+      var cached = localStorage.getItem(CACHE_KEY);
+      if(cached) injectHeadSlots(JSON.parse(cached));
+    } catch(_) {}
+
+    // 异步拉取 GitHub Pages 上的最新配置，更新缓存供下次使用
+    fetch(CFG_URL + '?t=' + Date.now())
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(cfg){
+        if(!cfg) return;
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(cfg)); } catch(_){}
+        // 如果缓存为空（首次访问），立即补注 head slots
+        if(!localStorage.getItem(CACHE_KEY)) injectHeadSlots(cfg);
+        // Body slots 会由页面底部的引擎处理；这里触发一次补注（幂等）
+        if(window._injectBodySlots) window._injectBodySlots(cfg);
+      })
+      .catch(function(){});
   })();
   </script>
   <style>
@@ -79,6 +69,11 @@
     .logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
     .logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
     .logo-text{font-size:16px;font-weight:700;color:var(--text)}
+    .header-search{flex:1;max-width:480px;position:relative}
+    .header-search input{width:100%;padding:8px 14px 8px 34px;border:1px solid var(--border);border-radius:22px;font-size:13.5px;outline:none;background:var(--bg);color:var(--text);font-family:var(--font);transition:border-color .2s,box-shadow .2s}
+    .header-search input:focus{border-color:var(--blue-light);background:var(--white);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+    .header-search input::placeholder{color:var(--muted)}
+    .hs-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}
     .header-stats{display:flex;gap:16px;margin-left:auto}
     .hstat{text-align:center}
     .hstat-n{font-size:17px;font-weight:700;color:var(--blue);line-height:1}
@@ -228,19 +223,7 @@
     .rate-toast.show{display:block;animation:fadeup .3s ease}
     @keyframes fadeup{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 
-    /* Search Suggestions */
-    .search-suggestions{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:var(--sh-md);z-index:50;overflow:hidden;animation:mup .15s ease}
-    .suggest-header{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1.5px;padding:9px 14px 5px;border-bottom:1px solid var(--border-l);background:#fafbfc}
-    .suggest-item{display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);transition:background .12s}
-    .suggest-item:hover{background:var(--blue-dim)}
-    .suggest-code{font-family:"Courier New",monospace;font-size:11px;font-weight:700;color:var(--blue);background:var(--bg);border:1px solid var(--border-l);border-radius:4px;padding:2px 6px;flex-shrink:0}
-    .suggest-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .suggest-status{font-size:10px;flex-shrink:0;padding:1px 6px;border-radius:10px}
-    .suggest-more{font-size:12px;color:var(--blue-mid);padding:8px 14px;text-align:center;cursor:pointer;border-top:1px solid var(--border-l);background:#fafbfc}
-    .suggest-more:hover{background:var(--blue-dim)}
-    /* Ad slots */
-    .ad-slot{width:100%;background:#f8fafc;border:1px dashed var(--border);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;margin:16px 0;min-height:90px;overflow:hidden}
-    .ad-slot ins{display:block;width:100%}
+    /* Footer */
     .site-footer{background:#f8fafc;border-top:1px solid var(--border);padding:40px 20px 0;margin-top:56px}
     .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px}
     .footer-col h4{font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
@@ -259,15 +242,25 @@
 </head>
 <body>
 
+<!-- ★ 广告位①：页面顶部横幅（导航栏上方） -->
+<div id="ad-slot-banner-top" class="ad-inject-slot"></div>
+
 <header class="site-header">
   <div class="header-inner">
-    <a href="javascript:void(0)" class="logo" onclick="goHome()" title="返回首页">
+    <a href="#" class="logo">
       <div class="logo-icon">🏟</div>
       <span class="logo-text">体育建设标准库</span>
     </a>
-
+    <div class="header-stats">
+      <div class="hstat"><div class="hstat-n" id="hTotal">—</div><div class="hstat-l">收录标准</div></div>
+      <div class="hstat"><div class="hstat-n" id="hActive" style="color:var(--green)">—</div><div class="hstat-l">现行有效</div></div>
+      <div class="hstat"><div class="hstat-n" id="hAbol" style="color:var(--red)">—</div><div class="hstat-l">已废止</div></div>
+    </div>
   </div>
 </header>
+
+<!-- ★ 广告位②：搜索区上方 -->
+<div id="ad-slot-hero-above" class="ad-inject-slot"></div>
 
 <section class="hero">
   <div class="hero-badge">🏅 全品类收录 · 实时更新 · 完全免费</div>
@@ -276,12 +269,9 @@
   <div class="hero-search">
     <span class="hs-left">🔍</span>
     <input type="text" id="heroSearch"
-      placeholder="输入标准编号（如 GB 36246）或关键词（如 塑胶跑道、木地板）…"
-      oninput="syncQ(this.value);showSuggestions(this.value)"
-      onkeydown="handleSuggestKey(event)"
-      autocomplete="off">
+      placeholder="输入标准编号（如 GB 36246）或关键词（如 塑胶跑道）…"
+      oninput="syncQ(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
     <button class="hero-btn" onclick="doSearch()">查 询</button>
-    <div class="search-suggestions" id="searchSuggestions" style="display:none"></div>
   </div>
   <div class="quick-tags">
     <span class="qtag" onclick="quickSearch('合成材料')">合成材料跑道</span>
@@ -291,16 +281,16 @@
     <span class="qtag" onclick="quickSearch('围网')">体育围网</span>
     <span class="qtag" onclick="quickSearch('健身')">健身器材</span>
     <span class="qtag" onclick="quickSearch('中小学')">中小学场地</span>
+    <span class="qtag" onclick="quickSearch('PVC')">PVC运动地胶</span>
   </div>
 </section>
 
+<!-- ★ 广告位③：搜索区下方横幅 -->
+<div id="ad-slot-hero-below" class="ad-inject-slot"></div>
+
 <div class="main-wrap">
-  <!-- Ad Slot: 横幅广告 -->
-  <div class="ad-slot" id="adSlotTop">
-    <!-- Google AdSense 横幅广告 -->
-    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
-  </div>
+  <!-- ★ 广告位④：结果列表顶部 -->
+  <div id="ad-slot-content-top" class="ad-inject-slot" style="margin-bottom:12px"></div>
   <div class="main-toolbar">
     <div class="result-count">找到 <strong id="resultCount">0</strong> 条标准</div>
     <div class="filter-pills" id="filterPills">
@@ -320,20 +310,17 @@
     <div class="loading"><span class="spinner"></span>正在加载标准数据…</div>
   </div>
   <div class="pagination" id="pagination"></div>
-
-
-  <!-- Ad Slot: 内容底部广告 -->
-  <div class="ad-slot" id="adSlotBottom" style="margin-top:20px">
-    <!-- Google AdSense 内容广告 -->
-    <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="YYYYYYYYYY" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script> -->
-  </div>
+  <!-- ★ 广告位⑤：结果列表底部 -->
+  <div id="ad-slot-content-bottom" class="ad-inject-slot" style="margin-top:16px"></div>
 </div>
+
+<!-- ★ 广告位⑥：页脚上方横幅 -->
+<div id="ad-slot-footer-above" class="ad-inject-slot"></div>
 
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-col">
-      <h4>关于本站</h4>
+      <h4>关于平台</h4>
       <p>本站专注于体育建设行业标准整理与查询，覆盖全品类体育建设标准，文件可在本站免费下载，如发现未收录标准或数据有误，欢迎通过邮件联系我们，我们将尽快核实补充。</p>
     </div>
     <div class="footer-col">
@@ -358,7 +345,7 @@
         <li><a onclick="quickSearch('中小学')">中小学场地</a></li>
       </ul>
     </div>
-   <div class="footer-col">
+    <div class="footer-col">
     <h4>支持中心</h4>
     <ul style="list-style:none; padding:0; font-size:13px; line-height:2.2">
         <li><a href="about.html" style="text-decoration:none; color:inherit">关于平台</a></li>
@@ -665,6 +652,46 @@ document.addEventListener('keydown', function(e){
 })();
 
 // ═══════════════════════════════════════════════════════════
+//  同义词搜索映射（双向自动扩展）
+// ═══════════════════════════════════════════════════════════
+var SYNONYMS = {
+  '木地板':   ['木质地板','实木地板','运动木地板','木质运动地板','木制地板'],
+  '木质地板': ['木地板','实木地板','运动木地板','木质运动地板'],
+  '实木地板': ['木地板','木质地板','运动木地板'],
+  '运动木地板':['木地板','木质地板','实木地板'],
+  '塑胶跑道': ['合成材料跑道','橡胶跑道','田径跑道','全天候跑道'],
+  '合成材料': ['塑胶','橡胶','合成跑道'],
+  '人造草':   ['人工草坪','人工草皮','仿真草坪','足球人造草'],
+  '人工草坪': ['人造草坪','人造草','足球草坪'],
+  '灯光':     ['照明','LED灯','体育照明'],
+  '照明':     ['灯光','LED','体育灯光'],
+  '围网':     ['防护网','隔离网','体育围栏'],
+  'PVC':      ['PVC运动地胶','PVC地板','弹性地板','运动地胶'],
+  '地胶':     ['PVC地板','运动地胶','弹性地板'],
+  '健身':     ['健身器材','健身路径','户外健身'],
+  '篮球':     ['篮球场','篮球馆','篮球地板'],
+  '足球':     ['足球场','足球草坪','人造草足球'],
+  '中小学':   ['学校操场','校园体育','学校跑道']
+};
+
+// 根据查询词展开所有同义词变体
+function expandQuery(q) {
+  if (!q) return [];
+  var terms = [q];
+  var added = {};
+  added[q] = true;
+  Object.keys(SYNONYMS).forEach(function(k) {
+    if (q.indexOf(k) !== -1) {
+      SYNONYMS[k].forEach(function(syn) {
+        var variant = q.replace(k, syn);
+        if (!added[variant]) { terms.push(variant); added[variant] = true; }
+      });
+    }
+  });
+  return terms;
+}
+
+// ═══════════════════════════════════════════════════════════
 //  主逻辑
 // ═══════════════════════════════════════════════════════════
 var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='';
@@ -673,6 +700,9 @@ function loadData(){
   fetch('data/standards.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
     DB = data.standards||[];
     document.getElementById('footerVer').textContent = data.version||'—';
+    document.getElementById('hTotal').textContent = DB.length;
+    document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
+    document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
     fuse = new Fuse(DB, {
       keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
       threshold:0.3, includeScore:true
@@ -684,82 +714,25 @@ function loadData(){
 }
 
 function syncQ(v){ document.getElementById('heroSearch').value=v; activeQ=v; }
-function doSearch(){ activeQ=document.getElementById('heroSearch').value.trim(); hideSuggestions(); applyAll(); }
-function quickSearch(q){ syncQ(q); hideSuggestions(); applyAll(); document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'}); }
-
-// ── 回到首页 ──
-function goHome(){
-  syncQ('');
-  activeQ=''; activeType='';
-  document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
-  var all=document.querySelector('.pill[data-type=""]');
-  if(all) all.classList.add('active');
-  hideSuggestions();
-  applyAll();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-// ── 实时搜索建议 ──
-var _suggestTimer = null;
-var SUGGEST_KEYWORDS = ['木地板','实木','篮球','运动木'];
-
-function showSuggestions(q){
-  clearTimeout(_suggestTimer);
-  var box = document.getElementById('searchSuggestions');
-  if(!q || q.length < 1 || !DB.length){ hideSuggestions(); return; }
-  _suggestTimer = setTimeout(function(){
-    var results = fuse ? fuse.search(q).map(function(r){return r.item;}).slice(0,8) : [];
-    if(!results.length){ hideSuggestions(); return; }
-    var isWoodFloor = /木地板|实木|运动木|木质/.test(q);
-    var header = isWoodFloor ? '🪵 运动木地板相关标准' : '🔍 搜索建议';
-    var html = '<div class="suggest-header">'+header+'</div>';
-    results.slice(0,6).forEach(function(s){
-      var statusClass = s.status==='现行' ? 'b-现行' : (s.status==='废止' ? 'b-废止' : '');
-      var statusText = s.status || '现行';
-      html += '<div class="suggest-item" onclick="selectSuggest(\''+eh(s.id)+'\')">'
-        +'<span class="suggest-code">'+eh(s.code)+'</span>'
-        +'<span class="suggest-title">'+eh(s.title)+'</span>'
-        +'<span class="suggest-status badge '+statusClass+'">'+statusText+'</span>'
-        +'</div>';
-    });
-    if(results.length > 6){
-      html += '<div class="suggest-more" onclick="doSearch()">查看全部 '+results.length+' 条结果 →</div>';
-    }
-    box.innerHTML = html;
-    box.style.display = 'block';
-  }, 180);
-}
-
-function hideSuggestions(){
-  document.getElementById('searchSuggestions').style.display='none';
-}
-
-function selectSuggest(id){
-  hideSuggestions();
-  openModal(id);
-}
-
-function handleSuggestKey(e){
-  if(e.key==='Enter'){ doSearch(); }
-  if(e.key==='Escape'){ hideSuggestions(); }
-}
-
-document.addEventListener('click', function(e){
-  if(!e.target.closest('.hero-search')) hideSuggestions();
-});
+function doSearch(){ activeQ=document.getElementById('heroSearch').value.trim(); applyAll(); }
+function quickSearch(q){ syncQ(q); applyAll(); document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'}); }
 
 // 动态年份
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-// ── 实时轮询：每60秒自动重新加载数据
+// ── 实时轮询：每60秒自动重新加载数据（后台更新后首页自动同步）
 setInterval(function(){
   fetch('data/standards.json?t='+Date.now())
     .then(function(r){return r.json();})
     .then(function(data){
       var newList = data.standards||[];
+      // 只在数据有变化时才更新（对比总数和版本号）
       if(newList.length !== DB.length || (data.version && data.version !== document.getElementById('footerVer').textContent)){
         DB = newList;
         document.getElementById('footerVer').textContent = data.version||'—';
+        document.getElementById('hTotal').textContent = DB.length;
+        document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
+        document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
         fuse = new Fuse(DB, {
           keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
           threshold:0.3, includeScore:true
@@ -776,8 +749,20 @@ document.getElementById('filterPills').addEventListener('click',function(e){
 });
 
 function applyAll(){
-  var list=DB;
-  if(activeQ&&fuse) list=fuse.search(activeQ).map(function(r){return r.item;});
+  var list = DB;
+  if(activeQ && fuse){
+    // 展开同义词，合并所有变体的搜索结果（去重）
+    var terms = expandQuery(activeQ);
+    var seen = {}, merged = [];
+    terms.forEach(function(term){
+      fuse.search(term).forEach(function(r){
+        if(!seen[r.item.id]){ seen[r.item.id]=true; merged.push(r); }
+      });
+    });
+    // 按 Fuse score 排序（score 越小越相关）
+    merged.sort(function(a,b){ return (a.score||0)-(b.score||0); });
+    list = merged.map(function(r){ return r.item; });
+  }
   if(activeType) list=list.filter(function(s){return s.type===activeType;});
   var sort=document.getElementById('sortSel').value;
   if(sort==='date-new') list=list.slice().sort(function(a,b){return (b.issueDate||'0').localeCompare(a.issueDate||'0');});
@@ -912,18 +897,68 @@ window.addEventListener('scroll',function(){
 
 function eh(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// 等待 Fuse.js 加载完成再初始化，避免 CDN 延迟导致空白页
-window._appReady = function(){
-  if(typeof Fuse === 'undefined'){
-    setTimeout(window._appReady, 50); return;
+window.onload=loadData;
+</script>
+
+<!-- ★ 广告位⑦：Body 底部（悬浮广告/第三方工具） -->
+<div id="ad-slot-body-end" class="ad-inject-slot"></div>
+<!-- ★ 广告位⑧：自定义 Body 代码 -->
+<div id="ad-slot-custom-body" class="ad-inject-slot"></div>
+
+<!-- ★ Body 广告注入引擎：从 data/site-config.json 拉取配置，回落 localStorage 缓存 -->
+<script>
+(function(){
+  var CACHE_KEY = 'siteInjections';
+  var CFG_URL   = 'data/site-config.json';
+
+  var SLOT_MAP = {
+    'ad-slot-banner-top':    'banner-top',
+    'ad-slot-hero-above':    'hero-above',
+    'ad-slot-hero-below':    'hero-below',
+    'ad-slot-content-top':   'content-top',
+    'ad-slot-content-bottom':'content-bottom',
+    'ad-slot-footer-above':  'footer-above',
+    'ad-slot-body-end':      'body-end',
+    'ad-slot-custom-body':   'custom-body'
+  };
+
+  function injectDiv(elId, code){
+    var el = document.getElementById(elId);
+    if(!el || !code) return;
+    el.innerHTML = code;
+    el.querySelectorAll('script').forEach(function(s){
+      var ns = document.createElement('script');
+      if(s.src){ ns.src=s.src; ns.async=true; } else { ns.textContent=s.textContent; }
+      s.parentNode.replaceChild(ns, s);
+    });
   }
-  loadData();
-};
-// 如果 Fuse 已经先于此脚本加载完毕（刷新时有缓存），直接启动
-if(window._fuseLoaded || typeof Fuse !== 'undefined'){
-  window._appReady();
-}
-// 否则等 CDN 脚本的 onload 回调来触发 _appReady
+
+  function injectBodySlots(cfg){
+    Object.keys(SLOT_MAP).forEach(function(divId){
+      var k = SLOT_MAP[divId];
+      if(cfg['en-'+k] && cfg['code-'+k]) injectDiv(divId, cfg['code-'+k]);
+    });
+  }
+
+  // 暴露给 head 脚本的补注入口（首次访问时 head 拉到配置后触发）
+  window._injectBodySlots = injectBodySlots;
+
+  // 优先用 localStorage 缓存立即注入（重复访问快速生效）
+  try {
+    var cached = localStorage.getItem(CACHE_KEY);
+    if(cached) injectBodySlots(JSON.parse(cached));
+  } catch(_){}
+
+  // 同时从 GitHub Pages 拉取最新配置，更新缓存并补注（覆盖旧注入无副作用）
+  fetch(CFG_URL + '?t=' + Date.now())
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(cfg){
+      if(!cfg) return;
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(cfg)); } catch(_){}
+      injectBodySlots(cfg);
+    })
+    .catch(function(){});
+})();
 </script>
 </body>
 </html>

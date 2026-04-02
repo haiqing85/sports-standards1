@@ -116,6 +116,59 @@
         .cat-item:hover { border-color: #2563eb; color: #2563eb; }
         .cat-item input[type="checkbox"] { accent-color: #2563eb; cursor: pointer; width: 14px; height: 14px; }
         .cat-item:has(input:checked) { background: #dbeafe; border-color: #2563eb; color: #1d4ed8; font-weight: 600; }
+
+        /* ── 标签页导航 ── */
+        .tab-nav { display:flex; gap:0; border-bottom:2px solid #e2e8f0; margin-bottom:24px; }
+        .tab-btn { padding:10px 22px; font-size:14px; font-weight:600; cursor:pointer; background:none; border:none; border-bottom:3px solid transparent; margin-bottom:-2px; color:#94a3b8; font-family:inherit; transition:all .15s; }
+        .tab-btn:hover { color:#2563eb; }
+        .tab-btn.active { color:#2563eb; border-bottom-color:#2563eb; }
+        .tab-panel { display:none; }
+        .tab-panel.active { display:block; }
+
+        /* ── 广告/SEO 面板 ── */
+        .ad-section { margin-bottom:28px; }
+        .ad-section-title { font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f1f5f9; }
+        .ad-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:10px; overflow:hidden; }
+        .ad-card-head { display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer; user-select:none; transition:background .15s; }
+        .ad-card-head:hover { background:#f1f5f9; }
+        .ad-card-num { width:24px; height:24px; border-radius:50%; background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .ad-card-info { flex:1; }
+        .ad-card-name { font-size:13.5px; font-weight:700; color:#0f172a; }
+        .ad-card-desc { font-size:11.5px; color:#94a3b8; margin-top:1px; }
+        .ad-toggle-wrap { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+        .ad-toggle-label { font-size:11px; color:#64748b; }
+        .toggle-sw { position:relative; width:40px; height:22px; flex-shrink:0; }
+        .toggle-sw input { opacity:0; width:0; height:0; }
+        .toggle-track { position:absolute; inset:0; background:#cbd5e1; border-radius:22px; cursor:pointer; transition:background .2s; }
+        .toggle-track::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+        .toggle-sw input:checked + .toggle-track { background:#2563eb; }
+        .toggle-sw input:checked + .toggle-track::before { transform:translateX(18px); }
+        .ad-card-arrow { color:#cbd5e1; font-size:11px; transition:transform .2s; flex-shrink:0; }
+        .ad-card.open .ad-card-arrow { transform:rotate(180deg); }
+        .ad-card-body { display:none; padding:0 16px 16px; }
+        .ad-card.open .ad-card-body { display:block; }
+        .ad-code-label { font-size:11px; font-weight:700; color:#64748b; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
+        .ad-pos-tag { background:#dbeafe; color:#1d4ed8; border-radius:4px; padding:1px 8px; font-size:10px; text-transform:none; letter-spacing:0; font-weight:600; }
+        .ad-textarea { width:100%; min-height:100px; padding:10px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:7px; font-family:'Courier New',monospace; font-size:12px; color:#1e293b; line-height:1.6; outline:none; resize:vertical; box-sizing:border-box; transition:border-color .2s; }
+        .ad-textarea:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
+        .ad-textarea::placeholder { color:#cbd5e1; font-style:italic; }
+        .ad-hint { font-size:11px; color:#94a3b8; margin-top:5px; line-height:1.5; }
+        .ad-save-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #e2e8f0; padding:14px 0; display:flex; align-items:center; gap:12px; margin-top:20px; z-index:10; }
+        .ad-save-status { font-size:12.5px; color:#64748b; }
+        .ad-save-status.ok { color:#16a34a; }
+        .ad-save-status.err { color:#dc2626; }
+        .pos-map { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:20px; }
+        .pos-map-title { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+        .pos-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
+        .pos-row:last-child { border:none; }
+        .pos-num { width:22px; height:22px; border-radius:50%; background:#dbeafe; color:#1d4ed8; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .pos-label { color:#334155; flex:1; }
+        .pos-key { font-family:monospace; font-size:10px; color:#94a3b8; }
+        .ad-info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 14px; margin-bottom:20px; font-size:12.5px; color:#1e40af; line-height:1.7; }
+        .export-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
+        .sec-btn { padding:8px 16px; border:1px solid #e2e8f0; border-radius:7px; background:#fff; color:#475569; font-size:13px; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; transition:all .15s; }
+        .sec-btn:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
+        .sec-btn.danger:hover { border-color:#dc2626; color:#dc2626; background:#fef2f2; }
     </style>
 </head>
 <body>
@@ -139,12 +192,21 @@
 <!-- 主界面 -->
 <div class="container" id="adminScreen">
     <div class="header-bar">
-        <h1>📋 标准数据管理</h1>
+        <h1>🏟 体育标准管理后台</h1>
         <div class="header-btns">
-            <button class="btn btn-primary" onclick="openModal()">➕ 新增标准</button>
+            <button class="btn btn-primary" id="addStdBtn" onclick="openModal()">➕ 新增标准</button>
             <button class="btn btn-sync" onclick="syncToGithub()" id="syncBtn">☁️ 推送至 GitHub</button>
         </div>
     </div>
+
+    <!-- 标签导航 -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('std',this)">📋 标准数据管理</button>
+        <button class="tab-btn" onclick="switchTab('ad',this)">📢 广告与SEO配置</button>
+    </div>
+
+    <!-- ══ Tab 1: 标准管理（原有内容） ══ -->
+    <div class="tab-panel active" id="tab-std">
     <div id="statusText">正在连接 GitHub 并加载数据…</div>
 
     <!-- 统计面板 -->
@@ -189,7 +251,274 @@
     </div>
 
     <div id="list"></div>
-</div>
+    </div><!-- /tab-std -->
+
+    <!-- ══ Tab 2: 广告与SEO配置 ══ -->
+    <div class="tab-panel" id="tab-ad">
+
+      <div class="ad-info-box">
+        📌 <strong>工作原理：</strong>在此填入广告联盟或SEO统计代码，启用开关后保存，<code>index.html</code> 加载时会自动读取并注入到对应位置，<strong>无需手动编辑 index.html</strong>。配置仅存储在本浏览器中，可通过导出/导入 JSON 备份迁移。
+      </div>
+
+      <!-- 位置示意 -->
+      <div class="pos-map">
+        <div class="pos-map-title">广告位位置示意</div>
+        <div class="pos-row"><span class="pos-num">HEAD</span><span class="pos-label">GA4 / 百度统计 / 站点验证 / AdSense主脚本 / 自定义HEAD代码</span><span class="pos-key">head类</span></div>
+        <div class="pos-row"><span class="pos-num">①</span><span class="pos-label">页面顶部横幅（导航栏上方，全宽）</span><span class="pos-key">banner-top</span></div>
+        <div class="pos-row"><span class="pos-num">②</span><span class="pos-label">搜索区上方横幅</span><span class="pos-key">hero-above</span></div>
+        <div class="pos-row"><span class="pos-num">③</span><span class="pos-label">搜索区下方横幅（流量最集中）</span><span class="pos-key">hero-below</span></div>
+        <div class="pos-row"><span class="pos-num">④</span><span class="pos-label">结果列表顶部（筛选栏下方）</span><span class="pos-key">content-top</span></div>
+        <div class="pos-row"><span class="pos-num">⑤</span><span class="pos-label">结果列表底部（分页器上方）</span><span class="pos-key">content-bottom</span></div>
+        <div class="pos-row"><span class="pos-num">⑥</span><span class="pos-label">页脚上方横幅</span><span class="pos-key">footer-above</span></div>
+        <div class="pos-row"><span class="pos-num">⑦</span><span class="pos-label">Body 底部（悬浮广告 / 推送工具）</span><span class="pos-key">body-end</span></div>
+        <div class="pos-row"><span class="pos-num">⑧</span><span class="pos-label">自定义 Body 底部脚本</span><span class="pos-key">custom-body</span></div>
+      </div>
+
+      <!-- ─── 广告联盟 ─── -->
+      <div class="ad-section">
+        <div class="ad-section-title">🪙 广告联盟代码</div>
+
+        <!-- AdSense 主脚本 -->
+        <div class="ad-card" id="adcard-adsense-script">
+          <div class="ad-card-head" onclick="toggleAdCard('adsense-script')">
+            <span class="ad-card-num">G</span>
+            <div class="ad-card-info"><div class="ad-card-name">Google AdSense 主脚本</div><div class="ad-card-desc">AdSense 自动广告 / 单元广告加载脚本，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-adsense-script" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-adsense-script" placeholder='<!-- Google AdSense 自动广告主脚本 -->&#10;<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>'></textarea>
+            <div class="ad-hint">💡 开启自动广告后，AdSense 会自动在页面合适位置插入广告；若使用手动广告单元，请在下方各广告位填入对应代码。</div>
+          </div>
+        </div>
+
+        <!-- 顶部横幅 -->
+        <div class="ad-card" id="adcard-banner-top">
+          <div class="ad-card-head" onclick="toggleAdCard('banner-top')">
+            <span class="ad-card-num">①</span>
+            <div class="ad-card-info"><div class="ad-card-name">页面顶部横幅</div><div class="ad-card-desc">导航栏上方全宽横幅，适合 970×90 / 728×90 / 自适应</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-banner-top" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：导航栏上方</span></div>
+            <textarea class="ad-textarea" id="code-banner-top" placeholder='<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>&#10;<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'></textarea>
+          </div>
+        </div>
+
+        <!-- 搜索区上方 -->
+        <div class="ad-card" id="adcard-hero-above">
+          <div class="ad-card-head" onclick="toggleAdCard('hero-above')">
+            <span class="ad-card-num">②</span>
+            <div class="ad-card-info"><div class="ad-card-name">搜索区上方横幅</div><div class="ad-card-desc">蓝色搜索区域上方，紧贴导航栏下方</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-hero-above" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：搜索区上方</span></div>
+            <textarea class="ad-textarea" id="code-hero-above" placeholder="<!-- 横幅广告代码 -->"></textarea>
+          </div>
+        </div>
+
+        <!-- 搜索区下方 -->
+        <div class="ad-card" id="adcard-hero-below">
+          <div class="ad-card-head" onclick="toggleAdCard('hero-below')">
+            <span class="ad-card-num">③</span>
+            <div class="ad-card-info"><div class="ad-card-name">搜索区下方横幅 ⭐ 推荐</div><div class="ad-card-desc">搜索框结束后立即显示，曝光量最大，点击率最高</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-hero-below" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：搜索区下方</span></div>
+            <textarea class="ad-textarea" id="code-hero-below" placeholder="<!-- 推荐使用自适应横幅广告 -->"></textarea>
+          </div>
+        </div>
+
+        <!-- 结果顶部 -->
+        <div class="ad-card" id="adcard-content-top">
+          <div class="ad-card-head" onclick="toggleAdCard('content-top')">
+            <span class="ad-card-num">④</span>
+            <div class="ad-card-info"><div class="ad-card-name">结果列表顶部</div><div class="ad-card-desc">筛选工具栏下方、第一张标准卡片上方</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-content-top" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：结果列表顶部</span></div>
+            <textarea class="ad-textarea" id="code-content-top" placeholder="<!-- 信息流广告 / 原生广告代码 -->"></textarea>
+          </div>
+        </div>
+
+        <!-- 结果底部 -->
+        <div class="ad-card" id="adcard-content-bottom">
+          <div class="ad-card-head" onclick="toggleAdCard('content-bottom')">
+            <span class="ad-card-num">⑤</span>
+            <div class="ad-card-info"><div class="ad-card-name">结果列表底部</div><div class="ad-card-desc">分页器上方，适合矩形广告 300×250</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-content-bottom" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：分页器上方</span></div>
+            <textarea class="ad-textarea" id="code-content-bottom" placeholder="<!-- 矩形广告 / 信息流广告 -->"></textarea>
+          </div>
+        </div>
+
+        <!-- 页脚上方 -->
+        <div class="ad-card" id="adcard-footer-above">
+          <div class="ad-card-head" onclick="toggleAdCard('footer-above')">
+            <span class="ad-card-num">⑥</span>
+            <div class="ad-card-info"><div class="ad-card-name">页脚上方横幅</div><div class="ad-card-desc">Footer 开始前的横幅广告位</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-footer-above" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：Footer 上方</span></div>
+            <textarea class="ad-textarea" id="code-footer-above" placeholder="<!-- 横幅广告代码 -->"></textarea>
+          </div>
+        </div>
+
+        <!-- Body 底部 -->
+        <div class="ad-card" id="adcard-body-end">
+          <div class="ad-card-head" onclick="toggleAdCard('body-end')">
+            <span class="ad-card-num">⑦</span>
+            <div class="ad-card-info"><div class="ad-card-name">Body 底部（悬浮/推送）</div><div class="ad-card-desc">页面最底部，适合悬浮广告、客服工具、推送插件</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-body-end" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/body&gt; 前</span></div>
+            <textarea class="ad-textarea" id="code-body-end" placeholder="<!-- 悬浮广告、客服气泡、推送通知插件等 -->"></textarea>
+            <div class="ad-hint">💡 此处代码最后加载，不影响主体渲染性能。</div>
+          </div>
+        </div>
+      </div><!-- /广告联盟 -->
+
+      <!-- ─── SEO 统计分析 ─── -->
+      <div class="ad-section">
+        <div class="ad-section-title">📊 SEO 统计分析</div>
+
+        <!-- GA4 -->
+        <div class="ad-card" id="adcard-ga4">
+          <div class="ad-card-head" onclick="toggleAdCard('ga4')">
+            <span class="ad-card-num" style="background:#fce7f3;color:#9d174d">G4</span>
+            <div class="ad-card-info"><div class="ad-card-name">Google Analytics 4 (GA4)</div><div class="ad-card-desc">全局标签 gtag.js，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-ga4" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">GA4 代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-ga4" placeholder="<!-- Google tag (gtag.js) -->&#10;<script async src=&quot;https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX&quot;></script>&#10;<script>&#10;  window.dataLayer=window.dataLayer||[];&#10;  function gtag(){dataLayer.push(arguments);}&#10;  gtag('js',new Date());&#10;  gtag('config','G-XXXXXXXXXX');&#10;</script>"></textarea>
+          </div>
+        </div>
+
+        <!-- 百度统计 -->
+        <div class="ad-card" id="adcard-baidu-stat">
+          <div class="ad-card-head" onclick="toggleAdCard('baidu-stat')">
+            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
+            <div class="ad-card-info"><div class="ad-card-name">百度统计</div><div class="ad-card-desc">hm.js 统计代码，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-stat" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">百度统计代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-baidu-stat" placeholder="<script>&#10;var _hmt=_hmt||[];&#10;(function(){&#10;  var hm=document.createElement('script');&#10;  hm.src='https://hm.baidu.com/hm.js?XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';&#10;  var s=document.getElementsByTagName('script')[0];&#10;  s.parentNode.insertBefore(hm,s);&#10;})();&#10;</script>"></textarea>
+          </div>
+        </div>
+
+        <!-- 自定义 Body 底部 -->
+        <div class="ad-card" id="adcard-custom-body">
+          <div class="ad-card-head" onclick="toggleAdCard('custom-body')">
+            <span class="ad-card-num" style="background:#f0fdf4;color:#15803d">⑧</span>
+            <div class="ad-card-info"><div class="ad-card-name">自定义 Body 底部脚本</div><div class="ad-card-desc">任意第三方工具代码，注入到 &lt;/body&gt; 前</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-custom-body" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/body&gt; 前</span></div>
+            <textarea class="ad-textarea" id="code-custom-body" style="min-height:130px" placeholder="<!-- 自定义 JavaScript 或第三方工具 -->"></textarea>
+          </div>
+        </div>
+      </div><!-- /统计分析 -->
+
+      <!-- ─── 搜索引擎验证 ─── -->
+      <div class="ad-section">
+        <div class="ad-section-title">✅ 搜索引擎站点验证</div>
+
+        <!-- Google Search Console -->
+        <div class="ad-card" id="adcard-gsc">
+          <div class="ad-card-head" onclick="toggleAdCard('gsc')">
+            <span class="ad-card-num" style="background:#dcfce7;color:#15803d">G</span>
+            <div class="ad-card-info"><div class="ad-card-name">Google Search Console</div><div class="ad-card-desc">谷歌站长工具所有权验证 meta 标签</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-gsc" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-gsc" placeholder='<meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
+          </div>
+        </div>
+
+        <!-- 百度 -->
+        <div class="ad-card" id="adcard-baidu-verify">
+          <div class="ad-card-head" onclick="toggleAdCard('baidu-verify')">
+            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
+            <div class="ad-card-info"><div class="ad-card-name">百度搜索资源平台验证</div><div class="ad-card-desc">百度站长工具所有权验证 meta 标签</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-verify" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-baidu-verify" placeholder='<meta name="baidu-site-verification" content="XXXXXXXXXX" />'></textarea>
+          </div>
+        </div>
+
+        <!-- Bing -->
+        <div class="ad-card" id="adcard-bing">
+          <div class="ad-card-head" onclick="toggleAdCard('bing')">
+            <span class="ad-card-num" style="background:#ede9fe;color:#5b21b6">B</span>
+            <div class="ad-card-info"><div class="ad-card-name">Bing Webmaster Tools</div><div class="ad-card-desc">必应站长工具所有权验证 meta 标签</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-bing" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-bing" placeholder='<meta name="msvalidate.01" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
+          </div>
+        </div>
+
+        <!-- 自定义 HEAD -->
+        <div class="ad-card" id="adcard-custom-head">
+          <div class="ad-card-head" onclick="toggleAdCard('custom-head')">
+            <span class="ad-card-num" style="background:#f1f5f9;color:#475569">+</span>
+            <div class="ad-card-info"><div class="ad-card-name">自定义 HEAD 代码</div><div class="ad-card-desc">额外 meta 标签、结构化数据 JSON-LD、自定义字体等</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-custom-head" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/head&gt; 前</span></div>
+            <textarea class="ad-textarea" id="code-custom-head" style="min-height:130px" placeholder='<!-- 例如 JSON-LD 结构化数据 -->&#10;<script type="application/ld+json">&#10;{&#10;  "@context": "https://schema.org",&#10;  "@type": "WebSite",&#10;  "name": "体育建设标准查询平台"&#10;}&#10;</script>'></textarea>
+          </div>
+        </div>
+      </div><!-- /站点验证 -->
+
+      <!-- 保存栏 -->
+      <div class="ad-save-bar">
+        <button class="btn btn-primary" onclick="saveAdConfig()" id="adSaveBtn">💾 保存广告与SEO配置</button>
+        <a href="index.html" target="_blank" class="sec-btn">👁️ 预览前台</a>
+        <span class="ad-save-status" id="adSaveStatus"></span>
+      </div>
+
+      <!-- 导出/导入/清空 -->
+      <div class="export-row">
+        <button class="sec-btn" onclick="exportAdConfig()">⬇️ 导出配置 JSON</button>
+        <button class="sec-btn" onclick="document.getElementById('importFileInput').click()">⬆️ 导入配置 JSON</button>
+        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAdConfig(this)">
+        <button class="sec-btn danger" onclick="resetAdConfig()">🗑️ 清空所有配置</button>
+      </div>
+
+    </div><!-- /tab-ad -->
+
+</div><!-- /container -->
 
 <!-- 新增 / 编辑弹窗 -->
 <div class="modal" id="editModal" onclick="if(event.target===this)closeModal()">
@@ -964,6 +1293,233 @@
             loadDataFromGithub();
         }
     });
+
+    // ══════════════════════════════════════════════════
+    //  标签页切换
+    // ══════════════════════════════════════════════════
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+        // 广告Tab：加载已保存配置；标准Tab：显示新增按钮
+        var addBtn = document.getElementById('addStdBtn');
+        var syncBtn = document.getElementById('syncBtn');
+        if (name === 'ad') {
+            addBtn.style.display = 'none';
+            syncBtn.style.display = 'none';
+            loadAdConfig();
+        } else {
+            addBtn.style.display = '';
+            syncBtn.style.display = '';
+        }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  广告/SEO 面板：折叠卡片
+    // ══════════════════════════════════════════════════
+    function toggleAdCard(key) {
+        var card = document.getElementById('adcard-' + key);
+        if (card) card.classList.toggle('open');
+    }
+
+    // ══════════════════════════════════════════════════
+    //  广告/SEO 配置 — GitHub 存储
+    // ══════════════════════════════════════════════════
+    var AD_STORAGE_KEY = 'siteInjections';
+    var AD_CONFIG_PATH = 'data/site-config.json';   // GitHub 内文件路径
+    var adConfigSha    = '';                         // 用于覆盖写入
+
+    var AD_SLOTS = [
+        'adsense-script','banner-top','hero-above','hero-below',
+        'content-top','content-bottom','footer-above','body-end','custom-body',
+        'ga4','baidu-stat','gsc','baidu-verify','bing','custom-head'
+    ];
+
+    // ── 从表单收集配置对象 ──
+    function collectAdCfg() {
+        var cfg = {};
+        AD_SLOTS.forEach(function(k) {
+            var codeEl = document.getElementById('code-' + k);
+            var enEl   = document.getElementById('en-' + k);
+            if (codeEl) cfg['code-' + k] = codeEl.value;
+            if (enEl)   cfg['en-'   + k] = enEl.checked;
+        });
+        cfg.savedAt = new Date().toISOString();
+        return cfg;
+    }
+
+    // ── 把配置对象填回表单 ──
+    function applyAdCfgToForm(cfg) {
+        AD_SLOTS.forEach(function(k) {
+            var codeEl = document.getElementById('code-' + k);
+            var enEl   = document.getElementById('en-' + k);
+            if (codeEl && cfg['code-' + k] !== undefined) codeEl.value = cfg['code-' + k];
+            if (enEl   && cfg['en-'   + k] !== undefined) enEl.checked = cfg['en-' + k];
+        });
+    }
+
+    // ── 从 GitHub 加载广告/SEO配置（切换到广告Tab时调用）──
+    async function loadAdConfig() {
+        var st = document.getElementById('adSaveStatus');
+        st.textContent = '⏳ 正在从 GitHub 加载配置…';
+        st.className = 'ad-save-status';
+
+        try {
+            var token = getToken();
+            var headers = { 'Accept': 'application/vnd.github.v3+json' };
+            if (token) headers['Authorization'] = 'token ' + token;
+
+            var resp = await fetch(
+                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                { headers: headers }
+            );
+
+            if (resp.status === 404) {
+                // 文件不存在，尝试从 localStorage 恢复（首次使用）
+                st.textContent = '📝 GitHub 尚无配置文件，请保存后自动创建';
+                var cached = localStorage.getItem(AD_STORAGE_KEY);
+                if (cached) applyAdCfgToForm(JSON.parse(cached));
+                adConfigSha = '';
+                return;
+            }
+            if (!resp.ok) throw new Error('读取失败 (' + resp.status + ')');
+
+            var result = await resp.json();
+            adConfigSha = result.sha || '';
+            var jsonStr = decodeURIComponent(escape(atob(result.content.replace(/\n/g,''))));
+            var cfg = JSON.parse(jsonStr);
+
+            // 同步到 localStorage 作为离线缓存
+            localStorage.setItem(AD_STORAGE_KEY, jsonStr);
+
+            applyAdCfgToForm(cfg);
+            st.textContent = '✅ 已从 GitHub 加载配置';
+            st.className = 'ad-save-status ok';
+            setTimeout(function(){ st.textContent = ''; st.className = 'ad-save-status'; }, 3000);
+
+        } catch(e) {
+            // GitHub 读取失败，回落 localStorage 缓存
+            st.textContent = '⚠️ GitHub 读取失败，使用本地缓存：' + e.message;
+            st.className = 'ad-save-status';
+            var cached = localStorage.getItem(AD_STORAGE_KEY);
+            if (cached) { try{ applyAdCfgToForm(JSON.parse(cached)); }catch(_){} }
+        }
+    }
+
+    // ── 保存配置：写入 GitHub + 更新 localStorage ──
+    async function saveAdConfig() {
+        var btn = document.getElementById('adSaveBtn');
+        var st  = document.getElementById('adSaveStatus');
+        btn.disabled = true;
+        btn.textContent = '⏳ 正在推送至 GitHub…';
+        st.textContent = '';
+
+        var cfg = collectAdCfg();
+        var jsonStr = JSON.stringify(cfg, null, 2);
+
+        // 先存本地，保证离线也能生效
+        try { localStorage.setItem(AD_STORAGE_KEY, jsonStr); } catch(_) {}
+
+        var token = getToken();
+        if (!token) {
+            token = prompt(
+                '请输入 GitHub Personal Access Token（PAT）以保存配置：\n' +
+                '（也可在 admin.html 的 GITHUB_TOKEN_BUILTIN 变量中直接填入，避免每次输入）'
+            );
+            if (!token) {
+                st.textContent = '⚠️ 未提供 Token，配置仅保存在本浏览器，未推送 GitHub';
+                st.className = 'ad-save-status';
+                btn.disabled = false;
+                btn.textContent = '💾 保存广告与SEO配置';
+                return;
+            }
+            localStorage.setItem('github_token', token);
+        }
+
+        try {
+            var encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
+            var body = {
+                message: '⚙️ 更新广告与SEO配置 ' + new Date().toISOString().slice(0,10),
+                content: encodedContent
+            };
+            if (adConfigSha) body.sha = adConfigSha;
+
+            var resp = await fetch(
+                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                {
+                    method: 'PUT',
+                    headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                }
+            );
+
+            if (resp.ok) {
+                var result = await resp.json();
+                adConfigSha = result.content.sha;
+                st.textContent = '✅ 已推送至 GitHub，前台约1分钟后自动生效';
+                st.className = 'ad-save-status ok';
+                setTimeout(function(){ st.textContent = ''; st.className = 'ad-save-status'; }, 5000);
+            } else {
+                var err = await resp.json();
+                if (err.message === 'Bad credentials') {
+                    localStorage.removeItem('github_token');
+                    throw new Error('Token 失效，请重新输入');
+                }
+                throw new Error(err.message);
+            }
+        } catch(e) {
+            st.textContent = '❌ GitHub 推送失败：' + e.message + '（配置已保存在本地）';
+            st.className = 'ad-save-status err';
+        }
+
+        btn.disabled = false;
+        btn.textContent = '💾 保存广告与SEO配置';
+    }
+
+    function updateAdDash() { /* 可扩展 */ }
+
+    // ── 导出 / 导入 / 清空 ──
+    function exportAdConfig() {
+        var raw = localStorage.getItem(AD_STORAGE_KEY) || '{}';
+        var blob = new Blob([raw], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'site-ad-seo-config.json';
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 500);
+    }
+
+    function importAdConfig(input) {
+        var file = input.files[0]; if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                var cfg = JSON.parse(e.target.result);
+                localStorage.setItem(AD_STORAGE_KEY, e.target.result);
+                applyAdCfgToForm(cfg);
+                alert('✅ 配置已填入表单，请点击"保存广告与SEO配置"推送至 GitHub 使其生效。');
+            } catch(err) {
+                alert('❌ 导入失败，请检查 JSON 格式：' + err.message);
+            }
+        };
+        reader.readAsText(file);
+        input.value = '';
+    }
+
+    function resetAdConfig() {
+        if (!confirm('确定清空所有广告与SEO配置吗？清空后需再次保存推送至 GitHub 才会在前台生效。')) return;
+        localStorage.removeItem(AD_STORAGE_KEY);
+        AD_SLOTS.forEach(function(k) {
+            var codeEl = document.getElementById('code-' + k);
+            var enEl   = document.getElementById('en-' + k);
+            if (codeEl) codeEl.value = '';
+            if (enEl)   enEl.checked = false;
+        });
+        alert('✅ 表单已清空。点击"保存"可将空配置推送至 GitHub。');
+    }
+
+
 </script>
 </body>
 </html>
