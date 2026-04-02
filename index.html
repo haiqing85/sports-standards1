@@ -222,25 +222,10 @@
     .rate-toast.show{display:block;animation:fadeup .3s ease}
     @keyframes fadeup{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 
-    /* Hot Standards Module */
-    .hot-section{margin-bottom:24px}
-    .hot-section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-    .hot-section-head h2{font-size:16px;font-weight:700;color:var(--text)}
-    .hot-label{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:.3px}
-    .hot-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
-    .hot-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:border-color .2s,box-shadow .2s,transform .15s;box-shadow:var(--sh)}
-    .hot-card:hover{border-color:var(--blue-light);box-shadow:var(--sh-md);transform:translateY(-2px)}
-    .hot-rank{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
-    .hot-rank.r1{background:#fef3c7;color:#b45309}
-    .hot-rank.r2{background:#f1f5f9;color:#475569}
-    .hot-rank.r3{background:#fff7ed;color:#c2410c}
-    .hot-rank.rn{background:#f1f5f9;color:#94a3b8}
-    .hot-card-info{flex:1;min-width:0}
-    .hot-card-code{font-family:"Courier New",monospace;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px}
-    .hot-card-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .hot-card-meta{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
-    .hot-divider{border:none;border-top:1px solid var(--border);margin:0 0 20px}
-    @media(max-width:640px){.hot-cards{grid-template-columns:1fr}}
+    /* 热门标准 pill 样式 */
+    .pill-hot{background:linear-gradient(135deg,#ef4444,#f97316);border-color:transparent;color:#fff;font-weight:600}
+    .pill-hot:hover{opacity:.9;color:#fff;border-color:transparent}
+    .pill-hot.active{background:linear-gradient(135deg,#dc2626,#ea580c);border-color:transparent;color:#fff}
 
     /* Footer */
     .site-footer{background:#f8fafc;border-top:1px solid var(--border);padding:40px 20px 0;margin-top:56px}
@@ -307,11 +292,12 @@
   <div class="main-toolbar">
     <div class="result-count">找到 <strong id="resultCount">0</strong> 条标准</div>
     <div class="filter-pills" id="filterPills">
-      <span class="pill active" data-type="">全部</span>
+      <span class="pill" data-type="">全部</span>
       <span class="pill" data-type="国家标准">国家标准</span>
       <span class="pill" data-type="行业标准">行业标准</span>
       <span class="pill" data-type="地方标准">地方标准</span>
       <span class="pill" data-type="团标">团标</span>
+      <span class="pill pill-hot active" data-type="__hot__">🔥 热门标准</span>
     </div>
     <select class="sort-sel" id="sortSel" onchange="applyAll()">
       <option value="date-new">最新发布</option>
@@ -320,17 +306,10 @@
     </select>
   </div>
 
-  <!-- ══ 热门标准模块（筛选栏后、标准列表前，搜索/筛选时自动隐藏） ══ -->
-  <div class="hot-section" id="hotSection">
-    <div class="hot-section-head">
-      <span class="hot-label">🔥 热门</span>
-      <h2>热门标准</h2>
-    </div>
-    <div class="hot-cards" id="hotCardsGrid">
-      <!-- 由 JS 渲染，数据加载后自动填充 -->
-    </div>
-  </div>
-  <div class="std-grid" id="standardsGrid">
+  <!-- 热门标准卡片网格（与正式标准同款尺寸） -->
+  <div class="std-grid" id="hotCardsGrid"></div>
+  <!-- 正式标准卡片网格（搜索或切换其他分类时显示） -->
+  <div class="std-grid" id="standardsGrid" style="display:none">
     <div class="loading"><span class="spinner"></span>正在加载标准数据…</div>
   </div>
   <div class="pagination" id="pagination"></div>
@@ -736,7 +715,8 @@ function applyDBUpdate(data){
   document.getElementById('footerVer').textContent = data.version || '—';
   if(typeof Fuse !== 'undefined') fuse = buildFuse(DB);
   renderHotCards();
-  applyAll();
+  // 若当前是热门视图，不触发 applyAll（避免切换到 all 视图）
+  if(activeView !== 'hot') applyAll();
 }
 
 function loadData(){
@@ -773,22 +753,42 @@ function loadData(){
     });
 }
 
-// ── 返回首页（清空搜索、重置筛选、滚回顶部）──
+// ── 返回首页：恢复热门标准视图 ──
 function goHome(){
   syncQ('');
-  activeQ = ''; activeType = '';
+  activeQ = ''; activeType = ''; curPage = 1;
   document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
-  var allPill = document.querySelector('.pill[data-type=""]');
-  if(allPill) allPill.classList.add('active');
-  var hot = document.getElementById('hotSection');
-  if(hot) hot.style.display = '';
-  applyAll();
+  var hotPill = document.querySelector('.pill[data-type="__hot__"]');
+  if(hotPill) hotPill.classList.add('active');
+  setView('hot');
   window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 function syncQ(v){ document.getElementById('heroSearch').value=v; activeQ=v; }
-function doSearch(){ activeQ=document.getElementById('heroSearch').value.trim(); applyAll(); }
-function quickSearch(q){ syncQ(q); applyAll(); document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'}); }
+function doSearch(){
+  activeQ = document.getElementById('heroSearch').value.trim();
+  if(activeQ){
+    // 搜索时切到全部视图，取消 activeType
+    activeType = '';
+    document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+    var allPill = document.querySelector('.pill[data-type=""]');
+    if(allPill) allPill.classList.add('active');
+    setView('all');
+    applyAll();
+  } else {
+    goHome();
+  }
+}
+function quickSearch(q){
+  syncQ(q);
+  activeType = '';
+  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+  var allPill = document.querySelector('.pill[data-type=""]');
+  if(allPill) allPill.classList.add('active');
+  setView('all');
+  applyAll();
+  document.querySelector('.main-wrap').scrollIntoView({behavior:'smooth'});
+}
 
 // 动态年份
 document.getElementById('footerYear').textContent = new Date().getFullYear();
@@ -811,14 +811,29 @@ setInterval(function(){
 document.getElementById('filterPills').addEventListener('click',function(e){
   var pill=e.target.closest('.pill'); if(!pill)return;
   document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
-  pill.classList.add('active'); activeType=pill.dataset.type; curPage=1; applyAll();
+  pill.classList.add('active');
+  var type = pill.dataset.type;
+  if(type === '__hot__'){
+    // 热门标准视图
+    activeType = ''; activeQ = ''; curPage = 1;
+    syncQ('');
+    setView('hot');
+  } else {
+    activeType = type; curPage = 1;
+    setView('all');
+    applyAll();
+  }
 });
 
 function applyAll(){
+  // 搜索时强制切到 all 视图
+  if(activeQ) setView('all');
+  // 热门视图且无搜索词时不渲染 std-grid
+  if(activeView === 'hot' && !activeQ) return;
+
   var list = DB;
   if(activeQ){
     if(fuse){
-      // Fuse 模糊搜索 + 同义词展开
       var terms = expandQuery(activeQ);
       var seen = {}, merged = [];
       terms.forEach(function(term){
@@ -829,7 +844,6 @@ function applyAll(){
       merged.sort(function(a,b){ return (a.score||0)-(b.score||0); });
       list = merged.map(function(r){ return r.item; });
     } else {
-      // Fuse 未就绪时的基础字符串搜索（兜底）
       var q = activeQ.toLowerCase();
       list = DB.filter(function(s){
         return (s.code||'').toLowerCase().indexOf(q)!==-1 ||
@@ -845,7 +859,6 @@ function applyAll(){
   else if(sort==='code') list=list.slice().sort(function(a,b){return a.code.localeCompare(b.code);});
   filtered=list; document.getElementById('resultCount').textContent=filtered.length;
   curPage=1; renderGrid(); renderPager();
-  updateHotVisibility();
 }
 
 function renderGrid(){
@@ -974,8 +987,10 @@ window.addEventListener('scroll',function(){
 function eh(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 // ══════════════════════════════════════════════════════
-//  热门标准数据（手工精选，数据加载后自动补全卡片信息）
+//  视图状态：hot = 显示热门标准，all = 显示全部/筛选结果
 // ══════════════════════════════════════════════════════
+var activeView = 'hot'; // 默认热门标准
+
 var HOT_STANDARD_IDS = [
   'GB_T-14833-2011','GB-36246-2018','GB-T-22517_6-2011',
   'GB-T-19851_11-2005','WS-792-2022','CJJ-T-90-2009',
@@ -985,35 +1000,57 @@ var HOT_STANDARD_IDS = [
 function renderHotCards(){
   var grid = document.getElementById('hotCardsGrid');
   if(!grid || !DB.length) return;
-  var cards = [];
-  HOT_STANDARD_IDS.forEach(function(id, i){
+  var items = [];
+  HOT_STANDARD_IDS.forEach(function(id){
     var s = DB.find(function(x){ return x.id === id; });
-    if(!s) return;
-    cards.push({s:s, rank:i+1});
+    if(s) items.push(s);
   });
-  if(!cards.length){
-    DB.filter(function(s){ return s.status==='现行'; })
-      .slice(0,8)
-      .forEach(function(s,i){ cards.push({s:s,rank:i+1}); });
+  // 若精选 ID 未命中，退而显示最新8条现行标准
+  if(!items.length){
+    items = DB.filter(function(s){ return s.status==='现行'; }).slice(0,8);
   }
-  grid.innerHTML = cards.map(function(item){
-    var s = item.s, r = item.rank;
-    var rankClass = r===1?'r1':r===2?'r2':r===3?'r3':'rn';
-    return '<div class="hot-card" onclick="openModal(\''+s.id+'\')">'
-      +'<div class="hot-rank '+rankClass+'">'+r+'</div>'
-      +'<div class="hot-card-info">'
-      +'<div class="hot-card-code">'+eh(s.code)+'</div>'
-      +'<div class="hot-card-title">'+eh(s.title)+'</div>'
-      +'<div class="hot-card-meta">'
+  // 用与正式标准完全相同的 std-card 标记渲染
+  grid.innerHTML = items.map(function(s){
+    return '<div class="std-card'+(s.status==='废止'?' abolished':'')+'" onclick="openModal(\''+s.id+'\')">'
+      +'<div class="card-code">'+eh(s.code)+'</div>'
+      +'<div class="card-title">'+eh(s.title)+'</div>'
+      +(s.summary?'<div class="card-summary">'+eh(s.summary)+'</div>':'')
+      +'<div class="card-meta">'
       +'<span class="badge b-'+eh(s.type||'')+'">'+eh(s.type||'标准')+'</span>'
       +'<span class="badge b-'+eh(s.status||'')+'">'+eh(s.status||'现行')+'</span>'
-      +'</div></div></div>';
+      +(s.isMandatory?'<span class="badge b-mand">⚡强制</span>':'')
+      +'<span class="card-date">'+(s.issueDate||'')+'</span>'
+      +'</div></div>';
   }).join('');
 }
 
+function setView(view){
+  var hotGrid = document.getElementById('hotCardsGrid');
+  var stdGrid = document.getElementById('standardsGrid');
+  var pg = document.getElementById('pagination');
+  if(view === 'hot'){
+    hotGrid.style.display = '';
+    stdGrid.style.display = 'none';
+    if(pg) pg.innerHTML = '';
+    document.getElementById('resultCount').textContent = '—';
+  } else {
+    hotGrid.style.display = 'none';
+    stdGrid.style.display = '';
+  }
+  activeView = view;
+}
+
 function updateHotVisibility(){
-  var hot = document.getElementById('hotSection');
-  if(hot) hot.style.display = (activeQ || activeType) ? 'none' : '';
+  // 搜索时强制切到 all 视图；清空时恢复 hot
+  if(activeQ){
+    setView('all');
+  } else if(!activeType){
+    // 无搜索词且无类型筛选，还原热门标准 pill 为 active
+    document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+    var hotPill = document.querySelector('.pill[data-type="__hot__"]');
+    if(hotPill) hotPill.classList.add('active');
+    setView('hot');
+  }
 }
 
 </script>
