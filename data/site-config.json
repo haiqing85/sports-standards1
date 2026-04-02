@@ -1,8 +1,8 @@
 {
   "code-adsense-script": "",
   "en-adsense-script": false,
-  "code-banner-top": "11111",
-  "en-banner-top": true,
+  "code-banner-top": "",
+  "en-banner-top": false,
   "code-hero-above": "",
   "en-hero-above": false,
   "code-hero-below": "",
@@ -29,5 +29,5 @@
   "en-bing": false,
   "code-custom-head": "",
   "en-custom-head": false,
-  "savedAt": "2026-04-02T12:41:30.340Z"
+  "savedAt": "2026-04-02T12:43:14.515Z"
 }
