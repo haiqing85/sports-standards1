@@ -1,7 +1,7 @@
 {
   "version": "2026.04.02",
-  "updated": "2026-04-02",
-  "total": 347,
+  "updated": "2026-04-02 01:43:37",
+  "total": 355,
   "standards": [
     {
       "id": "GB362462018",
@@ -7864,6 +7864,190 @@
       "scope": "",
       "localFile": null,
       "_origIndex": 346
+    },
+    {
+      "id": "GBT1749852026",
+      "code": "GB/T 17498.5-2026",
+      "title": "室内固定式健身器材 第5部分：固定式健身车和上肢曲柄类健身器材 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT17498102026",
+      "code": "GB/T 17498.10-2026",
+      "title": "室内固定式健身器材 第10部分：带有固定轮或无飞轮的健身车 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749812026",
+      "code": "GB/T 17498.1-2026",
+      "title": "室内固定式健身器材 第1部分：通用安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749872026",
+      "code": "GB/T 17498.7-2026",
+      "title": "室内固定式健身器材 第7部分：划船器 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749862026",
+      "code": "GB/T 17498.6-2026",
+      "title": "室内固定式健身器材 第6部分：跑步机 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749892026",
+      "code": "GB/T 17498.9-2026",
+      "title": "室内固定式健身器材 第9部分：椭圆训练机 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749842026",
+      "code": "GB/T 17498.4-2026",
+      "title": "室内固定式健身器材 第4部分：力量型训练长凳 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT1749822026",
+      "code": "GB/T 17498.2-2026",
+      "title": "室内固定式健身器材 第2部分：力量型训练器材 附加的特殊安全要求和试验方法",
+      "english": "",
+      "type": "国家标准",
+      "status": "即将实施",
+      "issueDate": "2026-03-31",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "健身器材",
+      "tags": [
+        "健身",
+        "健身器材"
+      ],
+      "summary": null,
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
     }
   ]
 }
