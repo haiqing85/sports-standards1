@@ -1,7 +1,7 @@
 {
   "version": "2026.04.02",
-  "updated": "2026-04-02 06:52:20",
-  "total": 355,
+  "updated": "2026-04-02",
+  "total": 353,
   "standards": [
     {
       "id": "GB362462018",
@@ -5884,29 +5884,6 @@
       "_origIndex": 257
     },
     {
-      "id": "GBT3188742023",
-      "code": "GB/T 31887.4-2023",
-      "title": "自行车  照明和回复反射装置  第4部分：自行车发电机供电的照明系统",
-      "english": "",
-      "type": "国家标准",
-      "status": "现行",
-      "issueDate": "2023-05-23",
-      "implementDate": null,
-      "abolishDate": null,
-      "replaces": null,
-      "replacedBy": null,
-      "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "灯光照明",
-      "tags": [
-        "照明"
-      ],
-      "summary": null,
-      "isMandatory": false,
-      "scope": "",
-      "localFile": null,
-      "_origIndex": 258
-    },
-    {
       "id": "GBT106421989",
       "code": "GB/T 10642-1989",
       "title": "自行车飞轮",
@@ -5925,7 +5902,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 259
+      "_origIndex": 258
     },
     {
       "id": "GBT111841989",
@@ -5946,7 +5923,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 260
+      "_origIndex": 259
     },
     {
       "id": "GBT111831989",
@@ -5967,7 +5944,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 261
+      "_origIndex": 260
     },
     {
       "id": "GB172841998",
@@ -5988,7 +5965,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 262
+      "_origIndex": 261
     },
     {
       "id": "GBT35661993",
@@ -6009,7 +5986,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 263
+      "_origIndex": 262
     },
     {
       "id": "GB35651993",
@@ -6030,7 +6007,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 264
+      "_origIndex": 263
     },
     {
       "id": "GBT3188752025",
@@ -6053,30 +6030,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 265
-    },
-    {
-      "id": "GBT3188752023",
-      "code": "GB/T 31887.5-2023",
-      "title": "自行车  照明和回复反射装置  第5部分：自行车非发电机供电的照明系统",
-      "english": "",
-      "type": "国家标准",
-      "status": "现行",
-      "issueDate": "2023-05-23",
-      "implementDate": null,
-      "abolishDate": null,
-      "replaces": null,
-      "replacedBy": null,
-      "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "灯光照明",
-      "tags": [
-        "照明"
-      ],
-      "summary": null,
-      "isMandatory": false,
-      "scope": "",
-      "localFile": null,
-      "_origIndex": 266
+      "_origIndex": 264
     },
     {
       "id": "GBT227902008",
@@ -6097,7 +6051,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 267
+      "_origIndex": 265
     },
     {
       "id": "GBT227912008",
@@ -6120,7 +6074,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 268
+      "_origIndex": 266
     },
     {
       "id": "GB35652005",
@@ -6141,7 +6095,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 269
+      "_origIndex": 267
     },
     {
       "id": "GB147461993",
@@ -6162,7 +6116,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 270
+      "_origIndex": 268
     },
     {
       "id": "GB134721992",
@@ -6183,7 +6137,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 271
+      "_origIndex": 269
     },
     {
       "id": "GBT318872015",
@@ -6204,7 +6158,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 272
+      "_origIndex": 270
     },
     {
       "id": "GB147462006",
@@ -6225,7 +6179,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 273
+      "_origIndex": 271
     },
     {
       "id": "GBT328422023",
@@ -6246,7 +6200,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 274
+      "_origIndex": 272
     },
     {
       "id": "GBT328422016",
@@ -6267,7 +6221,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 275
+      "_origIndex": 273
     },
     {
       "id": "GBT199942005",
@@ -6288,7 +6242,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 276
+      "_origIndex": 274
     },
     {
       "id": "GBT35642023",
@@ -6309,7 +6263,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 277
+      "_origIndex": 275
     },
     {
       "id": "GBT35792002",
@@ -6330,7 +6284,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 278
+      "_origIndex": 276
     },
     {
       "id": "GBT35641993",
@@ -6351,7 +6305,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 279
+      "_origIndex": 277
     },
     {
       "id": "GBT127421991",
@@ -6372,7 +6326,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 280
+      "_origIndex": 278
     },
     {
       "id": "GBT35792006",
@@ -6393,7 +6347,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 281
+      "_origIndex": 279
     },
     {
       "id": "GBT35671983",
@@ -6414,7 +6368,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 282
+      "_origIndex": 280
     },
     {
       "id": "GBT147462025",
@@ -6435,7 +6389,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 283
+      "_origIndex": 281
     },
     {
       "id": "GBT427032023",
@@ -6456,7 +6410,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 284
+      "_origIndex": 282
     },
     {
       "id": "GBT293482012",
@@ -6477,7 +6431,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 285
+      "_origIndex": 283
     },
     {
       "id": "GBT293472012",
@@ -6498,7 +6452,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 286
+      "_origIndex": 284
     },
     {
       "id": "GB1907982005",
@@ -6521,7 +6475,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 287
+      "_origIndex": 285
     },
     {
       "id": "GBT2634412010",
@@ -6542,7 +6496,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 288
+      "_origIndex": 286
     },
     {
       "id": "GBT343892017",
@@ -6563,7 +6517,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 289
+      "_origIndex": 287
     },
     {
       "id": "GBT428252023",
@@ -6584,7 +6538,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 290
+      "_origIndex": 288
     },
     {
       "id": "GBT439882024",
@@ -6607,7 +6561,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 291
+      "_origIndex": 289
     },
     {
       "id": "GBT389552020",
@@ -6628,7 +6582,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 292
+      "_origIndex": 290
     },
     {
       "id": "GBT465072025",
@@ -6649,7 +6603,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 293
+      "_origIndex": 291
     },
     {
       "id": "GB6675122014",
@@ -6670,7 +6624,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 294
+      "_origIndex": 292
     },
     {
       "id": "GBT404812021",
@@ -6691,7 +6645,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 295
+      "_origIndex": 293
     },
     {
       "id": "GBT345722017",
@@ -6712,7 +6666,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 296
+      "_origIndex": 294
     },
     {
       "id": "GBT2068852014",
@@ -6733,7 +6687,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 297
+      "_origIndex": 295
     },
     {
       "id": "GB405592024",
@@ -6754,7 +6708,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 298
+      "_origIndex": 296
     },
     {
       "id": "GB244292009",
@@ -6777,7 +6731,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 299
+      "_origIndex": 297
     },
     {
       "id": "GBT2755322011",
@@ -6798,7 +6752,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 300
+      "_origIndex": 298
     },
     {
       "id": "GBT2755312011",
@@ -6819,7 +6773,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 301
+      "_origIndex": 299
     },
     {
       "id": "GBT1179812001",
@@ -6840,7 +6794,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 302
+      "_origIndex": 300
     },
     {
       "id": "GBT3914212020",
@@ -6861,7 +6815,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 303
+      "_origIndex": 301
     },
     {
       "id": "GBT2654832017",
@@ -6882,7 +6836,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 304
+      "_origIndex": 302
     },
     {
       "id": "GBT463833012025",
@@ -6903,7 +6857,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 305
+      "_origIndex": 303
     },
     {
       "id": "GB1907942005",
@@ -6926,7 +6880,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 306
+      "_origIndex": 304
     },
     {
       "id": "GBT200962021",
@@ -6947,7 +6901,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 307
+      "_origIndex": 305
     },
     {
       "id": "GBT200962006",
@@ -6968,7 +6922,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 308
+      "_origIndex": 306
     },
     {
       "id": "GBT441032024",
@@ -6991,7 +6945,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 309
+      "_origIndex": 307
     },
     {
       "id": "GB1907952005",
@@ -7014,7 +6968,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 310
+      "_origIndex": 308
     },
     {
       "id": "GBT342892017",
@@ -7038,7 +6992,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 311
+      "_origIndex": 309
     },
     {
       "id": "GB17498102008",
@@ -7062,7 +7016,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 312
+      "_origIndex": 310
     },
     {
       "id": "GB174981998",
@@ -7086,7 +7040,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 313
+      "_origIndex": 311
     },
     {
       "id": "GBT342852017",
@@ -7110,7 +7064,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 314
+      "_origIndex": 312
     },
     {
       "id": "GBT451802024",
@@ -7134,7 +7088,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 315
+      "_origIndex": 313
     },
     {
       "id": "GBT468682025",
@@ -7158,7 +7112,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 316
+      "_origIndex": 314
     },
     {
       "id": "GBT1826622025",
@@ -7182,7 +7136,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 317
+      "_origIndex": 315
     },
     {
       "id": "GBT1000142021",
@@ -7206,7 +7160,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 318
+      "_origIndex": 316
     },
     {
       "id": "GBT1826622002",
@@ -7230,7 +7184,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 319
+      "_origIndex": 317
     },
     {
       "id": "GBT1000142009",
@@ -7254,7 +7208,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 320
+      "_origIndex": 318
     },
     {
       "id": "GB1749812008",
@@ -7278,7 +7232,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 321
+      "_origIndex": 319
     },
     {
       "id": "GBT1000142007",
@@ -7302,7 +7256,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 322
+      "_origIndex": 320
     },
     {
       "id": "GB1749872008",
@@ -7326,7 +7280,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 323
+      "_origIndex": 321
     },
     {
       "id": "GB1749892008",
@@ -7350,7 +7304,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 324
+      "_origIndex": 322
     },
     {
       "id": "GB1749822008",
@@ -7374,7 +7328,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 325
+      "_origIndex": 323
     },
     {
       "id": "GB1749842008",
@@ -7398,7 +7352,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 326
+      "_origIndex": 324
     },
     {
       "id": "GB1749852008",
@@ -7422,7 +7376,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 327
+      "_origIndex": 325
     },
     {
       "id": "GB1749882008",
@@ -7446,7 +7400,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 328
+      "_origIndex": 326
     },
     {
       "id": "GBT441002024",
@@ -7470,7 +7424,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 329
+      "_origIndex": 327
     },
     {
       "id": "GBT347432017",
@@ -7493,7 +7447,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 330
+      "_origIndex": 328
     },
     {
       "id": "GBT436492024",
@@ -7516,7 +7470,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 331
+      "_origIndex": 329
     },
     {
       "id": "GBT317572015",
@@ -7539,7 +7493,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 332
+      "_origIndex": 330
     },
     {
       "id": "GBT289922012",
@@ -7562,7 +7516,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 333
+      "_origIndex": 331
     },
     {
       "id": "GBT1503612001",
@@ -7585,7 +7539,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 334
+      "_origIndex": 332
     },
     {
       "id": "GBT317452015",
@@ -7608,7 +7562,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 335
+      "_origIndex": 333
     },
     {
       "id": "GBT466812025",
@@ -7631,7 +7585,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 336
+      "_origIndex": 334
     },
     {
       "id": "GBT466842025",
@@ -7654,7 +7608,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 337
+      "_origIndex": 335
     },
     {
       "id": "GBT359132018",
@@ -7677,7 +7631,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 338
+      "_origIndex": 336
     },
     {
       "id": "GBT1503622001",
@@ -7700,7 +7654,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 339
+      "_origIndex": 337
     },
     {
       "id": "GBT1503612018",
@@ -7723,7 +7677,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 340
+      "_origIndex": 338
     },
     {
       "id": "GBT1503612009",
@@ -7746,7 +7700,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 341
+      "_origIndex": 339
     },
     {
       "id": "GBT1503622018",
@@ -7769,7 +7723,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 342
+      "_origIndex": 340
     },
     {
       "id": "GBT1503622009",
@@ -7792,7 +7746,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 343
+      "_origIndex": 341
     },
     {
       "id": "GB473682026",
@@ -7816,7 +7770,7 @@
       "isMandatory": true,
       "scope": "",
       "localFile": null,
-      "_origIndex": 344
+      "_origIndex": 342
     },
     {
       "id": "GBT1749882026",
@@ -7840,7 +7794,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 345
+      "_origIndex": 343
     },
     {
       "id": "GBT148332011",
@@ -7863,7 +7817,7 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 346
+      "_origIndex": 344
     },
     {
       "id": "GBT1749852026",
@@ -7886,7 +7840,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 345
     },
     {
       "id": "GBT17498102026",
@@ -7909,7 +7864,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 346
     },
     {
       "id": "GBT1749812026",
@@ -7932,7 +7888,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 347
     },
     {
       "id": "GBT1749872026",
@@ -7955,7 +7912,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 348
     },
     {
       "id": "GBT1749862026",
@@ -7978,7 +7936,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 349
     },
     {
       "id": "GBT1749892026",
@@ -8001,7 +7960,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 350
     },
     {
       "id": "GBT1749842026",
@@ -8024,7 +7984,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 351
     },
     {
       "id": "GBT1749822026",
@@ -8047,7 +8008,8 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 352
     }
   ]
 }
