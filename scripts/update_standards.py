@@ -1,28 +1,64 @@
 #!/usr/bin/env python3
 """
-体育标准数据库 — 自动抓取更新 v22（核心问题修复版）
+体育标准数据库 — 自动抓取更新 v23（替代关系专项修复版）
 修复内容：
-1. 彻底解决「搜木地板出不来木质地板」双向搜索匹配问题
-2. 新增关键词「合成材料跑道」，全链路适配
-3. 彻底修复替代旧标准号不正确、自替代问题
-4. 保留手动修改保护、发布单位原文、50页限制等所有原有规则
+1. 彻底解决「替代标准/被替代标准填充TC198/F772等无效ID」问题，新增严格标准号格式校验
+2. 强制规则：现行/即将实施标准，彻底移除「已被替代为(replacedBy)」项，仅保留替代旧标准字段
+3. 废止标准「已被替代为」字段强制清洗，仅保留合规标准号，杜绝无效内容
+4. 彻底杜绝自替代问题，自动过滤自身标准号
+5. 优化详情页抓取逻辑，避免误抓页面提示文本中的非标准号内容
+6. 兜底填充逻辑新增合规校验，不生成无效替代关系
+7. 保留手动修改保护、发布单位原文、50页限制等所有原有规则
 """
 import json, time, re, argparse, hashlib, os
 from datetime import datetime
 from pathlib import Path
-
 try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util.retry import Retry
 except ImportError:
     raise SystemExit("请安装依赖: pip install requests urllib3")
-
 ROOT      = Path(__file__).parent.parent
 DATA_FILE = ROOT / 'data' / 'standards.json'
 LOG_FILE  = ROOT / 'data' / 'update_log.txt'
 ENV_FILE  = Path(__file__).parent / '.env'
 DEBUG_MODE = False
+
+# ===================== 新增修复1：严格标准号格式校验与清洗核心函数 =====================
+# 合规标准号正则：支持GB/T、GB、JGJ、JG/T、CJJ、T/、DB开头的标准号格式
+STD_CODE_REGEX = re.compile(r'[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}', re.IGNORECASE)
+# 标准号主体+年份拆分正则，用于自替代校验
+STD_BASE_SPLIT_REGEX = re.compile(r'^([A-Z]+\/?T?\s*\d+(?:\.\d+)?)\s*[－\-–]\s*(\d{4})$', re.IGNORECASE)
+
+def clean_valid_std_codes(raw_content, self_code=''):
+    """
+    清洗替代字段内容，仅保留合规的标准号，过滤TC198/F772等无效ID
+    :param raw_content: 抓取到的原始替代内容
+    :param self_code: 当前标准号，用于过滤自替代
+    :return: 清洗后的合规标准号字符串，无有效内容返回None
+    """
+    if not raw_content:
+        return None
+    # 提取所有符合标准号格式的内容
+    valid_codes = STD_CODE_REGEX.findall(str(raw_content))
+    if not valid_codes:
+        return None
+    
+    # 格式化清洗每个标准号
+    cleaned_codes = []
+    self_code_norm = norm_code(self_code)
+    for code in valid_codes:
+        code_clean = clean_samr_code(code)
+        code_norm = norm_code(code_clean)
+        # 过滤自替代、空内容
+        if not code_norm or code_norm == self_code_norm:
+            continue
+        cleaned_codes.append(code_clean)
+    
+    # 去重后返回，无有效内容返回None
+    cleaned_codes = list(dict.fromkeys(cleaned_codes))
+    return '；'.join(cleaned_codes) if cleaned_codes else None
 
 def load_env():
     if ENV_FILE.exists():
@@ -31,22 +67,21 @@ def load_env():
             if '=' in line and not line.startswith('#'):
                 k, v = line.split('=', 1)
                 os.environ.setdefault(k.strip(), v.strip())
-
 load_env()
 DEEPSEEK_KEY = os.environ.get('DEEPSEEK_KEY', '')
 QWEN_KEY     = os.environ.get('QWEN_KEY', '')
 
-# ===================== 修复1：彻底解决替代标准号不正确问题 =====================
+# ===================== 修复2：替代关系兜底填充，新增合规校验，杜绝无效内容 =====================
 def auto_fill_replaces(standards):
     """
     仅兜底填充：只有官网没抓到真实替代号时，才自动补全
-    严格校验同标准号不同年份，彻底杜绝错误替代、自替代
+    严格校验同标准号不同年份，彻底杜绝错误替代、自替代、无效内容
     """
     groups = {}
     for s in standards:
         code = s.get('code', '')
-        # 严格拆分【标准号主体+4位年份】，只匹配GB/T 1234-2024格式
-        m = re.match(r'^([A-Z]+\/?T?\s*\d+(?:\.\d+)?)\s*[－\-–]\s*(\d{4})$', code.strip())
+        # 严格拆分【标准号主体+4位年份】，只匹配合规格式的标准号
+        m = STD_BASE_SPLIT_REGEX.match(code.strip())
         if m:
             base = re.sub(r'\s+', '', m.group(1)).upper()
             try:
@@ -55,7 +90,7 @@ def auto_fill_replaces(standards):
                 continue
             if base not in groups:
                 groups[base] = []
-            groups[base].append({'std': s, 'year': year, 'code': code})
+            groups[base].append({'std': s, 'year': year, 'code': code, 'code_norm': norm_code(code)})
     
     updated = 0
     for base, versions in groups.items():
@@ -67,27 +102,42 @@ def auto_fill_replaces(standards):
         
         for i, ver in enumerate(versions):
             s = ver['std']
-            # 只有官网没抓到真实替代号，才自动填充
+            current_status = s.get('status', '现行')
+            current_code = ver['code']
+            current_code_norm = ver['code_norm']
+
+            # 只有官网没抓到真实替代号，才自动填充替代旧标准
             if i > 0 and not s.get('replaces'):
-                # 严格校验：年份不同、标准主体完全一致，才生成替代关系
-                if versions[i-1]['year'] != ver['year'] and versions[i-1]['code'] != ver['code']:
-                    s['replaces'] = versions[i-1]['code']
+                prev_ver = versions[i-1]
+                # 严格校验：年份不同、标准主体完全一致、不是自身，才生成替代关系
+                if (prev_ver['year'] != ver['year'] 
+                    and prev_ver['code_norm'] != current_code_norm):
+                    s['replaces'] = prev_ver['code']
                     updated += 1
-            # 只有官网没抓到真实被替代号，才自动填充
-            if i < version_count - 1 and not s.get('replacedBy'):
-                if versions[i+1]['year'] != ver['year'] and versions[i+1]['code'] != ver['code']:
-                    s['replacedBy'] = versions[i+1]['code']
+
+            # 【核心规则】仅废止标准才填充被替代号，现行/即将实施强制清空
+            if current_status == '废止' and i < version_count - 1 and not s.get('replacedBy'):
+                next_ver = versions[i+1]
+                if (next_ver['year'] != ver['year'] 
+                    and next_ver['code_norm'] != current_code_norm):
+                    s['replacedBy'] = next_ver['code']
                     updated += 1
+            elif current_status in ['现行', '即将实施']:
+                # 强制清空现行/即将实施标准的被替代字段，彻底去掉「已被替代为」项
+                if s.get('replacedBy'):
+                    s['replacedBy'] = None
+                    updated += 1
+
             # 只有新版本是现行，才标记旧版本为废止
             if (i < version_count - 1 
                 and s.get('status') == '现行' 
                 and versions[i+1]['std'].get('status') == '现行'
-                and versions[i+1]['code'] != ver['code']):
+                and versions[i+1]['code_norm'] != current_code_norm):
                 s['status'] = '废止'
                 updated += 1
     return updated
 
-# ===================== 修复2：新增关键词「合成材料跑道」+ 木地板全量关键词 =====================
+# ===================== 关键词配置（保留原有新增内容） =====================
 KEYWORDS = [
     # 新增关键词
     "合成材料跑道",
@@ -109,7 +159,6 @@ KEYWORDS = [
     "体育场地", "运动场地", "体育场馆",
     "体育建筑", "体育公园", "全民健身",
     "学校操场", "体育设施", "体育",
-
     "足球", "足球场", "足球场地",
     "篮球", "篮球场", "篮球场地",
     "网球", "网球场", "网球场地",
@@ -129,7 +178,6 @@ KEYWORDS = [
     "曲棍球", "曲棍球场地",
     "毽球", "沙狐球", "飞镖", "射箭",
     "水球", "板球", "马球", "藤球", "门球", "地掷球",
-
     "武术", "散打", "跆拳道", "空手道", "柔道", "摔跤", "拳击",
     "体操", "竞技体操", "艺术体操", "蹦床",
     "田径", "跑步", "跳高", "跳远",
@@ -141,7 +189,7 @@ KEYWORDS = [
     "飞盘", "滑板", "攀岩", "轮滑", "钓鱼", "拔河"
 ]
 
-# ===================== 体育过滤 + 新增合成材料跑道 + 木地板全量术语 =====================
+# ===================== 体育过滤配置（保留原有新增内容） =====================
 SPORTS_TERMS = [
     # 新增术语
     "合成材料跑道",
@@ -164,7 +212,6 @@ SPORTS_TERMS = [
     "武术","散打","跆拳道","空手道","柔道","摔跤","拳击",
     "体操","蹦床","滑雪","滑冰","冰壶","自行车","射击","击剑","马术","飞盘","滑板","攀岩","轮滑"
 ]
-
 BLACKLIST = ["电动自行车", "电动车", "电动二轮车", "电动单车"]
 
 def is_sports(title):
@@ -177,7 +224,7 @@ def is_sports(title):
             return False
     return any(term.lower() in title_clean for term in SPORTS_TERMS)
 
-# ===================== 修复3：木地板分类+标签强制统一，解决搜索问题 =====================
+# ===================== 分类与标签配置（保留原有修复） =====================
 def guess_category(text):
     """所有木质地板相关，强制归为「木地板」，合成材料跑道归为合成材料面层"""
     if not text:
@@ -220,7 +267,6 @@ def guess_tags(text):
     return base_tags
 
 UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130.0.0.0 Safari/537.36'
-
 def make_session():
     s = requests.Session()
     retry = Retry(
@@ -243,7 +289,6 @@ def make_session():
     except Exception as e:
         log(f"会话初始化警告：{str(e)}")
     return s
-
 SESSION = make_session()
 
 def log(msg):
@@ -336,9 +381,9 @@ def guess_type(code):
             return t
     return "国家标准"
 
-# ===================== 修复4：详情页真实替代号精准匹配，杜绝错误 =====================
-def fetch_detail_real_info(std_id, domain):
-    """从官网详情页抓取真实的替代号，优先使用，绝不自动生成覆盖"""
+# ===================== 修复3：详情页抓取，新增替代内容强制清洗，杜绝无效ID =====================
+def fetch_detail_real_info(std_id, domain, self_code=''):
+    """从官网详情页抓取真实的替代号，优先使用，抓取后强制清洗，仅保留合规标准号"""
     if not std_id or not domain:
         return None, None, None, None
     try:
@@ -346,46 +391,40 @@ def fetch_detail_real_info(std_id, domain):
         resp = SESSION.get(url, timeout=20)
         resp.raise_for_status()
         html = resp.text
-
         impl_date = None
         m = re.search(r'实施日期[^：:]*[：:]\s*(\d{4}[-\s]?\d{2}[-\s]?\d{2})', html)
         if m:
             impl_date = norm_date(m.group(1))
-
-        # 精准匹配替代旧标准号，支持多标准号
+        
+        # 精准匹配替代旧标准号，抓取后强制清洗
         replaces = None
         m = re.search(r'代替[^：:]*[：:]\s*([^\n<]{5,150})', html)
         if m:
-            # 精准匹配标准号格式：GB/T 1234-2024、GB 1234-2024、JGJ 123-2024
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}', m.group(1))
-            if codes:
-                replaces = '；'.join([clean_samr_code(c) for c in codes])
-
-        # 精准匹配被新标准替代号
+            replaces_raw = m.group(1)
+            replaces = clean_valid_std_codes(replaces_raw, self_code)
+        
+        # 精准匹配被新标准替代号，抓取后强制清洗
         replaced_by = None
         m = re.search(r'被.*代替[^：:]*[：:]\s*([^\n<]{5,150})', html)
         if m:
-            codes = re.findall(r'[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}', m.group(1))
-            if codes:
-                replaced_by = '；'.join([clean_samr_code(c) for c in codes])
-
+            replaced_by_raw = m.group(1)
+            replaced_by = clean_valid_std_codes(replaced_by_raw, self_code)
+        
         summary = None
         m = re.search(r'标准摘要[^：:]*[：:]\s*([^<]{10,600})', html)
         if m:
             summary = clean_sacinfo(m.group(1)).strip()
-
         return impl_date, replaces, replaced_by, summary
     except Exception as e:
         if DEBUG_MODE:
             log(f"详情页抓取失败 {std_id}@{domain}：{str(e)}")
         return None, None, None, None
 
-# ===================== 抓取接口 =====================
+# ===================== 抓取接口，新增自身标准号传入清洗 =====================
 def fetch_samr(keyword, page=1):
     results = []
     total_pages = 1
     domains = ["https://std.samr.gov.cn", "https://openstd.samr.gov.cn"]
-
     for domain in domains:
         try:
             resp = SESSION.get(
@@ -407,12 +446,10 @@ def fetch_samr(keyword, page=1):
             resp.raise_for_status()
             if 'html' in resp.headers.get('content-type','').lower():
                 continue
-
             data = resp.json()
             rows = data.get('rows', [])
             total = int(data.get('total',0))
             total_pages = max(1, (total+49)//50)
-
             for row in rows:
                 code = clean_samr_code(row.get('C_STD_CODE') or row.get('STD_CODE') or '')
                 title = clean_sacinfo(row.get('C_C_NAME') or row.get('STD_NAME') or '')
@@ -420,23 +457,30 @@ def fetch_samr(keyword, page=1):
                     continue
                 if not is_sports(title):
                     continue
-
                 issue_date = norm_date(row.get('ISSUE_DATE'))
                 impl_date = norm_date(row.get('IMPL_DATE'))
                 std_id = row.get('id') or row.get('ID') or ''
+                status = norm_status(row.get('STATE') or row.get('STD_STATUS'))
 
-                # 优先抓取官网真实的替代号、日期、摘要
+                # 优先抓取官网真实的替代号、日期、摘要，传入自身标准号做清洗
                 if std_id:
-                    d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain)
+                    d_impl, d_rep, d_repd, d_sum = fetch_detail_real_info(std_id, domain, code)
                     if d_impl:
                         impl_date = d_impl
                     replaces = d_rep
                     replaced_by = d_repd
                     summary = d_sum
                 else:
-                    replaces = clean_sacinfo(row.get('C_SUPERSEDE_CODE') or '')
-                    replaced_by = clean_sacinfo(row.get('C_REPLACED_CODE') or '')
+                    # 列表页抓取的内容也强制清洗
+                    replaces_raw = clean_sacinfo(row.get('C_SUPERSEDE_CODE') or '')
+                    replaces = clean_valid_std_codes(replaces_raw, code)
+                    replaced_by_raw = clean_sacinfo(row.get('C_REPLACED_CODE') or '')
+                    replaced_by = clean_valid_std_codes(replaced_by_raw, code)
                     summary = ''
+
+                # 【核心规则】现行/即将实施标准，强制清空被替代字段
+                if status in ['现行', '即将实施']:
+                    replaced_by = None
 
                 dept1 = str(row.get('ISSUE_DEPT') or '').strip()
                 dept2 = str(row.get('ISSUE_UNIT') or '').strip()
@@ -444,11 +488,10 @@ def fetch_samr(keyword, page=1):
                     issued_by = f"{dept1}、{dept2}"
                 else:
                     issued_by = dept1 or dept2
-
                 results.append({
                     "code": code, 
                     "title": title, 
-                    "status": norm_status(row.get('STATE') or row.get('STD_STATUS')),
+                    "status": status,
                     "issueDate": issue_date, 
                     "implementDate": impl_date, 
                     "abolishDate": norm_date(row.get('ABOL_DATE')),
@@ -465,7 +508,7 @@ def fetch_samr(keyword, page=1):
             continue
     return results, total_pages
 
-# ===================== 每页限制 50 页 =====================
+# ===================== 分页抓取（保留原有50页限制） =====================
 def fetch_samr_all(keyword):
     all_res = []
     seen = set()
@@ -479,7 +522,6 @@ def fetch_samr_all(keyword):
     except Exception as e:
         log(f"关键词 {keyword} 初始页抓取失败：{str(e)}")
         return all_res
-
     max_page = 50
     for p in range(2, min(tp+1, max_page+1)):
         try:
@@ -498,31 +540,41 @@ def fetch_samr_all(keyword):
             continue
     return all_res
 
-# ===================== 修复5：手动修改保护 + 替代号绝不覆盖手动修改 =====================
+# ===================== 修复4：合并逻辑，新增替代字段清洗+手动修改保护+规则强制 =====================
 def merge(existing, new_items):
     existing_code_map = { norm_code(s['code']): s for s in existing }
     add, upd = 0, 0
-
     for item in new_items:
         code_raw = item.get('code', '')
         nc = norm_code(code_raw)
         if not nc:
             continue
-
         if nc in existing_code_map:
             old = existing_code_map[nc]
-            # 状态：只有官网是现行，才覆盖手动的废止
             new_status = item.get('status')
-            if new_status and old.get('status') != new_status:
+            old_status = old.get('status')
+
+            # 状态：只有官网是现行，才覆盖手动的废止
+            if new_status and old_status != new_status:
                 if new_status == '现行':
                     old['status'] = new_status
                     upd +=1
-            # 替代号：只有用户没手动修改，才用官网真实数据
+
+            # 【核心规则】现行/即将实施标准，强制清空被替代字段，不覆盖手动修改
+            current_status = new_status or old_status
+            if current_status in ['现行', '即将实施']:
+                if old.get('replacedBy'):
+                    old['replacedBy'] = None
+                    upd +=1
+
+            # 替代号：只有用户没手动修改，才用官网清洗后的真实数据
             for f in ['replaces','replacedBy']:
                 val = item.get(f)
+                # 仅当用户没手动填写、新值有效时才更新，保护手动修改
                 if val and not old.get(f):
                     old[f] = val
                     upd +=1
+
             # 其他字段：非空才更新
             for f in ['issueDate','implementDate','abolishDate','summary']:
                 val = item.get(f)
@@ -553,24 +605,34 @@ def merge(existing, new_items):
                     break
             if replaced:
                 upd +=1
-
     return final_standards, add, upd
 
 def build_entry(item):
     code = item.get('code','')
     title = clean_sacinfo(item.get('title',''))
+    status = item.get('status','现行')
+    replaces = item.get('replaces')
+    replacedBy = item.get('replacedBy')
+
+    # 入库前最终清洗，确保合规
+    replaces = clean_valid_std_codes(replaces, code)
+    replacedBy = clean_valid_std_codes(replacedBy, code)
+    # 强制规则：现行/即将实施标准，清空被替代字段
+    if status in ['现行', '即将实施']:
+        replacedBy = None
+
     return {
         'id': make_id(code), 
         'code': code, 
         'title': title, 
         'english': '',
         'type': item.get('type') or guess_type(code),
-        'status': item.get('status','现行'),
+        'status': status,
         'issueDate': item.get('issueDate'), 
         'implementDate': item.get('implementDate'),
         'abolishDate': item.get('abolishDate'), 
-        'replaces': item.get('replaces'),
-        'replacedBy': item.get('replacedBy'), 
+        'replaces': replaces,
+        'replacedBy': replacedBy, 
         'issuedBy': item.get('issuedBy',''),
         'category': guess_category(title), 
         'tags': guess_tags(title),
@@ -600,7 +662,6 @@ def save_db(db, standards, dry):
     removed = before - len(standards)
     if removed > 0:
         log(f"🗑️ 自动清理：移除 {removed} 条非体育/电动自行车/重复标准")
-
     db['standards'] = standards
     db['updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     db['total'] = len(standards)
@@ -611,47 +672,55 @@ def save_db(db, standards, dry):
         DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(DATA_FILE,'w',encoding='utf-8') as f:
             json.dump(db, f, ensure_ascii=False, indent=2)
-        log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，替代号已修复）")
+        log(f"✅ 保存成功：共{len(standards)}条（手动修改已保护，替代关系已全量修复）")
     except Exception as e:
         log(f"❌ 保存失败：{str(e)}")
 
-def run(dry=False, debug=False):
+def run(dry=False, debug=False, repair_only=False):
+    """
+    新增repair_only模式：仅修复现有库的替代关系，不重新抓取
+    """
     global DEBUG_MODE
     DEBUG_MODE = debug
     log("="*60)
-    log("体育标准抓取工具 v22（核心问题修复版）")
-    log("已修复：搜索双向匹配、合成材料跑道关键词、替代标准号错误")
+    log("体育标准抓取工具 v23（替代关系专项修复版）")
+    log("核心修复：替代号无效ID过滤、现行标准移除已被替代为、废止标准替代号清洗")
     log("="*60)
-
     db, standards = load_db()
     log(f"当前已有：{len(standards)} 条")
 
-    log("\n开始抓取...")
-    all_new = []
-    total_kw = len(KEYWORDS)
-    for i, kw in enumerate(KEYWORDS,1):
-        log(f"[{i}/{total_kw}] 关键词: {kw}")
-        try:
-            res = fetch_samr_all(kw)
-            log(f"   → 抓到 {len(res)} 条")
-            all_new.extend(res)
-            time.sleep(1)
-        except Exception as e:
-            log(f"   → 抓取失败：{str(e)}")
-            time.sleep(2)
-            continue
-
-    log(f"\n抓取完成，去重前总数：{len(all_new)}")
-    # 先合并，再兜底补全替代关系（绝不覆盖官网真实数据）
-    standards, add, upd = merge(standards, all_new)
-    auto_fill_replaces(standards)
-    log(f"合并结果：新增 {add} 条，更新 {upd} 条，去重后总计 {len(standards)} 条")
-
+    if not repair_only:
+        log("\n开始抓取...")
+        all_new = []
+        total_kw = len(KEYWORDS)
+        for i, kw in enumerate(KEYWORDS,1):
+            log(f"[{i}/{total_kw}] 关键词: {kw}")
+            try:
+                res = fetch_samr_all(kw)
+                log(f"   → 抓到 {len(res)} 条")
+                all_new.extend(res)
+                time.sleep(1)
+            except Exception as e:
+                log(f"   → 抓取失败：{str(e)}")
+                time.sleep(2)
+                continue
+        log(f"\n抓取完成，去重前总数：{len(all_new)}")
+        # 先合并，再兜底补全替代关系（绝不覆盖官网真实数据）
+        standards, add, upd = merge(standards, all_new)
+        log(f"合并结果：新增 {add} 条，更新 {upd} 条")
+    
+    # 全量修复替代关系，兜底填充+规则强制
+    log("\n开始全量修复替代关系...")
+    repair_count = auto_fill_replaces(standards)
+    log(f"替代关系修复完成：共修正 {repair_count} 条字段")
+    log(f"最终总计：{len(standards)} 条标准")
+    
     save_db(db, standards, dry)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dry', action='store_true', help='预览不保存')
-    parser.add_argument('--debug', action='store_true', help='调试')
+    parser.add_argument('--debug', action='store_true', help='调试模式')
+    parser.add_argument('--repair-only', action='store_true', help='仅修复现有库替代关系，不重新抓取')
     args = parser.parse_args()
-    run(dry=args.dry, debug=args.debug)
+    run(dry=args.dry, debug=args.debug, repair_only=args.repair_only)
