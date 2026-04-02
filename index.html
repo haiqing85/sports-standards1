@@ -5,7 +5,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="中国体育建设标准查询平台，收录国家标准、行业标准、地方标准、团标，涵盖合成材料跑道、人造草坪、灯光照明、木地板、围网等全品类体育建设标准。">
   <title>中国体育建设标准查询平台 | 最全体育行业标准数据库</title>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <!-- Fuse.js：动态加载，支持多 CDN 备用，兼容浏览器前进/后退缓存(bfcache) -->
+  <script>
+  (function(){
+    var CDNS = [
+      'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js',
+      'https://unpkg.com/fuse.js@7.0.0/dist/fuse.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/fuse.js/7.0.0/fuse.min.js'
+    ];
+    var idx = 0;
+    function tryLoad() {
+      if (idx >= CDNS.length) { window._fuseLoadFailed = true; return; }
+      var s = document.createElement('script');
+      s.src = CDNS[idx];
+      s.onload  = function(){ if(window._appStart) window._appStart(); else window._fuseReady = true; };
+      s.onerror = function(){ idx++; tryLoad(); };
+      document.head.appendChild(s);
+    }
+    tryLoad();
+    // 处理 bfcache（从其他页面返回时，onload 不再触发，需监听 pageshow）
+    window.addEventListener('pageshow', function(e){
+      // persisted=true 代表从 bfcache 恢复，页面已完整，直接重新加载数据
+      if (e.persisted && typeof loadData === 'function') {
+        loadData();
+      }
+    });
+  })();
+  </script>
   <!-- ★ 广告/SEO 注入引擎（HEAD 部分）：优先用 localStorage 缓存快速注入，同时异步拉取 GitHub 最新配置更新缓存 -->
   <script>
   (function(){
@@ -247,15 +273,10 @@
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="#" class="logo">
+    <a href="javascript:void(0)" class="logo" onclick="goHome()" title="返回首页">
       <div class="logo-icon">🏟</div>
       <span class="logo-text">体育建设标准库</span>
     </a>
-    <div class="header-stats">
-      <div class="hstat"><div class="hstat-n" id="hTotal">—</div><div class="hstat-l">收录标准</div></div>
-      <div class="hstat"><div class="hstat-n" id="hActive" style="color:var(--green)">—</div><div class="hstat-l">现行有效</div></div>
-      <div class="hstat"><div class="hstat-n" id="hAbol" style="color:var(--red)">—</div><div class="hstat-l">已废止</div></div>
-    </div>
   </div>
 </header>
 
@@ -696,21 +717,66 @@ function expandQuery(q) {
 // ═══════════════════════════════════════════════════════════
 var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='';
 
-function loadData(){
-  fetch('data/standards.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
-    DB = data.standards||[];
-    document.getElementById('footerVer').textContent = data.version||'—';
-    document.getElementById('hTotal').textContent = DB.length;
-    document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
-    document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
-    fuse = new Fuse(DB, {
-      keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
-      threshold:0.3, includeScore:true
-    });
-    applyAll();
-  }).catch(function(){
-    document.getElementById('standardsGrid').innerHTML='<div class="empty-state"><div class="ei">⚠️</div><h3>数据加载失败</h3><p>请刷新页面重试</p></div>';
+// ── 数据缓存 key（localStorage，首次访问后立即显示缓存，同时后台拉最新）──
+var DATA_CACHE_KEY = 'stdDataCache';
+
+function buildFuse(list){
+  return new Fuse(list, {
+    keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
+    threshold:0.3, includeScore:true
   });
+}
+
+function applyDBUpdate(data){
+  DB = data.standards || [];
+  document.getElementById('footerVer').textContent = data.version || '—';
+  fuse = buildFuse(DB);
+  applyAll();
+}
+
+function loadData(){
+  // ① 立即从 localStorage 缓存渲染，让用户第一眼就看到内容
+  try {
+    var cached = localStorage.getItem(DATA_CACHE_KEY);
+    if(cached){
+      var cachedData = JSON.parse(cached);
+      if(cachedData && cachedData.standards && cachedData.standards.length){
+        applyDBUpdate(cachedData);
+      }
+    }
+  } catch(_){}
+
+  // ② 后台拉取最新数据，更新缓存，若有变化则刷新视图
+  fetch('data/standards.json?t='+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      // 缓存最新数据
+      try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(data)); } catch(_){}
+      // 版本或数量有变化才重渲，避免闪烁
+      var newVer = data.version || '';
+      var curVer = document.getElementById('footerVer').textContent;
+      var newLen = (data.standards||[]).length;
+      if(newLen !== DB.length || newVer !== curVer){
+        applyDBUpdate(data);
+      }
+    })
+    .catch(function(){
+      if(!DB.length){
+        document.getElementById('standardsGrid').innerHTML =
+          '<div class="empty-state"><div class="ei">⚠️</div><h3>数据加载失败</h3><p>请刷新页面重试</p></div>';
+      }
+    });
+}
+
+// ── 返回首页（清空搜索、重置筛选、滚回顶部）──
+function goHome(){
+  syncQ('');
+  activeQ = ''; activeType = '';
+  document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
+  var allPill = document.querySelector('.pill[data-type=""]');
+  if(allPill) allPill.classList.add('active');
+  applyAll();
+  window.scrollTo({ top:0, behavior:'smooth' });
 }
 
 function syncQ(v){ document.getElementById('heroSearch').value=v; activeQ=v; }
@@ -720,24 +786,17 @@ function quickSearch(q){ syncQ(q); applyAll(); document.querySelector('.main-wra
 // 动态年份
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
-// ── 实时轮询：每60秒自动重新加载数据（后台更新后首页自动同步）
+// ── 轮询：每60秒静默拉取，仅在数据变化时更新视图 ──
 setInterval(function(){
   fetch('data/standards.json?t='+Date.now())
-    .then(function(r){return r.json();})
+    .then(function(r){ return r.json(); })
     .then(function(data){
-      var newList = data.standards||[];
-      // 只在数据有变化时才更新（对比总数和版本号）
-      if(newList.length !== DB.length || (data.version && data.version !== document.getElementById('footerVer').textContent)){
-        DB = newList;
-        document.getElementById('footerVer').textContent = data.version||'—';
-        document.getElementById('hTotal').textContent = DB.length;
-        document.getElementById('hActive').textContent = DB.filter(function(s){return s.status==='现行';}).length;
-        document.getElementById('hAbol').textContent = DB.filter(function(s){return s.status==='废止';}).length;
-        fuse = new Fuse(DB, {
-          keys:[{name:'code',weight:.4},{name:'title',weight:.35},{name:'tags',weight:.15},{name:'summary',weight:.1}],
-          threshold:0.3, includeScore:true
-        });
-        applyAll();
+      var newLen = (data.standards||[]).length;
+      var newVer = data.version || '';
+      var curVer = document.getElementById('footerVer').textContent;
+      if(newLen !== DB.length || newVer !== curVer){
+        try{ localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(data)); }catch(_){}
+        applyDBUpdate(data);
       }
     }).catch(function(){});
 }, 60000);
@@ -897,7 +956,16 @@ window.addEventListener('scroll',function(){
 
 function eh(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-window.onload=loadData;
+// ── 应用启动：等 Fuse.js 就绪后再初始化，避免竞争白屏 ──
+window._appStart = function(){
+  if(typeof Fuse === 'undefined'){ setTimeout(window._appStart, 30); return; }
+  loadData();
+};
+// Fuse 可能先于此脚本加载完（有缓存时），也可能稍后加载（CDN 回调触发）
+if(window._fuseReady || typeof Fuse !== 'undefined'){
+  window._appStart();
+}
+// 否则由 CDN 脚本的 onload 回调触发 _appStart
 </script>
 
 <!-- ★ 广告位⑦：Body 底部（悬浮广告/第三方工具） -->
