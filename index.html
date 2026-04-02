@@ -223,13 +223,10 @@
     @keyframes fadeup{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
 
     /* Hot Standards Module */
-    .hot-section{max-width:1280px;margin:0 auto 8px;padding:0 20px}
+    .hot-section{margin-bottom:24px}
     .hot-section-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
     .hot-section-head h2{font-size:16px;font-weight:700;color:var(--text)}
     .hot-label{display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;border-radius:20px;padding:2px 10px;font-size:11px;font-weight:700;letter-spacing:.3px}
-    .hot-tabs{display:flex;gap:6px;margin-bottom:14px}
-    .hot-tab{padding:5px 14px;border:1px solid var(--border);border-radius:20px;font-size:12.5px;color:var(--text2);background:var(--white);cursor:pointer;transition:all .15s;font-family:var(--font)}
-    .hot-tab.active{background:var(--blue-dim);border-color:var(--blue-mid);color:var(--blue-mid);font-weight:600}
     .hot-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
     .hot-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:12px;transition:border-color .2s,box-shadow .2s,transform .15s;box-shadow:var(--sh)}
     .hot-card:hover{border-color:var(--blue-light);box-shadow:var(--sh-md);transform:translateY(-2px)}
@@ -242,10 +239,7 @@
     .hot-card-code{font-family:"Courier New",monospace;font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px}
     .hot-card-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
     .hot-card-meta{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
-    .hot-searches{display:flex;flex-wrap:wrap;gap:8px}
-    .hot-search-tag{display:inline-flex;align-items:center;gap:5px;background:var(--white);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12.5px;color:var(--text2);cursor:pointer;transition:all .15s}
-    .hot-search-tag:hover{border-color:var(--blue-mid);color:var(--blue-mid);background:var(--blue-dim)}
-    .hot-search-tag .fire{font-size:13px}
+    .hot-divider{border:none;border-top:1px solid var(--border);margin:0 0 20px}
     @media(max-width:640px){.hot-cards{grid-template-columns:1fr}}
 
     /* Footer */
@@ -301,54 +295,27 @@
     <span class="qtag" onclick="quickSearch('围网')">体育围网</span>
     <span class="qtag" onclick="quickSearch('健身')">健身器材</span>
     <span class="qtag" onclick="quickSearch('中小学')">中小学场地</span>
-    <span class="qtag" onclick="quickSearch('PVC')">PVC运动地胶</span>
   </div>
 </section>
 
 <!-- ★ 广告位③：搜索区下方横幅 -->
 <div id="ad-slot-hero-below" class="ad-inject-slot"></div>
 
-<!-- ══ 热门标准模块 ══ -->
-<div class="hot-section" id="hotSection">
-  <div class="hot-section-head">
-    <span class="hot-label">🔥 热门</span>
-    <h2>热门标准与搜索</h2>
-  </div>
-  <div class="hot-tabs">
-    <button class="hot-tab active" onclick="switchHotTab('standards',this)">📋 热门标准</button>
-    <button class="hot-tab" onclick="switchHotTab('searches',this)">🔍 热门搜索</button>
-  </div>
-  <!-- 热门标准卡片 -->
-  <div id="hotStandardsPanel">
-    <div class="hot-cards" id="hotCardsGrid">
-      <!-- 由 JS 渲染 -->
-    </div>
-  </div>
-  <!-- 热门搜索词 -->
-  <div id="hotSearchesPanel" style="display:none">
-    <div class="hot-searches">
-      <span class="hot-search-tag" onclick="quickSearch('合成材料跑道')"><span class="fire">🔥</span>合成材料跑道</span>
-      <span class="hot-search-tag" onclick="quickSearch('木地板')"><span class="fire">🔥</span>运动木地板</span>
-      <span class="hot-search-tag" onclick="quickSearch('人造草')"><span class="fire">🔥</span>人造草坪</span>
-      <span class="hot-search-tag" onclick="quickSearch('照明')"><span class="fire">🔥</span>体育照明</span>
-      <span class="hot-search-tag" onclick="quickSearch('围网')">围网防护</span>
-      <span class="hot-search-tag" onclick="quickSearch('篮球')">篮球场标准</span>
-      <span class="hot-search-tag" onclick="quickSearch('足球')">足球场标准</span>
-      <span class="hot-search-tag" onclick="quickSearch('田径')">田径场标准</span>
-      <span class="hot-search-tag" onclick="quickSearch('健身')">健身器材</span>
-      <span class="hot-search-tag" onclick="quickSearch('中小学')">中小学场地</span>
-      <span class="hot-search-tag" onclick="quickSearch('PVC')">PVC运动地胶</span>
-      <span class="hot-search-tag" onclick="quickSearch('游泳')">游泳场地</span>
-      <span class="hot-search-tag" onclick="quickSearch('网球')">网球场地</span>
-      <span class="hot-search-tag" onclick="quickSearch('GB 36246')">GB 36246</span>
-      <span class="hot-search-tag" onclick="quickSearch('WS 792')">WS 792</span>
-    </div>
-  </div>
-</div>
-
 <div class="main-wrap">
+  <!-- ══ 热门标准模块（始终显示，搜索时自动隐藏） ══ -->
+  <div class="hot-section" id="hotSection">
+    <div class="hot-section-head">
+      <span class="hot-label">🔥 热门</span>
+      <h2>热门标准</h2>
+    </div>
+    <div class="hot-cards" id="hotCardsGrid">
+      <!-- 由 JS 渲染，数据加载后自动填充 -->
+    </div>
+  </div>
+
   <!-- ★ 广告位④：结果列表顶部 -->
   <div id="ad-slot-content-top" class="ad-inject-slot" style="margin-bottom:12px"></div>
+  <hr class="hot-divider">
   <div class="main-toolbar">
     <div class="result-count">找到 <strong id="resultCount">0</strong> 条标准</div>
     <div class="filter-pills" id="filterPills">
@@ -1022,10 +989,9 @@ function renderHotCards(){
   var cards = [];
   HOT_STANDARD_IDS.forEach(function(id, i){
     var s = DB.find(function(x){ return x.id === id; });
-    if(!s) return; // ID 不匹配时跳过，不显示空卡
+    if(!s) return;
     cards.push({s:s, rank:i+1});
   });
-  // 若精选ID都未命中（数据库结构不同），退而显示最新的8条现行标准
   if(!cards.length){
     DB.filter(function(s){ return s.status==='现行'; })
       .slice(0,8)
@@ -1046,43 +1012,30 @@ function renderHotCards(){
   }).join('');
 }
 
-function switchHotTab(tab, btn){
-  document.querySelectorAll('.hot-tab').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById('hotStandardsPanel').style.display = tab==='standards' ? '' : 'none';
-  document.getElementById('hotSearchesPanel').style.display  = tab==='searches'  ? '' : 'none';
-}
-
-// 搜索时隐藏热门模块，清空时恢复
 function updateHotVisibility(){
   var hot = document.getElementById('hotSection');
   if(hot) hot.style.display = (activeQ || activeType) ? 'none' : '';
 }
 
-// ══════════════════════════════════════════════════════
-//  可靠启动：DOMContentLoaded + bfcache pageshow
-// ══════════════════════════════════════════════════════
-var _started = false;
-function startApp(){
-  if(_started) return; _started = true;
-  loadData();
-}
-
-// 正常加载：DOM 就绪后立即启动（此时 Fuse 可能还没加载完，但 loadData 内有保护）
-document.addEventListener('DOMContentLoaded', startApp);
-
-// bfcache 恢复（从其他页面点返回时，onload/DOMContentLoaded 不会再触发）
-window.addEventListener('pageshow', function(e){
-  if(e.persisted){
-    _started = false; // 允许重新启动
-    startApp();
-  }
-});
 </script>
 
-<!-- ★ Fuse.js 放在 body 底部：页面渲染不受阻塞，脚本顺序加载确保主逻辑执行时 Fuse 已就绪 -->
-<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"
-  onerror="this.onerror=null;this.src='https://unpkg.com/fuse.js@7.0.0/dist/fuse.min.js'"></script>
+<!-- ★ Fuse.js：放在主脚本之前，确保主脚本执行时 Fuse 已就绪（同步阻塞加载，顺序可靠） -->
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+<script src="https://unpkg.com/fuse.js@7.0.0/dist/fuse.min.js" id="_fuseBackup"></script>
+<script>
+// 去重：如果 jsdelivr 已加载成功，移除 unpkg 备用标签避免二次执行
+(function(){ var b=document.getElementById('_fuseBackup'); if(b) b.remove(); })();
+
+// ══════════════════════════════════════════════════════
+//  直接启动（此处已在 body 底部，DOM 和 Fuse 均已就绪）
+// ══════════════════════════════════════════════════════
+loadData();
+
+// bfcache：从其他页面点「后退」返回时，onload/DOMContentLoaded 不再触发，
+// 用 pageshow.persisted 重新加载数据
+window.addEventListener('pageshow', function(e){
+  if(e.persisted) loadData();
+});
 
 <!-- ★ 广告位⑦：Body 底部（悬浮广告/第三方工具） -->
 <div id="ad-slot-body-end" class="ad-inject-slot"></div>
