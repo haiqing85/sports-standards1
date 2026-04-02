@@ -1,7 +1,7 @@
 {
   "version": "2026.04.02",
-  "updated": "2026-04-02",
-  "total": 353,
+  "updated": "2026-04-02 15:23:24",
+  "total": 355,
   "standards": [
     {
       "id": "GB362462018",
@@ -8010,6 +8010,50 @@
       "scope": "",
       "localFile": null,
       "_origIndex": 352
+    },
+    {
+      "id": "GBT3188742023",
+      "code": "GB/T 31887.4-2023",
+      "title": "自行车  照明和回复反射装置  第4部分：自行车发电机供电的照明系统",
+      "english": "",
+      "type": "国家标准",
+      "status": "现行",
+      "issueDate": "2023-05-23",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "灯光照明",
+      "tags": [
+        "照明"
+      ],
+      "summary": "",
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
+    },
+    {
+      "id": "GBT3188752023",
+      "code": "GB/T 31887.5-2023",
+      "title": "自行车  照明和回复反射装置  第5部分：自行车非发电机供电的照明系统",
+      "english": "",
+      "type": "国家标准",
+      "status": "现行",
+      "issueDate": "2023-05-23",
+      "implementDate": null,
+      "abolishDate": null,
+      "replaces": null,
+      "replacedBy": null,
+      "issuedBy": "",
+      "category": "灯光照明",
+      "tags": [
+        "照明"
+      ],
+      "summary": "",
+      "isMandatory": false,
+      "scope": "",
+      "localFile": null
     }
   ]
 }
