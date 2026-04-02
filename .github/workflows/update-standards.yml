@@ -2,9 +2,11 @@ name: 自动抓取更新体育标准数据库
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 */2 * *'  # 改为每两天的UTC 0点运行（原每天运行）
   push:
     branches: [ main ]
+    paths:                # 仅匹配 update_standards.py 文件的变更
+      - 'scripts/update_standards.py'
   workflow_dispatch:
     inputs:
       mode:
