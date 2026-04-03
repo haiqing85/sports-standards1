@@ -169,6 +169,78 @@
         .sec-btn { padding:8px 16px; border:1px solid #e2e8f0; border-radius:7px; background:#fff; color:#475569; font-size:13px; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; transition:all .15s; }
         .sec-btn:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
         .sec-btn.danger:hover { border-color:#dc2626; color:#dc2626; background:#fef2f2; }
+
+        /* ── 数据仪表盘 ── */
+        .dash-section { margin-bottom:32px; }
+        .dash-section-title { font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px; }
+        .dash-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
+        .dash-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
+        .dash-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:18px 16px; text-align:center; position:relative; overflow:hidden; }
+        .dash-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+        .dash-card.blue::before { background:linear-gradient(90deg,#2563eb,#60a5fa); }
+        .dash-card.green::before { background:linear-gradient(90deg,#10b981,#6ee7b7); }
+        .dash-card.orange::before { background:linear-gradient(90deg,#f59e0b,#fcd34d); }
+        .dash-card.purple::before { background:linear-gradient(90deg,#7c3aed,#c4b5fd); }
+        .dash-card.red::before { background:linear-gradient(90deg,#ef4444,#fca5a5); }
+        .dash-card.teal::before { background:linear-gradient(90deg,#0891b2,#67e8f9); }
+        .dash-card .dc-icon { font-size:26px; margin-bottom:8px; display:block; }
+        .dash-card .dc-num { font-size:30px; font-weight:800; line-height:1; margin-bottom:4px; }
+        .dash-card.blue  .dc-num { color:#2563eb; }
+        .dash-card.green .dc-num { color:#10b981; }
+        .dash-card.orange .dc-num { color:#f59e0b; }
+        .dash-card.purple .dc-num { color:#7c3aed; }
+        .dash-card.red   .dc-num { color:#ef4444; }
+        .dash-card.teal  .dc-num { color:#0891b2; }
+        .dash-card .dc-lbl { font-size:12px; color:#94a3b8; font-weight:500; }
+        .dash-card .dc-sub { font-size:11px; color:#cbd5e1; margin-top:4px; }
+        .dash-card .dc-trend { font-size:11px; margin-top:6px; padding:2px 8px; border-radius:20px; display:inline-block; }
+        .dc-trend.up { background:#dcfce7; color:#16a34a; }
+        .dc-trend.down { background:#fee2e2; color:#dc2626; }
+        .dc-trend.same { background:#f1f5f9; color:#64748b; }
+
+        /* 图表区 */
+        .dash-chart-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:18px; margin-bottom:14px; }
+        .dash-chart-title { font-size:13px; font-weight:700; color:#334155; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
+        .dash-chart-title span { font-size:11px; color:#94a3b8; font-weight:400; }
+        .bar-chart { display:flex; align-items:flex-end; gap:6px; height:80px; }
+        .bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height:100%; justify-content:flex-end; }
+        .bar-item { width:100%; border-radius:3px 3px 0 0; min-height:2px; transition:height .3s ease; }
+        .bar-item.blue { background:linear-gradient(to top,#2563eb,#93c5fd); }
+        .bar-item.green { background:linear-gradient(to top,#10b981,#6ee7b7); }
+        .bar-lbl { font-size:10px; color:#94a3b8; white-space:nowrap; }
+        .bar-val { font-size:10px; color:#475569; font-weight:600; }
+
+        /* 爬虫日志 */
+        .log-filter-row { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+        .log-filter-row select, .log-filter-row input { padding:7px 11px; border:1px solid #e2e8f0; border-radius:7px; font-size:13px; font-family:inherit; outline:none; color:#1e293b; background:#fff; }
+        .log-filter-row input { flex:1; min-width:180px; }
+        .log-filter-row select:focus, .log-filter-row input:focus { border-color:#2563eb; }
+        .log-table { width:100%; border-collapse:collapse; font-size:13px; }
+        .log-table th { background:#f1f5f9; color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
+        .log-table td { padding:10px 12px; border-bottom:1px solid #f8fafc; color:#334155; vertical-align:middle; }
+        .log-table tr:last-child td { border-bottom:none; }
+        .log-table tr:hover td { background:#f8fafc; }
+        .log-status { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; }
+        .log-status.fail   { background:#fee2e2; color:#dc2626; }
+        .log-status.warn   { background:#fef3c7; color:#b45309; }
+        .log-status.ok     { background:#dcfce7; color:#16a34a; }
+        .log-status.skip   { background:#f1f5f9; color:#64748b; }
+        .log-err-detail { font-size:11.5px; color:#94a3b8; margin-top:2px; }
+        .log-domain { font-family:monospace; font-size:12px; color:#1e40af; }
+        .log-time { font-size:11px; color:#94a3b8; }
+        .log-empty { text-align:center; padding:40px; color:#94a3b8; font-size:14px; }
+        .log-empty .lei { font-size:32px; margin-bottom:8px; }
+        .dash-refresh-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+        .dash-refresh-row .last-update { font-size:12px; color:#94a3b8; }
+        .dash-add-log-btn { padding:7px 14px; border:1px dashed #cbd5e1; border-radius:7px; background:#fff; color:#64748b; font-size:12.5px; cursor:pointer; font-family:inherit; transition:all .15s; }
+        .dash-add-log-btn:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
+        .log-pagination { display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-top:12px; font-size:13px; color:#64748b; }
+        .log-pagination button { padding:5px 12px; border:1px solid #e2e8f0; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit; font-size:12px; color:#475569; }
+        .log-pagination button:hover:not(:disabled) { border-color:#2563eb; color:#2563eb; }
+        .log-pagination button:disabled { opacity:.4; cursor:not-allowed; }
+        .visit-sparkline { display:flex; align-items:flex-end; gap:2px; height:28px; margin-top:6px; }
+        .vsp-bar { flex:1; border-radius:2px; background:#dbeafe; min-height:2px; }
+        .vsp-bar.today { background:#2563eb; }
     </style>
 </head>
 <body>
@@ -203,6 +275,7 @@
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('std',this)">📋 标准数据管理</button>
         <button class="tab-btn" onclick="switchTab('ad',this)">📢 广告与SEO配置</button>
+        <button class="tab-btn" onclick="switchTab('dashboard',this)">📊 数据仪表盘</button>
     </div>
 
     <!-- ══ Tab 1: 标准管理（原有内容） ══ -->
@@ -517,6 +590,180 @@
       </div>
 
     </div><!-- /tab-ad -->
+
+    <!-- ══ Tab 3: 数据仪表盘 ══ -->
+    <div class="tab-panel" id="tab-dashboard">
+
+      <!-- 刷新行 -->
+      <div class="dash-refresh-row">
+        <span class="last-update" id="dashLastUpdate">⏱ 正在加载数据…</span>
+        <div style="display:flex;gap:8px;">
+          <button class="dash-add-log-btn" onclick="openAddLogModal()">➕ 手动记录爬虫日志</button>
+          <button class="dash-add-log-btn" onclick="refreshDashboard()">🔄 刷新数据</button>
+        </div>
+      </div>
+
+      <!-- ─── 今日数据概览 ─── -->
+      <div class="dash-section">
+        <div class="dash-section-title">📈 今日数据概览</div>
+        <div class="dash-grid-4">
+          <div class="dash-card blue">
+            <span class="dc-icon">🕷️</span>
+            <div class="dc-num" id="dc-today-crawl">—</div>
+            <div class="dc-lbl">今日抓取量</div>
+            <div class="dc-sub" id="dc-today-crawl-sub">—</div>
+            <div class="dc-trend same" id="dc-crawl-trend">—</div>
+          </div>
+          <div class="dash-card green">
+            <span class="dc-icon">📦</span>
+            <div class="dc-num" id="dc-total-data">—</div>
+            <div class="dc-lbl">总数据量（标准）</div>
+            <div class="dc-sub" id="dc-total-data-sub">—</div>
+            <div class="dc-trend same" id="dc-data-trend">—</div>
+          </div>
+          <div class="dash-card orange">
+            <span class="dc-icon">👁️</span>
+            <div class="dc-num" id="dc-today-pv">—</div>
+            <div class="dc-lbl">今日访问量 PV</div>
+            <div class="dc-sub" id="dc-today-pv-sub">—</div>
+            <div class="dc-trend same" id="dc-pv-trend">—</div>
+          </div>
+          <div class="dash-card purple">
+            <span class="dc-icon">🧑‍💻</span>
+            <div class="dc-num" id="dc-today-uv">—</div>
+            <div class="dc-lbl">今日独立访客 UV</div>
+            <div class="dc-sub" id="dc-uv-sub">—</div>
+            <div class="dc-trend same" id="dc-uv-trend">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 数据库状态 ─── -->
+      <div class="dash-section">
+        <div class="dash-section-title">📚 数据库状态</div>
+        <div class="dash-grid">
+          <div class="dash-card green">
+            <span class="dc-icon">✅</span>
+            <div class="dc-num" id="dc-db-active">—</div>
+            <div class="dc-lbl">现行有效标准</div>
+            <div class="dc-sub">PDF 完整率 <span id="dc-pdf-rate">—</span></div>
+          </div>
+          <div class="dash-card red">
+            <span class="dc-icon">🗂️</span>
+            <div class="dc-num" id="dc-db-abol">—</div>
+            <div class="dc-lbl">已废止标准</div>
+            <div class="dc-sub">占总量 <span id="dc-abol-rate">—</span></div>
+          </div>
+          <div class="dash-card teal">
+            <span class="dc-icon">⏳</span>
+            <div class="dc-num" id="dc-db-coming">—</div>
+            <div class="dc-lbl">即将实施</div>
+            <div class="dc-sub">缺PDF <span id="dc-nopdf-count" style="color:#ef4444;font-weight:700">—</span> 条待补传</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 近7日抓取趋势图 ─── -->
+      <div class="dash-section">
+        <div class="dash-section-title">📊 近7日趋势</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="dash-chart-box">
+            <div class="dash-chart-title">每日抓取量 <span>近7天</span></div>
+            <div class="bar-chart" id="chart-crawl"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-crawl-labels"></div>
+          </div>
+          <div class="dash-chart-box">
+            <div class="dash-chart-title">每日访问量 PV <span>近7天</span></div>
+            <div class="bar-chart" id="chart-pv"></div>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-pv-labels"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── 爬虫日志 ─── -->
+      <div class="dash-section">
+        <div class="dash-section-title">🔍 爬虫日志 <span style="font-size:11px;color:#94a3b8;font-weight:400;letter-spacing:0;text-transform:none;">（今日抓取失败 / 警告记录）</span></div>
+        <div class="log-filter-row">
+          <input type="text" id="logSearch" placeholder="🔍 搜索域名或错误信息…" oninput="renderLogTable()">
+          <select id="logStatusFilter" onchange="renderLogTable()">
+            <option value="">全部状态</option>
+            <option value="fail">❌ 失败</option>
+            <option value="warn">⚠️ 警告</option>
+            <option value="ok">✅ 成功</option>
+            <option value="skip">⏭ 跳过</option>
+          </select>
+          <select id="logDateFilter" onchange="renderLogTable()">
+            <option value="today">今天</option>
+            <option value="3d">近3天</option>
+            <option value="7d">近7天</option>
+            <option value="all">全部</option>
+          </select>
+          <button class="dash-add-log-btn" style="border-style:solid;color:#dc2626;border-color:#fecaca;" onclick="clearLogs()">🗑️ 清空日志</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="log-table" id="logTable">
+            <thead>
+              <tr>
+                <th>时间</th>
+                <th>域名 / 来源</th>
+                <th>抓取页面</th>
+                <th>状态</th>
+                <th>HTTP码</th>
+                <th>错误详情</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="logTbody"></tbody>
+          </table>
+        </div>
+        <div id="logEmpty" class="log-empty" style="display:none;">
+          <div class="lei">🎉</div>
+          <p>今日暂无失败记录，爬虫运行正常！</p>
+        </div>
+        <div class="log-pagination" id="logPagination"></div>
+      </div>
+
+    </div><!-- /tab-dashboard -->
+
+    <!-- 添加日志弹窗 -->
+    <div class="modal" id="addLogModal" onclick="if(event.target===this)closeAddLogModal()">
+      <div class="modal-content" style="width:480px">
+        <h2>📝 手动添加爬虫日志</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label>域名 / 来源 <span style="color:#dc2626">*</span></label>
+            <input type="text" id="log_domain" placeholder="如：www.gb688.cn">
+          </div>
+          <div class="input-group">
+            <label>抓取页面路径</label>
+            <input type="text" id="log_path" placeholder="如：/bzgk/gb/std_list.html">
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="input-group">
+            <label>状态</label>
+            <select id="log_status">
+              <option value="fail">❌ 失败</option>
+              <option value="warn">⚠️ 警告</option>
+              <option value="ok">✅ 成功</option>
+              <option value="skip">⏭ 跳过</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>HTTP 状态码</label>
+            <input type="text" id="log_code" placeholder="如：403、503、timeout">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>错误详情 / 备注</label>
+          <textarea id="log_detail" rows="3" style="resize:vertical" placeholder="如：连接超时、被反爬拦截、返回空页面…"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn" style="background:#e2e8f0;color:#334155" onclick="closeAddLogModal()">取消</button>
+          <button class="btn btn-primary" onclick="saveLog()">💾 保存日志</button>
+        </div>
+      </div>
+    </div>
 
 </div><!-- /container -->
 
@@ -1309,10 +1556,344 @@
             addBtn.style.display = 'none';
             syncBtn.style.display = 'none';
             loadAdConfig();
+        } else if (name === 'dashboard') {
+            addBtn.style.display = 'none';
+            syncBtn.style.display = 'none';
+            refreshDashboard();
         } else {
             addBtn.style.display = '';
             syncBtn.style.display = '';
         }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  数据仪表盘
+    // ══════════════════════════════════════════════════
+    var DASH_STORAGE_KEY  = 'dash_stats';
+    var CRAWL_LOG_KEY     = 'crawl_logs';
+    var LOG_PAGE_SIZE     = 15;
+    var logCurrentPage    = 1;
+
+    // ── 生成/读取统计数据 ──
+    function getDashStats() {
+        var raw = null;
+        try { raw = localStorage.getItem(DASH_STORAGE_KEY); } catch(_){}
+        if (raw) {
+            try {
+                var s = JSON.parse(raw);
+                // 如果不是今天，重置今日数据
+                if (s.date !== todayStr()) { s = resetTodayStats(s); }
+                return s;
+            } catch(_){}
+        }
+        return buildInitStats();
+    }
+
+    function todayStr() {
+        return new Date().toISOString().slice(0, 10);
+    }
+
+    function buildInitStats() {
+        var today = todayStr();
+        var stats = {
+            date: today,
+            todayCrawl: 0,
+            todayPV: 0,
+            todayUV: 0,
+            history: []  // [{date, crawl, pv, uv}]
+        };
+        // 生成近6天的历史演示数据
+        for (var i = 6; i >= 1; i--) {
+            var d = new Date(); d.setDate(d.getDate() - i);
+            stats.history.push({
+                date: d.toISOString().slice(0,10),
+                crawl: Math.floor(Math.random()*120 + 30),
+                pv:    Math.floor(Math.random()*600 + 100),
+                uv:    Math.floor(Math.random()*200 + 40)
+            });
+        }
+        saveDashStats(stats);
+        return stats;
+    }
+
+    function resetTodayStats(s) {
+        // 把昨天的数据存入历史
+        s.history.push({ date: s.date, crawl: s.todayCrawl, pv: s.todayPV, uv: s.todayUV });
+        if (s.history.length > 30) s.history = s.history.slice(-30);
+        s.date = todayStr();
+        s.todayCrawl = 0; s.todayPV = 0; s.todayUV = 0;
+        saveDashStats(s);
+        return s;
+    }
+
+    function saveDashStats(s) {
+        try { localStorage.setItem(DASH_STORAGE_KEY, JSON.stringify(s)); } catch(_){}
+    }
+
+    // ── 模拟访问量递增（实际项目可对接 GA/百度统计 API）──
+    function simulateVisits(stats) {
+        var hour = new Date().getHours();
+        // 白天流量高，夜间低
+        var rate = hour >= 9 && hour <= 22 ? 1 : 0.2;
+        if (Math.random() < rate * 0.4) { stats.todayPV += Math.floor(Math.random()*3 + 1); }
+        if (Math.random() < rate * 0.15) { stats.todayUV += 1; }
+        saveDashStats(stats);
+        return stats;
+    }
+
+    // ── 刷新仪表盘 ──
+    function refreshDashboard() {
+        var stats = getDashStats();
+        stats = simulateVisits(stats);
+
+        var totalStds   = DB.standards ? DB.standards.length : 0;
+        var activeStds  = DB.standards ? DB.standards.filter(function(s){ return s.status === '现行'; }).length : 0;
+        var abolStds    = DB.standards ? DB.standards.filter(function(s){ return s.status === '废止'; }).length : 0;
+        var comingStds  = DB.standards ? DB.standards.filter(function(s){ return s.status === '即将实施'; }).length : 0;
+        var noPdfStds   = DB.standards ? DB.standards.filter(function(s){ return !s.localFile; }).length : 0;
+        var hasPdfStds  = totalStds - noPdfStds;
+        var pdfRate     = totalStds ? Math.round(hasPdfStds / totalStds * 100) : 0;
+
+        // 今日抓取量（用总量变化估算）
+        var yesterdayHistory = stats.history.length ? stats.history[stats.history.length-1] : null;
+        var yesterdayCrawl   = yesterdayHistory ? yesterdayHistory.crawl : 0;
+
+        setText('dc-today-crawl', stats.todayCrawl);
+        setText('dc-today-crawl-sub', '昨日: ' + yesterdayCrawl + ' 条');
+        setTrend('dc-crawl-trend', stats.todayCrawl, yesterdayCrawl);
+
+        setText('dc-total-data', totalStds);
+        setText('dc-total-data-sub', '现行 ' + activeStds + ' + 废止 ' + abolStds);
+        var prevTotal = totalStds; // 静态，无历史变化
+        setTrend('dc-data-trend', totalStds, prevTotal, true);
+
+        setText('dc-today-pv', stats.todayPV);
+        var yesterdayPV = yesterdayHistory ? yesterdayHistory.pv : 0;
+        setText('dc-today-pv-sub', '昨日: ' + yesterdayPV);
+        setTrend('dc-pv-trend', stats.todayPV, yesterdayPV);
+
+        setText('dc-today-uv', stats.todayUV);
+        var yesterdayUV = yesterdayHistory ? yesterdayHistory.uv : 0;
+        setText('dc-uv-sub', '昨日: ' + yesterdayUV);
+        setTrend('dc-uv-trend', stats.todayUV, yesterdayUV);
+
+        setText('dc-db-active',  activeStds);
+        setText('dc-db-abol',    abolStds);
+        setText('dc-db-coming',  comingStds);
+        setText('dc-pdf-rate',   pdfRate + '%');
+        setText('dc-abol-rate',  totalStds ? Math.round(abolStds/totalStds*100) + '%' : '0%');
+        setText('dc-nopdf-count', noPdfStds);
+
+        // 绘制图表
+        var chartData = stats.history.slice(-6).concat([{ date: stats.date, crawl: stats.todayCrawl, pv: stats.todayPV, uv: stats.todayUV }]);
+        drawBarChart('chart-crawl', 'chart-crawl-labels', chartData, 'crawl', 'blue');
+        drawBarChart('chart-pv',    'chart-pv-labels',    chartData, 'pv',    'green');
+
+        // 渲染日志
+        renderLogTable();
+
+        var now = new Date();
+        setText('dashLastUpdate', '⏱ 上次刷新：' + now.toLocaleTimeString('zh-CN') + '  |  数据来源：本地存储 + GitHub');
+    }
+
+    function setText(id, val) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = val;
+    }
+
+    function setTrend(id, current, prev, hideIfSame) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (current > prev) {
+            el.className = 'dc-trend up';
+            el.textContent = '↑ 较昨日增加 ' + (current - prev);
+        } else if (current < prev) {
+            el.className = 'dc-trend down';
+            el.textContent = '↓ 较昨日减少 ' + (prev - current);
+        } else {
+            el.className = 'dc-trend same';
+            el.textContent = hideIfSame ? '— 与昨日持平' : '— 暂无变化';
+        }
+    }
+
+    function drawBarChart(chartId, labelId, data, field, colorClass) {
+        var chartEl  = document.getElementById(chartId);
+        var labelEl  = document.getElementById(labelId);
+        if (!chartEl || !labelEl) return;
+        var values = data.map(function(d){ return d[field] || 0; });
+        var maxVal  = Math.max.apply(null, values) || 1;
+        chartEl.innerHTML = values.map(function(v, i){
+            var h = Math.max(4, Math.round(v / maxVal * 72));
+            var isToday = i === data.length - 1;
+            return '<div class="bar-wrap">'
+                 + '<div class="bar-val">' + v + '</div>'
+                 + '<div class="bar-item ' + colorClass + '" style="height:' + h + 'px;opacity:' + (isToday ? 1 : 0.55) + '"></div>'
+                 + '</div>';
+        }).join('');
+        labelEl.innerHTML = data.map(function(d){
+            return '<span class="bar-lbl">' + d.date.slice(5) + '</span>';
+        }).join('');
+    }
+
+    // ── 模拟今日抓取 ──
+    function addTodayCrawl(count) {
+        var stats = getDashStats();
+        stats.todayCrawl += count;
+        saveDashStats(stats);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  爬虫日志 CRUD
+    // ══════════════════════════════════════════════════
+    function getLogs() {
+        try {
+            var raw = localStorage.getItem(CRAWL_LOG_KEY);
+            return raw ? JSON.parse(raw) : buildDemoLogs();
+        } catch(_){ return []; }
+    }
+
+    function saveLogs(logs) {
+        try { localStorage.setItem(CRAWL_LOG_KEY, JSON.stringify(logs)); } catch(_){}
+    }
+
+    function buildDemoLogs() {
+        var today = todayStr();
+        var yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+        var y = yesterday.toISOString().slice(0,10);
+        var t2 = new Date(); t2.setDate(t2.getDate()-2);
+        var d2 = t2.toISOString().slice(0,10);
+
+        var demos = [
+            { id: 1, time: today + ' 09:15:32', domain: 'www.gb688.cn',          path: '/bzgk/gb/std_list.html?p.p1=0&p.p90=on', status: 'fail', code: '403', detail: '被反爬策略拦截，返回 Forbidden，建议更换 User-Agent 或降低频率' },
+            { id: 2, time: today + ' 09:18:07', domain: 'std.samr.gov.cn',        path: '/gb/search/gbDetailed.jsp?id=67D34B48', status: 'fail', code: 'timeout', detail: '请求超时（>30s），服务器无响应，已重试3次仍失败' },
+            { id: 3, time: today + ' 10:02:45', domain: 'www.csbts.cn',           path: '/web/index.do?method=newsList&id=1',    status: 'warn', code: '200', detail: '页面返回200但解析失败：目标DOM节点 .std-table 不存在，可能页面结构已变更' },
+            { id: 4, time: today + ' 10:45:10', domain: 'openstd.samr.gov.cn',   path: '/bzgk/gb/gbQuery.do',                   status: 'fail', code: '503', detail: '服务器内部错误（503 Service Unavailable），可能正在维护' },
+            { id: 5, time: today + ' 11:30:01', domain: 'www.ttbz.org.cn',        path: '/Home/Standard?searchName=',            status: 'ok',   code: '200', detail: '成功抓取 28 条团标数据' },
+            { id: 6, time: today + ' 12:05:55', domain: 'www.gbstandards.org',    path: '/index.asp',                            status: 'warn', code: '200', detail: 'robots.txt 限制路径，跳过子页面，仅抓取列表页' },
+            { id: 7, time: today + ' 14:20:33', domain: 'std.samr.gov.cn',        path: '/gb/search/gbDetailed.jsp?id=89A12C',  status: 'fail', code: '404', detail: '页面不存在（404），该标准可能已下线或URL变更' },
+            { id: 8, time: today + ' 15:08:12', domain: 'www.cnis.ac.cn',         path: '/cnis/resource/cms/article/list.htm',  status: 'fail', code: '429', detail: '请求过于频繁（429 Too Many Requests），触发限速，需等待冷却' },
+            { id: 9, time: y     + ' 16:40:00', domain: 'www.gb688.cn',           path: '/bzgk/gb/std_list.html',               status: 'fail', code: '403', detail: 'IP 被封锁，建议更换代理后重试' },
+            { id: 10, time: y    + ' 09:10:20', domain: 'www.ttbz.org.cn',        path: '/Home/Standard?searchName=体育',        status: 'ok',   code: '200', detail: '成功抓取 15 条数据' },
+            { id: 11, time: d2   + ' 11:22:05', domain: 'openstd.samr.gov.cn',   path: '/bzgk/gb/gbQuery.do',                   status: 'skip', code: '—',   detail: '今日已抓取过，跳过重复请求' },
+        ];
+        saveLogs(demos);
+        return demos;
+    }
+
+    function renderLogTable() {
+        var logs     = getLogs();
+        var q        = (document.getElementById('logSearch')       || {}).value || '';
+        var stFilter = (document.getElementById('logStatusFilter') || {}).value || '';
+        var dtFilter = (document.getElementById('logDateFilter')   || {}).value || 'today';
+        var today    = todayStr();
+        var cutoff   = '';
+        if (dtFilter === 'today') { cutoff = today; }
+        else if (dtFilter === '3d') { var d = new Date(); d.setDate(d.getDate()-2); cutoff = d.toISOString().slice(0,10); }
+        else if (dtFilter === '7d') { var d = new Date(); d.setDate(d.getDate()-6); cutoff = d.toISOString().slice(0,10); }
+
+        var filtered = logs.filter(function(l){
+            if (stFilter && l.status !== stFilter) return false;
+            if (cutoff  && l.time.slice(0,10) < cutoff) return false;
+            if (q) {
+                var qL = q.toLowerCase();
+                if (!(l.domain+' '+l.path+' '+l.detail).toLowerCase().includes(qL)) return false;
+            }
+            return true;
+        }).sort(function(a, b){ return b.time > a.time ? 1 : -1; });
+
+        var tbody   = document.getElementById('logTbody');
+        var emptyEl = document.getElementById('logEmpty');
+        var pageEl  = document.getElementById('logPagination');
+        if (!tbody) return;
+
+        if (!filtered.length) {
+            tbody.innerHTML = '';
+            if (emptyEl) emptyEl.style.display = 'block';
+            if (pageEl)  pageEl.innerHTML = '';
+            return;
+        }
+        if (emptyEl) emptyEl.style.display = 'none';
+
+        var totalPages = Math.ceil(filtered.length / LOG_PAGE_SIZE);
+        if (logCurrentPage > totalPages) logCurrentPage = totalPages;
+        var start = (logCurrentPage - 1) * LOG_PAGE_SIZE;
+        var page  = filtered.slice(start, start + LOG_PAGE_SIZE);
+
+        var statusMap = { fail: '❌ 失败', warn: '⚠️ 警告', ok: '✅ 成功', skip: '⏭ 跳过' };
+        tbody.innerHTML = page.map(function(l){
+            var stClass = l.status === 'fail' ? 'fail' : l.status === 'warn' ? 'warn' : l.status === 'ok' ? 'ok' : 'skip';
+            return '<tr>'
+                 + '<td><div class="log-time">' + eh(l.time) + '</div></td>'
+                 + '<td><span class="log-domain">' + eh(l.domain) + '</span></td>'
+                 + '<td style="max-width:200px;font-size:11.5px;color:#64748b;word-break:break-all">' + eh(l.path||'—') + '</td>'
+                 + '<td><span class="log-status ' + stClass + '">' + (statusMap[l.status]||l.status) + '</span></td>'
+                 + '<td style="font-family:monospace;font-size:12px">' + eh(l.code||'—') + '</td>'
+                 + '<td style="max-width:260px"><div class="log-err-detail">' + eh(l.detail||'—') + '</div></td>'
+                 + '<td><button class="dash-add-log-btn" style="font-size:11px;padding:4px 9px;border-color:#fecaca;color:#dc2626" onclick="deleteLog(' + l.id + ')">删除</button></td>'
+                 + '</tr>';
+        }).join('');
+
+        // 分页
+        var pagerHtml = '<span>共 ' + filtered.length + ' 条  第 ' + logCurrentPage + '/' + totalPages + ' 页</span>'
+            + '<button onclick="logGoPage(' + (logCurrentPage-1) + ')" ' + (logCurrentPage<=1?'disabled':'') + '>上一页</button>'
+            + '<button onclick="logGoPage(' + (logCurrentPage+1) + ')" ' + (logCurrentPage>=totalPages?'disabled':'') + '>下一页</button>';
+        if (pageEl) pageEl.innerHTML = pagerHtml;
+    }
+
+    function logGoPage(p) { logCurrentPage = p; renderLogTable(); }
+
+    function deleteLog(id) {
+        if (!confirm('确定删除该条日志？')) return;
+        var logs = getLogs().filter(function(l){ return l.id !== id; });
+        saveLogs(logs);
+        renderLogTable();
+    }
+
+    function clearLogs() {
+        if (!confirm('确定清空所有爬虫日志吗？')) return;
+        saveLogs([]);
+        renderLogTable();
+    }
+
+    // ── 添加日志弹窗 ──
+    function openAddLogModal() {
+        document.getElementById('log_domain').value = '';
+        document.getElementById('log_path').value   = '';
+        document.getElementById('log_status').value = 'fail';
+        document.getElementById('log_code').value   = '';
+        document.getElementById('log_detail').value = '';
+        document.getElementById('addLogModal').classList.add('open');
+    }
+
+    function closeAddLogModal() {
+        document.getElementById('addLogModal').classList.remove('open');
+    }
+
+    function saveLog() {
+        var domain = document.getElementById('log_domain').value.trim();
+        if (!domain) { alert('请填写域名！'); return; }
+        var logs = getLogs();
+        var newId = logs.length ? Math.max.apply(null, logs.map(function(l){ return l.id||0; })) + 1 : 1;
+        var now = new Date();
+        var pad = function(n){ return String(n).padStart(2,'0'); };
+        var timeStr = now.toISOString().slice(0,10) + ' '
+            + pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+        logs.unshift({
+            id:     newId,
+            time:   timeStr,
+            domain: domain,
+            path:   document.getElementById('log_path').value.trim(),
+            status: document.getElementById('log_status').value,
+            code:   document.getElementById('log_code').value.trim(),
+            detail: document.getElementById('log_detail').value.trim()
+        });
+        saveLogs(logs);
+        // 如果是失败记录，更新今日抓取量（抓取了但失败）
+        if (document.getElementById('log_status').value !== 'skip') {
+            addTodayCrawl(1);
+        }
+        closeAddLogModal();
+        refreshDashboard();
     }
 
     // ══════════════════════════════════════════════════
