@@ -198,9 +198,10 @@
     .preview-head h3{flex:1;font-size:14px;font-weight:600;color:var(--text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .preview-close{width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
     .preview-close:hover{background:var(--red);border-color:var(--red);color:#fff}
-    .preview-iframe{flex:1;border:none;width:100%;background:#f5f5f5}
-    .preview-loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;flex-direction:column;gap:10px}
-    .preview-nofile{text-align:center;padding:40px 20px;color:var(--muted);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .preview-iframe{flex:1;border:none;width:100%;background:#f5f5f5;height:100%}
+    .preview-loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;flex-direction:column;gap:10px;min-height:200px}
+    .preview-nofile{text-align:center;padding:40px 20px;color:var(--muted);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px}
+    .preview-box{position:relative}
     @media(max-width:480px){
       .dl-btns{grid-template-columns:1fr}
       .modal-overlay{padding:0;align-items:flex-end}
@@ -386,12 +387,37 @@
     <div class="preview-head">
       <span style="font-size:18px">🔍</span>
       <h3 id="previewTitle">标准在线预览</h3>
+      <a id="previewDlBtn" href="#" target="_blank" download
+         style="flex-shrink:0;padding:5px 13px;background:#2563eb;color:#fff;border-radius:7px;
+                font-size:12px;font-weight:600;text-decoration:none;display:none">
+        ⬇️ 下载
+      </a>
       <button class="preview-close" onclick="closePreview()">✕</button>
     </div>
-    <div id="previewContent" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-      <div class="preview-loading" id="previewLoading">
-        <span class="spinner"></span>加载预览中…
-      </div>
+    <!-- 加载中状态 -->
+    <div class="preview-loading" id="previewLoading" style="display:flex">
+      <span class="spinner"></span>PDF加载中，请稍候…
+    </div>
+    <!-- 错误状态 -->
+    <div class="preview-nofile" id="previewError" style="display:none">
+      <div style="font-size:40px;margin-bottom:12px">📭</div>
+      <h3 style="color:var(--text);margin-bottom:8px">PDF 文件暂未收录</h3>
+      <p>该标准的 PDF 文件尚未上传，请稍后再试或联系我们补充。</p>
+    </div>
+    <!-- iframe 预览区（稳定存在，不被销毁重建） -->
+    <iframe id="previewIframe" class="preview-iframe"
+            style="display:none;flex:1" title="PDF预览"
+            allowfullscreen></iframe>
+    <!-- 移动端降级：直接下载提示 -->
+    <div class="preview-nofile" id="previewMobile" style="display:none">
+      <div style="font-size:40px;margin-bottom:12px">📱</div>
+      <h3 style="color:var(--text);margin-bottom:8px">手机端请直接下载</h3>
+      <p style="margin-bottom:20px">移动浏览器不支持内嵌 PDF 预览，请点击下方按钮下载后查看。</p>
+      <a id="previewMobileDl" href="#" download target="_blank"
+         style="padding:12px 28px;background:#2563eb;color:#fff;border-radius:9px;
+                font-size:15px;font-weight:700;text-decoration:none;display:inline-block">
+        ⬇️ 下载 PDF
+      </a>
     </div>
   </div>
 </div>
@@ -983,29 +1009,100 @@ function _doOpenModal(id){
 }
 
 // ── 在线预览弹窗逻辑 ──
+// ── 检测是否为移动端 ──
+function isMobile(){
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || window.innerWidth < 600;
+}
+
+// ── 预览弹窗：稳定显示，不销毁重建 iframe ──
+function _showPreviewState(state){
+  document.getElementById('previewLoading').style.display = state === 'loading' ? 'flex'  : 'none';
+  document.getElementById('previewError').style.display   = state === 'error'   ? 'flex'  : 'none';
+  document.getElementById('previewMobile').style.display  = state === 'mobile'  ? 'flex'  : 'none';
+  document.getElementById('previewIframe').style.display  = state === 'iframe'  ? 'block' : 'none';
+}
+
 function openPreview(pdfPath, title){
   document.getElementById('previewTitle').textContent = title || '标准在线预览';
-  var content = document.getElementById('previewContent');
-  content.innerHTML = '<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
   document.getElementById('previewOverlay').classList.add('open');
-  var iframe = document.createElement('iframe');
-  iframe.className = 'preview-iframe';
-  iframe.title = title;
-  iframe.onload = function(){ content.innerHTML=''; content.appendChild(iframe); };
-  setTimeout(function(){
-    if(content.querySelector('.preview-loading')){ content.innerHTML=''; content.appendChild(iframe); }
-  }, 2000);
-  iframe.src = pdfPath;
+  document.body.style.overflow = 'hidden';
+
+  // 设置下载按钮链接
+  var dlBtn = document.getElementById('previewDlBtn');
+  dlBtn.href = pdfPath;
+  dlBtn.download = (title || 'standard').replace(/[\/\s]/g,'-') + '.pdf';
+  dlBtn.style.display = '';
+
+  // 移动端直接显示下载提示（iframe 预览在移动端体验差）
+  if(isMobile()){
+    document.getElementById('previewMobileDl').href = pdfPath;
+    document.getElementById('previewMobileDl').download = dlBtn.download;
+    _showPreviewState('mobile');
+    return;
+  }
+
+  // 桌面端：先显示 loading，再加载 iframe
+  _showPreviewState('loading');
+
+  var iframe = document.getElementById('previewIframe');
+
+  // 超时兜底：8秒还没加载完，直接显示 iframe（避免白屏等待）
+  var fallbackTimer = setTimeout(function(){
+    _showPreviewState('iframe');
+  }, 8000);
+
+  // onload：PDF 成功加载，隐藏 loading 显示 iframe
+  iframe.onload = function(){
+    clearTimeout(fallbackTimer);
+    // 部分浏览器 PDF 加载失败也会触发 onload，用 contentDocument 检测
+    try {
+      var doc = iframe.contentDocument || iframe.contentWindow.document;
+      // 如果内容为空页面或404，显示错误
+      if(doc && doc.title && doc.title.indexOf('404') !== -1){
+        _showPreviewState('error');
+        return;
+      }
+    } catch(e){
+      // 跨域正常，忽略
+    }
+    _showPreviewState('iframe');
+  };
+
+  iframe.onerror = function(){
+    clearTimeout(fallbackTimer);
+    _showPreviewState('error');
+  };
+
+  // ⚠️ 关键修复：直接设置 src，不要重置 innerHTML
+  // 如果是同一个 PDF 再次打开，需要强制刷新
+  if(iframe.src && iframe.src.includes(pdfPath.split('?')[0])){
+    _showPreviewState('iframe'); // 已加载过，直接显示
+    clearTimeout(fallbackTimer);
+  } else {
+    iframe.src = pdfPath + '?v=' + Date.now();
+  }
 }
+
 function closePreview(){
   document.getElementById('previewOverlay').classList.remove('open');
-  document.getElementById('previewContent').innerHTML='<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
+  document.body.style.overflow = '';
+  // ⚠️ 不清空 iframe.src，不重建 DOM，避免触发重载闪烁
+  // 仅重置为 loading 状态，供下次打开时使用
+  _showPreviewState('loading');
+  document.getElementById('previewDlBtn').style.display = 'none';
 }
 function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect();}
-function closeModalDirect(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalDirect(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  // 只有预览弹窗也关闭时才恢复滚动
+  if(!document.getElementById('previewOverlay').classList.contains('open')){
+    document.body.style.overflow='';
+  }
+}
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     if(document.getElementById('previewOverlay').classList.contains('open')){closePreview();return;}
+    if(document.getElementById('capOverlay').classList.contains('open')){cancelCap();return;}
     closeModalDirect();
   }
 });
