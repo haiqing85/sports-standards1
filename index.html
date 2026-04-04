@@ -182,16 +182,24 @@
     .preview-btn{background:linear-gradient(135deg,#0369a1,#0284c7)}
     .dl-note{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
     /* 在线预览 iframe 弹窗 */
-    .preview-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.7);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+    .preview-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.75);z-index:300;flex-direction:column;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
     .preview-overlay.open{display:flex}
-    .preview-box{background:var(--white);border-radius:12px;width:100%;max-width:900px;height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.3)}
-    .preview-head{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);gap:12px;flex-shrink:0}
-    .preview-head h3{flex:1;font-size:14px;font-weight:600;color:var(--text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .preview-close{width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0}
-    .preview-close:hover{background:var(--red);border-color:var(--red);color:#fff}
-    .preview-iframe{flex:1;border:none;width:100%;background:#f5f5f5}
-    .preview-loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;flex-direction:column;gap:10px}
+    .preview-overlay.fullscreen{padding:0}
+    .preview-box{background:var(--white);border-radius:12px;width:100%;max-width:960px;height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.35);transition:all .25s ease}
+    .preview-overlay.fullscreen .preview-box{max-width:100%;height:100vh;border-radius:0}
+    .preview-head{display:flex;align-items:center;padding:11px 16px;border-bottom:1px solid var(--border);gap:10px;flex-shrink:0}
+    .preview-head h3{flex:1;font-size:13.5px;font-weight:600;color:var(--text);margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .preview-btn-icon{width:32px;height:32px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);flex-shrink:0;transition:all .15s}
+    .preview-btn-icon:hover{background:var(--blue-dim);border-color:var(--blue-light);color:var(--blue-mid)}
+    .preview-close:hover{background:#fee2e2;border-color:#fecaca;color:var(--red)}
+    /* iframe 区域：稳定存在，不销毁重建 */
+    .preview-body{flex:1;position:relative;overflow:hidden;background:#f3f4f6}
+    .preview-iframe{position:absolute;inset:0;width:100%;height:100%;border:none;background:#fff}
+    .preview-loading-mask{position:absolute;inset:0;background:#f3f4f6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted);font-size:14px;z-index:2;transition:opacity .3s}
+    .preview-loading-mask.hidden{opacity:0;pointer-events:none}
+    .preview-error-mask{position:absolute;inset:0;background:#f3f4f6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--muted);font-size:14px;z-index:2;display:none}
     .preview-nofile{text-align:center;padding:40px 20px;color:var(--muted);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .preview-loading{display:flex;align-items:center;justify-content:center;flex:1;color:var(--muted);font-size:14px;flex-direction:column;gap:10px}
     @media(max-width:480px){
       .dl-btns{grid-template-columns:1fr}
       .modal-overlay{padding:0;align-items:flex-end}
@@ -373,16 +381,34 @@
 
 <!-- 在线预览弹窗 -->
 <div class="preview-overlay" id="previewOverlay">
-  <div class="preview-box">
+  <div class="preview-box" id="previewBox">
     <div class="preview-head">
-      <span style="font-size:18px">🔍</span>
+      <span style="font-size:16px">🔍</span>
       <h3 id="previewTitle">标准在线预览</h3>
-      <button class="preview-close" onclick="closePreview()">✕</button>
+      <!-- 下载按钮 -->
+      <a id="previewDlBtn" href="#" target="_blank" download
+         class="preview-btn-icon" title="下载PDF" style="text-decoration:none;font-size:16px">⬇️</a>
+      <!-- 全屏按钮 -->
+      <button class="preview-btn-icon" id="previewFsBtn" onclick="togglePreviewFullscreen()" title="全屏/还原">⛶</button>
+      <!-- 关闭按钮 -->
+      <button class="preview-btn-icon preview-close" onclick="closePreview()" title="关闭">✕</button>
     </div>
-    <div id="previewContent" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
-      <div class="preview-loading" id="previewLoading">
-        <span class="spinner"></span>加载预览中…
+    <!-- 预览主体：iframe 稳定存在，不销毁重建 -->
+    <div class="preview-body">
+      <!-- 加载遮罩 -->
+      <div class="preview-loading-mask" id="previewMask">
+        <span class="spinner"></span>
+        <span>PDF 加载中，请稍候…</span>
       </div>
+      <!-- 错误遮罩 -->
+      <div class="preview-error-mask" id="previewErrMask">
+        <div style="font-size:36px">📭</div>
+        <div style="font-weight:600;color:var(--text)">PDF 暂未收录</div>
+        <div>该标准文件尚未上传，请稍后再试</div>
+      </div>
+      <!-- 稳定存在的 iframe，不会被 innerHTML 销毁 -->
+      <iframe id="previewIframe" class="preview-iframe"
+              title="PDF预览" allowfullscreen></iframe>
     </div>
   </div>
 </div>
@@ -972,30 +998,141 @@ function _doOpenModal(id){
   document.body.style.overflow='hidden';
 }
 
-// ── 在线预览弹窗逻辑 ──
-function openPreview(pdfPath, title){
+// ── 在线预览弹窗：稳定 iframe，不销毁重建，彻底消除闪烁 ──
+var _previewIsFullscreen = false;
+var _previewFallbackTimer = null;
+
+function _setPreviewState(state) {
+  // state: 'loading' | 'show' | 'error'
+  var mask    = document.getElementById('previewMask');
+  var errMask = document.getElementById('previewErrMask');
+  var iframe  = document.getElementById('previewIframe');
+  if (state === 'loading') {
+    mask.classList.remove('hidden');
+    errMask.style.display = 'none';
+    iframe.style.opacity  = '0';
+  } else if (state === 'show') {
+    mask.classList.add('hidden');
+    errMask.style.display = 'none';
+    iframe.style.opacity  = '1';
+  } else if (state === 'error') {
+    mask.classList.add('hidden');
+    errMask.style.display = 'flex';
+    iframe.style.opacity  = '0';
+  }
+}
+
+function openPreview(pdfPath, title) {
+  if (_previewFallbackTimer) { clearTimeout(_previewFallbackTimer); }
+
   document.getElementById('previewTitle').textContent = title || '标准在线预览';
-  var content = document.getElementById('previewContent');
-  content.innerHTML = '<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
+  document.body.style.overflow = 'hidden';
   document.getElementById('previewOverlay').classList.add('open');
-  var iframe = document.createElement('iframe');
-  iframe.className = 'preview-iframe';
-  iframe.title = title;
-  iframe.onload = function(){ content.innerHTML=''; content.appendChild(iframe); };
-  setTimeout(function(){
-    if(content.querySelector('.preview-loading')){ content.innerHTML=''; content.appendChild(iframe); }
-  }, 2000);
-  iframe.src = pdfPath;
+
+  // 设置下载按钮
+  var dlBtn = document.getElementById('previewDlBtn');
+  if (dlBtn) { dlBtn.href = pdfPath; dlBtn.download = (title||'standard').replace(/[\/\s]/g,'-')+'.pdf'; }
+
+  var iframe = document.getElementById('previewIframe');
+
+  // 若 src 相同，直接显示（不重新加载）
+  var cleanPath = pdfPath.split('?')[0];
+  var curSrc    = (iframe.src || '').split('?')[0];
+  // 兼容绝对URL与相对路径比较
+  var isSame = curSrc && (curSrc === cleanPath || curSrc.endsWith('/' + cleanPath));
+
+  if (isSame && iframe.style.opacity === '1') {
+    _setPreviewState('show');
+    return;
+  }
+
+  // 显示加载遮罩
+  _setPreviewState('loading');
+
+  // 超时兜底：10秒后若还在加载则强制显示（防止永久白屏）
+  _previewFallbackTimer = setTimeout(function() {
+    if (document.getElementById('previewMask') &&
+        !document.getElementById('previewMask').classList.contains('hidden')) {
+      _setPreviewState('show'); // 强制显示，让用户看到 PDF 或空白
+    }
+  }, 10000);
+
+  // ⚠️ 关键：onload 只切换状态，绝不操作 innerHTML
+  iframe.onload = function() {
+    if (_previewFallbackTimer) { clearTimeout(_previewFallbackTimer); _previewFallbackTimer = null; }
+    // 检测是否 404（部分浏览器 404 页面也触发 onload）
+    try {
+      var doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+      if (doc && doc.title && (doc.title.indexOf('404') !== -1 || doc.title.indexOf('Not Found') !== -1)) {
+        _setPreviewState('error'); return;
+      }
+    } catch(e) { /* 跨域忽略 */ }
+    _setPreviewState('show');
+  };
+
+  iframe.onerror = function() {
+    if (_previewFallbackTimer) { clearTimeout(_previewFallbackTimer); _previewFallbackTimer = null; }
+    _setPreviewState('error');
+  };
+
+  // 设置 src（带时间戳避免缓存，但仅首次或切换文件时）
+  iframe.src = pdfPath + (pdfPath.indexOf('?') === -1 ? '?v=' + Date.now() : '');
 }
-function closePreview(){
+
+function closePreview() {
+  if (_previewFallbackTimer) { clearTimeout(_previewFallbackTimer); _previewFallbackTimer = null; }
   document.getElementById('previewOverlay').classList.remove('open');
-  document.getElementById('previewContent').innerHTML='<div class="preview-loading"><span class="spinner"></span>加载预览中…</div>';
+  // 退出全屏
+  if (_previewIsFullscreen) { togglePreviewFullscreen(); }
+  document.body.style.overflow = '';
+  // 重置为加载状态，供下次打开使用（不清空 src，避免重新加载同一文件）
+  _setPreviewState('loading');
 }
+
+// ── 全屏切换 ──
+function togglePreviewFullscreen() {
+  var overlay = document.getElementById('previewOverlay');
+  var btn     = document.getElementById('previewFsBtn');
+  _previewIsFullscreen = !_previewIsFullscreen;
+  if (_previewIsFullscreen) {
+    overlay.classList.add('fullscreen');
+    if (btn) btn.textContent = '⊠'; // 还原图标
+    if (btn) btn.title = '还原';
+    // 尝试系统级全屏
+    var el = document.getElementById('previewBox');
+    if (el.requestFullscreen)            { el.requestFullscreen(); }
+    else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); }
+  } else {
+    overlay.classList.remove('fullscreen');
+    if (btn) btn.textContent = '⛶';
+    if (btn) btn.title = '全屏';
+    if (document.exitFullscreen)            { document.exitFullscreen().catch(function(){}); }
+    else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+  }
+}
+
+// 监听系统全屏退出（按 Esc 退出系统全屏时同步状态）
+document.addEventListener('fullscreenchange', function() {
+  if (!document.fullscreenElement && _previewIsFullscreen) {
+    _previewIsFullscreen = false;
+    document.getElementById('previewOverlay').classList.remove('fullscreen');
+    var btn = document.getElementById('previewFsBtn');
+    if (btn) { btn.textContent = '⛶'; btn.title = '全屏'; }
+  }
+});
 function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect();}
-function closeModalDirect(){document.getElementById('modalOverlay').classList.remove('open');document.body.style.overflow='';}
+function closeModalDirect(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  if(!document.getElementById('previewOverlay').classList.contains('open')){
+    document.body.style.overflow='';
+  }
+}
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
-    if(document.getElementById('previewOverlay').classList.contains('open')){closePreview();return;}
+    // 전체화면 중 Esc → 전체화면 해제만, 프리뷰는 유지
+    if(_previewIsFullscreen){ togglePreviewFullscreen(); return; }
+    if(document.getElementById('previewOverlay').classList.contains('open')){ closePreview(); return; }
+    if(document.getElementById('capOverlay').classList.contains('open')){ cancelCap(); return; }
     closeModalDirect();
   }
 });
