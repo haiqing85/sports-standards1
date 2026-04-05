@@ -1,6 +1,6 @@
 {
   "version": "2026.04.03",
-  "updated": "2026-04-03",
+  "updated": "2026-04-05 03:26:17",
   "total": 356,
   "standards": [
     {
@@ -34,7 +34,7 @@
       "issueDate": "2018-05-14",
       "implementDate": "2018-11-01",
       "abolishDate": null,
-      "replaces": "GB/T 19851.11-2005",
+      "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
       "category": "合成材料面层",
