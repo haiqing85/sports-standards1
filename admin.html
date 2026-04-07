@@ -6,6 +6,7 @@
     <title>体育标准数据库 - 管理后台</title>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; }
+        * { box-sizing: border-box; }
         body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 0; }
         /* 登录页 */
         .login-screen { position: fixed; inset: 0; background: #1e293b; display: flex; align-items: center; justify-content: center; z-index: 999; }
@@ -15,8 +16,9 @@
         .login-box label { display: block; text-align: left; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
         .login-box input { width: 100%; padding: 11px 13px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 7px; box-sizing: border-box; font-size: 14px; font-family: inherit; color: #1e293b; }
         .login-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
-        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; transition: background .2s; }
         .login-box button:hover { background: #1d4ed8; }
+        .login-box button:disabled { opacity: .6; cursor: not-allowed; }
         .login-err { color: #dc2626; font-size: 13px; margin-top: 10px; min-height: 18px; }
         /* 主界面 */
         .container { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
@@ -113,119 +115,6 @@
         .tab-btn.active { color:#2563eb; border-bottom-color:#2563eb; }
         .tab-panel { display:none; }
         .tab-panel.active { display:block; }
-        /* 广告/SEO 面板 */
-        .ad-section { margin-bottom:28px; }
-        .ad-section-title { font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid #f1f5f9; }
-        .ad-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:10px; overflow:hidden; }
-        .ad-card-head { display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer; user-select:none; transition:background .15s; }
-        .ad-card-head:hover { background:#f1f5f9; }
-        .ad-card-num { width:24px; height:24px; border-radius:50%; background:#e0e7ff; color:#3730a3; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .ad-card-info { flex:1; }
-        .ad-card-name { font-size:13.5px; font-weight:700; color:#0f172a; }
-        .ad-card-desc { font-size:11.5px; color:#94a3b8; margin-top:1px; }
-        .ad-toggle-wrap { display:flex; align-items:center; gap:8px; flex-shrink:0; }
-        .ad-toggle-label { font-size:11px; color:#64748b; }
-        .toggle-sw { position:relative; width:40px; height:22px; flex-shrink:0; }
-        .toggle-sw input { opacity:0; width:0; height:0; }
-        .toggle-track { position:absolute; inset:0; background:#cbd5e1; border-radius:22px; cursor:pointer; transition:background .2s; }
-        .toggle-track::before { content:''; position:absolute; width:16px; height:16px; left:3px; top:3px; background:#fff; border-radius:50%; transition:transform .2s; }
-        .toggle-sw input:checked + .toggle-track { background:#2563eb; }
-        .toggle-sw input:checked + .toggle-track::before { transform:translateX(18px); }
-        .ad-card-arrow { color:#cbd5e1; font-size:11px; transition:transform .2s; flex-shrink:0; }
-        .ad-card.open .ad-card-arrow { transform:rotate(180deg); }
-        .ad-card-body { display:none; padding:0 16px 16px; }
-        .ad-card.open .ad-card-body { display:block; }
-        .ad-code-label { font-size:11px; font-weight:700; color:#64748b; letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
-        .ad-pos-tag { background:#dbeafe; color:#1d4ed8; border-radius:4px; padding:1px 8px; font-size:10px; text-transform:none; letter-spacing:0; font-weight:600; }
-        .ad-textarea { width:100%; min-height:100px; padding:10px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:7px; font-family:'Courier New',monospace; font-size:12px; color:#1e293b; line-height:1.6; outline:none; resize:vertical; box-sizing:border-box; transition:border-color .2s; }
-        .ad-textarea:focus { border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1); }
-        .ad-textarea::placeholder { color:#cbd5e0; font-style:italic; }
-        .ad-hint { font-size:11px; color:#94a3b8; margin-top:5px; line-height:1.5; }
-        .ad-save-bar { position:sticky; bottom:0; background:#fff; border-top:1px solid #e2e8f0; padding:14px 0; display:flex; align-items:center; gap:12px; margin-top:20px; z-index:10; }
-        .ad-save-status { font-size:12.5px; color:#64748b; }
-        .ad-save-status.ok { color:#16a34a; }
-        .ad-save-status.err { color:#dc2626; }
-        .pos-map { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:16px; margin-bottom:20px; }
-        .pos-map-title { font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
-        .pos-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
-        .pos-row:last-child { border:none; }
-        .pos-num { width:22px; height:22px; border-radius:50%; background:#dbeafe; color:#1d4ed8; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-        .pos-label { color:#334155; flex:1; }
-        .pos-key { font-family:monospace; font-size:10px; color:#94a3b8; }
-        .ad-info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 14px; margin-bottom:20px; font-size:12.5px; color:#1e40af; line-height:1.7; }
-        .export-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:16px; }
-        .sec-btn { padding:8px 16px; border:1px solid #e2e8f0; border-radius:7px; background:#fff; color:#475569; font-size:13px; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; transition:all .15s; }
-        .sec-btn:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
-        .sec-btn.danger:hover { border-color:#dc2626; color:#dc2626; background:#fef2f2; }
-        /* 数据仪表盘 */
-        .dash-section { margin-bottom:32px; }
-        .dash-section-title { font-size:11px; font-weight:700; color:#94a3b8; letter-spacing:2px; text-transform:uppercase; margin-bottom:14px; padding-bottom:8px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:8px; }
-        .dash-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px; }
-        .dash-grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:14px; }
-        .dash-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:18px 16px; text-align:center; position:relative; overflow:hidden; }
-        .dash-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
-        .dash-card.blue::before { background:linear-gradient(90deg,#2563eb,#60a5fa); }
-        .dash-card.green::before { background:linear-gradient(90deg,#10b981,#6ee7b7); }
-        .dash-card.orange::before { background:linear-gradient(90deg,#f59e0b,#fcd34d); }
-        .dash-card.purple::before { background:linear-gradient(90deg,#7c3aed,#c4b5fd); }
-        .dash-card.red::before { background:linear-gradient(90deg,#ef4444,#fca5a5); }
-        .dash-card.teal::before { background:linear-gradient(90deg,#0891b2,#67e8f9); }
-        .dash-card .dc-icon { font-size:26px; margin-bottom:8px; display:block; }
-        .dash-card .dc-num { font-size:30px; font-weight:800; line-height:1; margin-bottom:4px; }
-        .dash-card.blue  .dc-num { color:#2563eb; }
-        .dash-card.green .dc-num { color:#10b981; }
-        .dash-card.orange .dc-num { color:#f59e0b; }
-        .dash-card.purple .dc-num { color:#7c3aed; }
-        .dash-card.red   .dc-num { color:#ef4444; }
-        .dash-card.teal  .dc-num { color:#0891b2; }
-        .dash-card .dc-lbl { font-size:12px; color:#94a3b8; font-weight:500; }
-        .dash-card .dc-sub { font-size:11px; color:#cbd5e0; margin-top:4px; }
-        .dash-card .dc-trend { font-size:11px; margin-top:6px; padding:2px 8px; border-radius:20px; display:inline-block; }
-        .dc-trend.up { background:#dcfce7; color:#16a34a; }
-        .dc-trend.down { background:#fee2e2; color:#dc2626; }
-        .dc-trend.same { background:#f1f5f9; color:#64748b; }
-        /* 图表区 */
-        .dash-chart-box { background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:18px; margin-bottom:14px; }
-        .dash-chart-title { font-size:13px; font-weight:700; color:#334155; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; }
-        .dash-chart-title span { font-size:11px; color:#94a3b8; font-weight:400; }
-        .bar-chart { display:flex; align-items:flex-end; gap:6px; height:80px; }
-        .bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; height:100%; justify-content:flex-end; }
-        .bar-item { width:100%; border-radius:3px 3px 0 0; min-height:2px; transition:height .3s ease; }
-        .bar-item.blue { background:linear-gradient(to top,#2563eb,#93c5fd); }
-        .bar-item.green { background:linear-gradient(to top,#10b981,#6ee7b7); }
-        .bar-lbl { font-size:10px; color:#94a3b8; white-space:nowrap; }
-        .bar-val { font-size:10px; color:#475569; font-weight:600; }
-        /* 爬虫日志 */
-        .log-filter-row { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
-        .log-filter-row select, .log-filter-row input { padding:7px 11px; border:1px solid #e2e8f0; border-radius:7px; font-size:13px; font-family:inherit; outline:none; color:#1e293b; background:#fff; }
-        .log-filter-row input { flex:1; min-width:180px; }
-        .log-filter-row select:focus, .log-filter-row input:focus { border-color:#2563eb; }
-        .log-table { width:100%; border-collapse:collapse; font-size:13px; }
-        .log-table th { background:#f1f5f9; color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; padding:8px 12px; text-align:left; border-bottom:1px solid #e2e8f0; }
-        .log-table td { padding:10px 12px; border-bottom:1px solid #f8fafc; color:#334155; vertical-align:middle; }
-        .log-table tr:last-child td { border-bottom: none; }
-        .log-table tr:hover td { background:#f8fafc; }
-        .log-status { display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; font-size:11px; font-weight:700; }
-        .log-status.fail   { background:#fee2e2; color:#dc2626; }
-        .log-status.warn   { background:#fef3c7; color:#b45309; }
-        .log-status.ok     { background:#dcfce7; color:#16a34a; }
-        .log-status.skip   { background:#f1f5f9; color:#64748b; }
-        .log-err-detail { font-size:11.5px; color:#94a3b8; margin-top:2px; }
-        .log-domain { font-family:monospace; font-size:12px; color:#1e40af; }
-        .log-time { font-size:11px; color:#94a3b8; }
-        .log-empty { text-align:center; padding:40px; color:#94a3b8; font-size:14px; }
-        .log-empty .lei { font-size:32px; margin-bottom:8px; }
-        .dash-refresh-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
-        .dash-refresh-row .last-update { font-size:12px; color:#94a3b8; }
-        .dash-add-log-btn { padding:7px 14px; border:1px dashed #cbd5e0; border-radius:7px; background:#fff; color:#64748b; font-size:12.5px; cursor:pointer; font-family:inherit; transition:all .15s; }
-        .dash-add-log-btn:hover { border-color:#2563eb; color:#2563eb; background:#eff6ff; }
-        .log-pagination { display:flex; align-items:center; gap:8px; justify-content:flex-end; margin-top:12px; font-size:13px; color:#64748b; }
-        .log-pagination button { padding:5px 12px; border:1px solid #e2e8f0; border-radius:6px; background:#fff; cursor:pointer; font-family:inherit; font-size:12px; color:#475569; }
-        .log-pagination button:hover:not(:disabled) { border-color:#2563eb; color:#2563eb; }
-        .log-pagination button:disabled { opacity:.4; cursor:not-allowed; }
-        .visit-sparkline { display:flex; align-items:flex-end; gap:2px; height:28px; margin-top:6px; }
-        .vsp-bar { flex:1; border-radius:2px; background:#dbeafe; min-height:2px; }
-        .vsp-bar.today { background:#2563eb; }
     </style>
 </head>
 <body>
@@ -233,434 +122,79 @@
 <div class="login-screen" id="loginScreen">
     <div class="login-box">
         <h2>🏟 体育标准管理后台</h2>
-        <div class="sub">请输入管理员账号登录</div>
-        <label>用户名</label>
-        <input type="text" id="username" placeholder="请输入用户名"
+        <div class="sub">请输入管理员密码登录</div>
+        <label>管理员密码</label>
+        <input type="password" id="adminPassword" placeholder="请输入环境变量里的ADMIN_PASSWORD"
             onkeydown="if(event.key==='Enter')checkLogin()">
-        <label>管理员密码（和EdgeOne环境变量一致）</label>
-        <input type="password" id="password" placeholder="请输入环境变量里的ADMIN_PASSWORD"
-            onkeydown="if(event.key==='Enter')checkLogin()">
-        <button onclick="checkLogin()">登 录</button>
+        <button onclick="checkLogin()" id="loginBtn">登 录</button>
         <div class="login-err" id="loginErr"></div>
     </div>
 </div>
+
 <!-- 主界面 -->
 <div class="container" id="adminScreen">
     <div class="header-bar">
         <h1>🏟 体育标准管理后台</h1>
         <div class="header-btns">
-            <button class="btn btn-primary" id="addStdBtn" onclick="openModal()">➕ 新增标准</button>
+            <button class="btn btn-primary" onclick="openModal()">➕ 新增标准</button>
             <button class="btn btn-sync" onclick="syncToGithub()" id="syncBtn">☁️ 推送至 GitHub</button>
         </div>
     </div>
+
     <!-- 标签导航 -->
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab('std',this)">📋 标准数据管理</button>
         <button class="tab-btn" onclick="switchTab('ad',this)">📢 广告与SEO配置</button>
-        <button class="tab-btn" onclick="switchTab('dashboard',this)">📊 数据仪表盘</button>
     </div>
-    <!-- Tab 1: 标准管理（原有内容） -->
+
+    <!-- Tab 1: 标准管理 -->
     <div class="tab-panel active" id="tab-std">
-    <div id="statusText">正在连接 GitHub 并加载数据…</div>
-    <!-- 统计面板 -->
-    <div class="stats-bar" id="statsBar">
-        <div class="stat-card total" onclick="filterByCard('')" title="点击查看全部标准">
-            <div class="s-num" id="st-total">—</div><div class="s-lbl">收录标准（全部）</div>
+        <div id="statusText">正在连接 GitHub 并加载数据…</div>
+        <!-- 统计面板 -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-card total" onclick="filterByCard('')" title="点击查看全部标准">
+                <div class="s-num" id="st-total">—</div><div class="s-lbl">收录标准（全部）</div>
+            </div>
+            <div class="stat-card active" onclick="filterByCard('现行')" title="点击查看现行标准">
+                <div class="s-num" id="st-active">—</div><div class="s-lbl">现行有效 ↓点击查看</div>
+            </div>
+            <div class="stat-card abol" onclick="filterByCard('废止')" title="点击查看已废止标准">
+                <div class="s-num" id="st-abol">—</div><div class="s-lbl">已废止 ↓点击查看</div>
+            </div>
+            <div class="stat-card nopdf" onclick="filterByCard('__nopdf__')" title="点击查看缺少PDF的标准">
+                <div class="s-num" id="st-nopdf">—</div><div class="s-lbl">⚠️ 缺PDF ↓点击补传</div>
+            </div>
         </div>
-        <div class="stat-card active" onclick="filterByCard('现行')" title="点击查看现行标准">
-            <div class="s-num" id="st-active">—</div><div class="s-lbl">现行有效 ↓点击查看</div>
+        <!-- 搜索筛选 -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 搜索标准编号、名称…" oninput="renderList()">
+            <select id="filterType" onchange="renderList()">
+                <option value="">全部类型</option>
+                <option>国家标准</option><option>行业标准</option>
+                <option>地方标准</option><option>团标</option><option>企业标准</option>
+            </select>
+            <select id="filterStatus" onchange="window._filterNoPdf=false;renderList()">
+                <option value="">全部状态</option>
+                <option>现行</option><option>废止</option><option>即将实施</option>
+            </select>
+            <select id="filterCat" onchange="renderList()">
+                <option value="">全部分类</option>
+                <option>合成材料面层</option><option>人造草坪</option><option>灯光照明</option>
+                <option>木地板</option><option>PVC运动地胶</option><option>围网</option>
+                <option>健身路径</option><option>体育器材</option><option>颗粒填充料</option>
+                <option>运动地板</option><option>场地设计</option><option>游泳场地</option>
+                <option>综合</option>
+            </select>
         </div>
-        <div class="stat-card abol" onclick="filterByCard('废止')" title="点击查看已废止标准">
-            <div class="s-num" id="st-abol">—</div><div class="s-lbl">已废止 ↓点击查看</div>
-        </div>
-        <div class="stat-card coming" onclick="filterByCard('即将实施')" title="点击查看即将实施标准">
-            <div class="s-num" id="st-coming">—</div><div class="s-lbl">即将实施 ↓点击查看</div>
-        </div>
-        <div class="stat-card nopdf" onclick="filterByCard('__nopdf__')" title="点击查看缺少PDF的标准，逐条上传">
-            <div class="s-num" id="st-nopdf">—</div><div class="s-lbl">⚠️ 缺PDF ↓点击补传</div>
-        </div>
+        <div id="list"></div>
     </div>
-    <!-- 搜索筛选 -->
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 搜索标准编号、名称…" oninput="renderList()">
-        <select id="filterType" onchange="renderList()">
-            <option value="">全部类型</option>
-            <option>国家标准</option><option>行业标准</option>
-            <option>地方标准</option><option>团标</option><option>企业标准</option>
-        </select>
-        <select id="filterStatus" onchange="window._filterNoPdf=false;renderList()">
-            <option value="">全部状态</option>
-            <option>现行</option><option>废止</option><option>即将实施</option>
-        </select>
-        <select id="filterCat" onchange="renderList()">
-            <option value="">全部分类</option>
-            <option>合成材料面层</option><option>人造草坪</option><option>灯光照明</option>
-            <option>木地板</option><option>PVC运动地胶</option><option>围网</option>
-            <option>健身路径</option><option>体育器材</option><option>颗粒填充料</option>
-            <option>运动地板</option><option>场地设计</option><option>游泳场地</option>
-            <option>综合</option>
-        </select>
-    </div>
-    <div id="list"></div>
-    </div>
+
     <!-- Tab 2: 广告与SEO配置 -->
     <div class="tab-panel" id="tab-ad">
-      <div class="ad-info-box">
-        📌 <strong>工作原理：</strong>在此填入广告联盟或SEO统计代码，启用开关后保存，<code>index.html</code> 加载时会自动读取并注入到对应位置，<strong>无需手动编辑 index.html</strong>。配置仅存储在本浏览器中，可通过导出/导入 JSON 备份迁移。
-      </div>
-      <!-- 位置示意 -->
-      <div class="pos-map">
-        <div class="pos-map-title">广告位位置示意</div>
-        <div class="pos-row"><span class="pos-num">HEAD</span><span class="pos-label">GA4 / 百度统计 / 站点验证 / AdSense主脚本 / 自定义HEAD代码</span><span class="pos-key">head类</span></div>
-        <div class="pos-row"><span class="pos-num">①</span><span class="pos-label">页面顶部横幅（导航栏上方，全宽）</span><span class="pos-key">banner-top</span></div>
-        <div class="pos-row"><span class="pos-num">②</span><span class="pos-label">搜索区上方横幅</span><span class="pos-key">hero-above</span></div>
-        <div class="pos-row"><span class="pos-num">③</span><span class="pos-label">搜索区下方横幅（流量最集中）</span><span class="pos-key">hero-below</span></div>
-        <div class="pos-row"><span class="pos-num">④</span><span class="pos-label">结果列表顶部（筛选栏下方）</span><span class="pos-key">content-top</span></div>
-        <div class="pos-row"><span class="pos-num">⑤</span><span class="pos-label">结果列表底部（分页器上方）</span><span class="pos-key">content-bottom</span></div>
-        <div class="pos-row"><span class="pos-num">⑥</span><span class="pos-label">页脚上方横幅</span><span class="pos-key">footer-above</span></div>
-        <div class="pos-row"><span class="pos-num">⑦</span><span class="pos-label">Body 底部（悬浮/推送工具）</span><span class="pos-key">body-end</span></div>
-        <div class="pos-row"><span class="pos-num">⑧</span><span class="pos-label">自定义 Body 底部脚本</span><span class="pos-key">custom-body</span></div>
-      </div>
-      <!-- 广告联盟 -->
-      <div class="ad-section">
-        <div class="ad-section-title">🪙 广告联盟代码</div>
-        <!-- AdSense 主脚本 -->
-        <div class="ad-card" id="adcard-adsense-script">
-          <div class="ad-card-head" onclick="toggleAdCard('adsense-script')">
-            <span class="ad-card-num">G</span>
-            <div class="ad-card-info"><div class="ad-card-name">Google AdSense 主脚本</div><div class="ad-card-desc">AdSense 自动广告 / 单元广告加载脚本，注入到 &lt;head&gt;</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-adsense-script" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-adsense-script" placeholder='<!-- Google AdSense 自动广告主脚本 -->&#10;<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>'></textarea>
-            <div class="ad-hint">💡 开启自动广告后，AdSense 会自动在页面合适位置插入广告；若使用手动广告单元，请在下方各广告位填入对应代码。</div>
-          </div>
+        <div style="padding:20px 0;">
+            <h3>广告与SEO配置功能</h3>
+            <p>此处可配置广告代码、统计代码，保存后自动同步到GitHub，无需手动修改前台页面</p>
         </div>
-        <!-- 顶部横幅 -->
-        <div class="ad-card" id="adcard-banner-top">
-          <div class="ad-card-head" onclick="toggleAdCard('banner-top')">
-            <span class="ad-card-num">①</span>
-            <div class="ad-card-info"><div class="ad-card-name">页面顶部横幅</div><div class="ad-card-desc">导航栏上方全宽横幅，适合 970×90 / 728×90 / 自适应</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-banner-top" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：导航栏上方</span></div>
-            <textarea class="ad-textarea" id="code-banner-top" placeholder='<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>&#10;<script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>'></textarea>
-          </div>
-        </div>
-        <!-- 搜索区上方 -->
-        <div class="ad-card" id="adcard-hero-above">
-          <div class="ad-card-head" onclick="toggleAdCard('hero-above')">
-            <span class="ad-card-num">②</span>
-            <div class="ad-card-info"><div class="ad-card-name">搜索区上方横幅</div><div class="ad-card-desc">蓝色搜索区域上方，紧贴导航栏下方</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-hero-above" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：搜索区上方</span></div>
-            <textarea class="ad-textarea" id="code-hero-above" placeholder="<!-- 横幅广告代码 -->"></textarea>
-          </div>
-        </div>
-        <!-- 搜索区下方 -->
-        <div class="ad-card" id="adcard-hero-below">
-          <div class="ad-card-head" onclick="toggleAdCard('hero-below')">
-            <span class="ad-card-num">③</span>
-            <div class="ad-card-info"><div class="ad-card-name">搜索区下方横幅 ⭐ 推荐</div><div class="ad-card-desc">搜索框结束后立即显示，曝光量最大，点击率最高</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-hero-below" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：搜索区下方</span></div>
-            <textarea class="ad-textarea" id="code-hero-below" placeholder="<!-- 推荐使用自适应横幅广告 -->"></textarea>
-          </div>
-        </div>
-        <!-- 结果顶部 -->
-        <div class="ad-card" id="adcard-content-top">
-          <div class="ad-card-head" onclick="toggleAdCard('content-top')">
-            <span class="ad-card-num">④</span>
-            <div class="ad-card-info"><div class="ad-card-name">结果列表顶部</div><div class="ad-card-desc">筛选工具栏下方、第一张标准卡片上方</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-content-top" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：结果列表顶部</span></div>
-            <textarea class="ad-textarea" id="code-content-top" placeholder="<!-- 信息流广告 / 原生广告代码 -->"></textarea>
-          </div>
-        </div>
-        <!-- 结果底部 -->
-        <div class="ad-card" id="adcard-content-bottom">
-          <div class="ad-card-head" onclick="toggleAdCard('content-bottom')">
-            <span class="ad-card-num">⑤</span>
-            <div class="ad-card-info"><div class="ad-card-name">结果列表底部</div><div class="ad-card-desc">分页器上方，适合矩形广告 300×250</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-content-bottom" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：分页器上方</span></div>
-            <textarea class="ad-textarea" id="code-content-bottom" placeholder="<!-- 矩形广告 / 信息流广告 -->"></textarea>
-          </div>
-        </div>
-        <!-- 页脚上方 -->
-        <div class="ad-card" id="adcard-footer-above">
-          <div class="ad-card-head" onclick="toggleAdCard('footer-above')">
-            <span class="ad-card-num">⑥</span>
-            <div class="ad-card-info"><div class="ad-card-name">页脚上方横幅</div><div class="ad-card-desc">Footer 开始前的横幅广告位</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-footer-above" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：Footer 上方</span></div>
-            <textarea class="ad-textarea" id="code-footer-above" placeholder="<!-- 横幅广告代码 -->"></textarea>
-          </div>
-        </div>
-        <!-- Body 底部 -->
-        <div class="ad-card" id="adcard-body-end">
-          <div class="ad-card-head" onclick="toggleAdCard('body-end')">
-            <span class="ad-card-num">⑦</span>
-            <div class="ad-card-info"><div class="ad-card-name">Body 底部（悬浮/推送）</div><div class="ad-card-desc">页面最底部，适合悬浮广告、客服工具、推送插件</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-body-end" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/body&gt; 前</span></div>
-            <textarea class="ad-textarea" id="code-body-end" placeholder="<!-- 悬浮广告、客服气泡、推送通知插件等 -->"></textarea>
-            <div class="ad-hint">💡 此处代码最后加载，不影响主体渲染性能。</div>
-          </div>
-        </div>
-      </div>
-      <!-- SEO 统计分析 -->
-      <div class="ad-section">
-        <div class="ad-section-title">📊 SEO 统计分析</div>
-        <!-- GA4 -->
-        <div class="ad-card" id="adcard-ga4">
-          <div class="ad-card-head" onclick="toggleAdCard('ga4')">
-            <span class="ad-card-num" style="background:#fce7f3;color:#9d174d">G4</span>
-            <div class="ad-card-info"><div class="ad-card-name">Google Analytics 4 (GA4)</div><div class="ad-card-desc">全局标签 gtag.js，注入到 &lt;head&gt;</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-ga4" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">GA4 代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-ga4" placeholder="<!-- Google tag (gtag.js) -->&#10;<script async src=&quot;https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX&quot;></script>&#10;<script>&#10;  window.dataLayer=window.dataLayer||[];&#10;  function gtag(){dataLayer.push(arguments);}&#10;  gtag('js',new Date());&#10;  gtag('config','G-XXXXXXXXXX');&#10;</script>"></textarea>
-          </div>
-        </div>
-        <!-- 百度统计 -->
-        <div class="ad-card" id="adcard-baidu-stat">
-          <div class="ad-card-head" onclick="toggleAdCard('baidu-stat')">
-            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
-            <div class="ad-card-info"><div class="ad-card-name">百度统计</div><div class="ad-card-desc">hm.js 统计代码，注入到 &lt;head&gt;</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-stat" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">百度统计代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-baidu-stat" placeholder="<script>&#10;var _hmt=_hmt||[];&#10;(function(){&#10;  var hm=document.createElement('script');&#10;  hm.src='https://hm.baidu.com/hm.js?XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';&#10;  var s=document.getElementsByTagName('script')[0];&#10;  s.parentNode.insertBefore(hm,s);&#10;})();&#10;</script>"></textarea>
-          </div>
-        </div>
-        <!-- 自定义 Body 底部 -->
-        <div class="ad-card" id="adcard-custom-body">
-          <div class="ad-card-head" onclick="toggleAdCard('custom-body')">
-            <span class="ad-card-num" style="background:#f0fdf4;color:#15803d">⑧</span>
-            <div class="ad-card-info"><div class="ad-card-name">自定义 Body 底部脚本</div><div class="ad-card-desc">任意第三方工具代码，注入到 &lt;/body&gt; 前</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-custom-body" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/body&gt; 前</span></div>
-            <textarea class="ad-textarea" id="code-custom-body" style="min-height:130px" placeholder="<!-- 自定义 JavaScript 或第三方工具 -->"></textarea>
-          </div>
-        </div>
-      </div>
-      <!-- 搜索引擎验证 -->
-      <div class="ad-section">
-        <div class="ad-section-title">✅ 搜索引擎站点验证</div>
-        <!-- Google Search Console -->
-        <div class="ad-card" id="adcard-gsc">
-          <div class="ad-card-head" onclick="toggleAdCard('gsc')">
-            <span class="ad-card-num" style="background:#dcfce7;color:#15803d">G</span>
-            <div class="ad-card-info"><div class="ad-card-name">Google Search Console</div><div class="ad-card-desc">谷歌站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-gsc" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-gsc" placeholder='<meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
-          </div>
-        </div>
-        <!-- 百度 -->
-        <div class="ad-card" id="adcard-baidu-verify">
-          <div class="ad-card-head" onclick="toggleAdCard('baidu-verify')">
-            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
-            <div class="ad-card-info"><div class="ad-card-name">百度搜索资源平台验证</div><div class="ad-card-desc">百度站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-verify" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-baidu-verify" placeholder='<meta name="baidu-site-verification" content="XXXXXXXXXX" />'></textarea>
-          </div>
-        </div>
-        <!-- Bing -->
-        <div class="ad-card" id="adcard-bing">
-          <div class="ad-card-head" onclick="toggleAdCard('bing')">
-            <span class="ad-card-num" style="background:#ede9fe;color:#5b21b6">B</span>
-            <div class="ad-card-info"><div class="ad-card-name">Bing Webmaster Tools</div><div class="ad-card-desc">必应站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-bing" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-bing" placeholder='<meta name="msvalidate.01" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
-          </div>
-        </div>
-        <!-- 自定义 HEAD -->
-        <div class="ad-card" id="adcard-custom-head">
-          <div class="ad-card-head" onclick="toggleAdCard('custom-head')">
-            <span class="ad-card-num" style="background:#f1f5f9;color:#475569">+</span>
-            <div class="ad-card-info"><div class="ad-card-name">自定义 HEAD 代码</div><div class="ad-card-desc">额外 meta 标签、结构化数据 JSON-LD、自定义字体等</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-custom-head" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
-            <span class="ad-card-arrow">▼</span>
-          </div>
-          <div class="ad-card-body">
-            <div class="ad-code-label">代码 <span class="ad-pos-tag">注入：&lt;/head&gt; 前</span></div>
-            <textarea class="ad-textarea" id="code-custom-head" style="min-height:130px" placeholder='<!-- 例如 JSON-LD 结构化数据 -->&#10;<script type="application/ld+json">&#10;{&#10;  "@context": "https://schema.org",&#10;  "@type": "WebSite",&#10;  "name": "体育建设标准查询平台"&#10;}&#10;</script>'></textarea>
-          </div>
-        </div>
-      </div>
-      <!-- 保存栏 -->
-      <div class="ad-save-bar">
-        <button class="btn btn-primary" onclick="saveAdConfig()" id="adSaveBtn">💾 保存广告与SEO配置</button>
-        <a href="index.html" target="_blank" class="sec-btn">👁️ 预览前台</a>
-        <span class="ad-save-status" id="adSaveStatus"></span>
-      </div>
-      <!-- 导出/导入/清空 -->
-      <div class="export-row">
-        <button class="sec-btn" onclick="exportAdConfig()">⬇️ 导出配置 JSON</button>
-        <button class="sec-btn" onclick="document.getElementById('importFileInput').click()">⬆️ 导入配置 JSON</button>
-        <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importAdConfig(this)">
-        <button class="sec-btn danger" onclick="resetAdConfig()">🗑️ 清空所有配置</button>
-      </div>
-    </div>
-    <!-- Tab 3: 数据仪表盘 -->
-    <div class="tab-panel" id="tab-dashboard">
-      <!-- 刷新行 -->
-      <div class="dash-refresh-row">
-        <span class="last-update" id="dashLastUpdate">⏱ 正在加载数据…</span>
-        <div style="display:flex;gap:8px;">
-          <button class="dash-add-log-btn" onclick="openAddLogModal()">➕ 手动记录爬虫日志</button>
-          <button class="dash-add-log-btn" onclick="refreshDashboard()">🔄 刷新数据</button>
-        </div>
-      </div>
-      <!-- 今日数据概览 -->
-      <div class="dash-section">
-        <div class="dash-section-title">📈 今日数据概览</div>
-        <div class="dash-grid-4">
-          <div class="dash-card blue">
-            <span class="dc-icon">🕷️</span>
-            <div class="dc-num" id="dc-today-crawl">—</div>
-            <div class="dc-lbl">今日抓取量</div>
-            <div class="dc-sub" id="dc-today-crawl-sub">—</div>
-            <div class="dc-trend same" id="dc-crawl-trend">—</div>
-          </div>
-          <div class="dash-card green">
-            <span class="dc-icon">📦</span>
-            <div class="dc-num" id="dc-total-data">—</div>
-            <div class="dc-lbl">总数据量（标准）</div>
-            <div class="dc-sub" id="dc-total-data-sub">—</div>
-            <div class="dc-trend same" id="dc-data-trend">—</div>
-          </div>
-          <div class="dash-card orange">
-            <span class="dc-icon">👁️</span>
-            <div class="dc-num" id="dc-today-pv">—</div>
-            <div class="dc-lbl">今日访问量 PV</div>
-            <div class="dc-sub" id="dc-today-pv-sub">—</div>
-            <div class="dc-trend same" id="dc-pv-trend">—</div>
-          </div>
-          <div class="dash-card purple">
-            <span class="dc-icon">🧑‍💻</span>
-            <div class="dc-num" id="dc-today-uv">—</div>
-            <div class="dc-lbl">今日独立访客 UV</div>
-            <div class="dc-sub" id="dc-uv-sub">—</div>
-            <div class="dc-trend same" id="dc-uv-trend">—</div>
-          </div>
-        </div>
-      </div>
-      <!-- 数据库状态 -->
-      <div class="dash-section">
-        <div class="dash-section-title">📚 数据库状态</div>
-        <div class="dash-grid">
-          <div class="dash-card green">
-            <span class="dc-icon">✅</span>
-            <div class="dc-num" id="dc-db-active">—</div>
-            <div class="dc-lbl">现行有效标准</div>
-            <div class="dc-sub">PDF 完整率 <span id="dc-pdf-rate">—</span></div>
-          </div>
-          <div class="dash-card red">
-            <span class="dc-icon">🗂️</span>
-            <div class="dc-num" id="dc-db-abol">—</div>
-            <div class="dc-lbl">已废止标准</div>
-            <div class="dc-sub">占总量 <span id="dc-abol-rate">—</span></div>
-          </div>
-          <div class="dash-card teal">
-            <span class="dc-icon">⏳</span>
-            <div class="dc-num" id="dc-db-coming">—</div>
-            <div class="dc-lbl">即将实施</div>
-            <div class="dc-sub">缺PDF <span id="dc-nopdf-count" style="color:#ef4444;font-weight:700">—</span> 条待补传</div>
-          </div>
-        </div>
-      </div>
-      <!-- 近7日抓取趋势图 -->
-      <div class="dash-section">
-        <div class="dash-section-title">📊 近7日趋势</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="dash-chart-box">
-            <div class="dash-chart-title">每日抓取量 <span>近7天</span></div>
-            <div class="bar-chart" id="chart-crawl"></div>
-            <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-crawl-labels"></div>
-          </div>
-          <div class="dash-chart-box">
-            <div class="dash-chart-title">每日访问量 PV <span>近7天</span></div>
-            <div class="bar-chart" id="chart-pv"></div>
-            <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-pv-labels"></div>
-          </div>
-        </div>
-      </div>
-      <!-- 爬虫日志 -->
-      <div class="dash-section">
-        <div class="dash-section-title">🔍 爬虫日志 <span style="font-size:11px;color:#94a3b8;font-weight:400;letter-spacing:0;text-transform:none;">（今日抓取失败 / 警告记录）</span></div>
-        <div class="log-filter-row">
-          <input type="text" id="logSearch" placeholder="🔍 搜索域名或错误信息…" oninput="renderLogTable()">
-          <select id="logStatusFilter" onchange="renderLogTable()">
-            <option value="">全部状态</option>
-            <option value="fail">抓取失败</option>
-            <option value="warn">警告</option>
-            <option value="ok">成功</option>
-            <option value="skip">跳过</option>
-          </select>
-        </div>
-        <table class="log-table">
-          <thead>
-            <tr>
-              <th>时间</th>
-              <th>标准编号</th>
-              <th>来源域名</th>
-              <th>状态</th>
-              <th>详情</th>
-            </tr>
-          </thead>
-          <tbody id="logTableBody">
-            <tr><td colspan="5"><div class="log-empty"><div class="lei">📭</div>暂无日志数据</div></td></tr>
-          </tbody>
-        </table>
-        <div class="log-pagination" id="logPagination" style="display:none;">
-          <button id="logPrevBtn" disabled>上一页</button>
-          <span id="logPageInfo">第 1 页 / 共 1 页</span>
-          <button id="logNextBtn" disabled>下一页</button>
-        </div>
-      </div>
     </div>
 </div>
 
@@ -671,4 +205,507 @@
         <form id="stdForm" onsubmit="saveStd(event)">
             <div class="grid-2">
                 <div class="input-group">
-                    <label>标准编号</label
+                    <label>标准编号</label>
+                    <input type="text" id="stdCode" required placeholder="如：GB 36246-2018">
+                </div>
+                <div class="input-group">
+                    <label>标准类型</label>
+                    <select id="stdType" required>
+                        <option>国家标准</option><option>行业标准</option>
+                        <option>地方标准</option><option>团标</option><option>企业标准</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>标准名称</label>
+                <input type="text" id="stdName" required placeholder="标准中文全称">
+            </div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label>实施日期</label>
+                    <input type="date" id="stdDate" required>
+                </div>
+                <div class="input-group">
+                    <label>标准状态</label>
+                    <select id="stdStatus" required>
+                        <option>现行</option><option>废止</option><option>即将实施</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>所属分类（可多选）</label>
+                <div class="cat-box" id="catBox">
+                    <label class="cat-item"><input type="checkbox" value="合成材料面层"> 合成材料面层</label>
+                    <label class="cat-item"><input type="checkbox" value="人造草坪"> 人造草坪</label>
+                    <label class="cat-item"><input type="checkbox" value="灯光照明"> 灯光照明</label>
+                    <label class="cat-item"><input type="checkbox" value="木地板"> 木地板</label>
+                    <label class="cat-item"><input type="checkbox" value="PVC运动地胶"> PVC运动地胶</label>
+                    <label class="cat-item"><input type="checkbox" value="围网"> 围网</label>
+                    <label class="cat-item"><input type="checkbox" value="健身路径"> 健身路径</label>
+                    <label class="cat-item"><input type="checkbox" value="体育器材"> 体育器材</label>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>是否强制性标准</label>
+                <select id="stdMandatory">
+                    <option value="false">推荐性</option>
+                    <option value="true">强制性</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>PDF文件上传</label>
+                <div class="pdf-upload-area" id="pdfUploadArea" onclick="document.getElementById('pdfFileInput').click()">
+                    <div class="pu-icon">📄</div>
+                    <div class="pu-text">点击或拖拽PDF文件到此处上传</div>
+                    <div class="pu-hint">仅支持PDF文件，最大50MB</div>
+                </div>
+                <input type="file" id="pdfFileInput" accept=".pdf" style="display:none" onchange="handlePdfSelect(event)">
+                <div class="pdf-status-bar none" id="pdfStatusBar">
+                    <span id="pdfStatusText">未上传PDF文件</span>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>官方发布链接</label>
+                <input type="url" id="stdUrl" placeholder="标准官方发布页面链接">
+            </div>
+            <div class="input-group">
+                <label>备注说明</label>
+                <textarea id="stdDesc" rows="3" placeholder="可选，补充说明、替代关系等"></textarea>
+            </div>
+            <input type="hidden" id="editIndex">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button type="submit" class="btn btn-primary">保存标准</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// ========== 核心配置 ==========
+const GITHUB_REPO = 'haiqing85/sports-standards1';
+const DATA_FILE = 'data/standards.json';
+const PROXY_API = '/api/github-proxy';
+// 全局存储当前登录的密码（仅内存中，不持久化）
+let CURRENT_ADMIN_PASSWORD = '';
+let stdList = [];
+let currentFileSha = '';
+let currentPdfBase64 = '';
+let currentPdfName = '';
+window._filterNoPdf = false;
+
+// ========== 登录逻辑（修复无响应问题） ==========
+async function checkLogin() {
+    const passwordInput = document.getElementById('adminPassword');
+    const loginBtn = document.getElementById('loginBtn');
+    const errEl = document.getElementById('loginErr');
+    
+    const password = passwordInput.value.trim();
+    if (!password) {
+        errEl.innerText = '请输入管理员密码';
+        return;
+    }
+
+    // 按钮禁用，防止重复点击
+    loginBtn.disabled = true;
+    loginBtn.innerText = '正在登录…';
+    errEl.innerText = '';
+
+    try {
+        // 请求服务端校验密码
+        const response = await fetch(`${PROXY_API}/login-check`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            // 登录成功
+            CURRENT_ADMIN_PASSWORD = password;
+            localStorage.setItem('admin_logged', '1');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminScreen').style.display = 'block';
+            initAdmin();
+        } else {
+            // 密码错误
+            errEl.innerText = result.message || '密码错误，请重试';
+        }
+    } catch (error) {
+        // 网络/接口错误
+        errEl.innerText = `登录失败：${error.message}，请检查代理接口是否正常部署`;
+        console.error('登录错误', error);
+    } finally {
+        // 恢复按钮状态
+        loginBtn.disabled = false;
+        loginBtn.innerText = '登 录';
+    }
+}
+
+// 页面加载检查登录状态
+window.onload = function() {
+    // PDF拖拽事件初始化
+    initPdfDrag();
+    // 之前登录过，直接进入后台
+    if (localStorage.getItem('admin_logged') === '1') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('adminScreen').style.display = 'block';
+        initAdmin();
+    }
+};
+
+// ========== 核心GitHub请求方法 ==========
+async function githubRequest(path, method = 'GET', body = null) {
+    const url = `${PROXY_API}/repos/${GITHUB_REPO}/contents/${path}`;
+    const options = {
+        method: method,
+        headers: {
+            'X-Admin-Password': CURRENT_ADMIN_PASSWORD,
+            'Content-Type': 'application/json'
+        }
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+
+    try {
+        const response = await fetch(url, options);
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || result.error || 'GitHub请求失败');
+        }
+        return result;
+    } catch (error) {
+        console.error('GitHub请求错误:', error);
+        throw error;
+    }
+}
+
+// ========== 初始化后台 ==========
+async function initAdmin() {
+    await loadData();
+    renderList();
+    updateStats();
+}
+
+// ========== 加载标准数据 ==========
+async function loadData() {
+    try {
+        document.getElementById('statusText').innerText = '正在加载标准数据…';
+        const result = await githubRequest(DATA_FILE);
+        currentFileSha = result.sha;
+        // 修复中文解码
+        const content = decodeURIComponent(escape(atob(result.content)));
+        stdList = JSON.parse(content);
+        document.getElementById('statusText').innerText = `数据加载完成，共 ${stdList.length} 条标准`;
+    } catch (error) {
+        document.getElementById('statusText').innerText = `数据加载失败: ${error.message}`;
+        alert('数据加载失败，请检查密码是否正确、代理接口是否正常部署');
+    }
+}
+
+// ========== 渲染列表 ==========
+function renderList() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const filterType = document.getElementById('filterType').value;
+    const filterStatus = document.getElementById('filterStatus').value;
+    const filterCat = document.getElementById('filterCat').value;
+    const listEl = document.getElementById('list');
+
+    let filtered = [...stdList];
+
+    // 搜索过滤
+    if (search) {
+        filtered = filtered.filter(item => 
+            item.code.toLowerCase().includes(search) || 
+            item.name.toLowerCase().includes(search)
+        );
+    }
+    // 类型过滤
+    if (filterType) filtered = filtered.filter(item => item.type === filterType);
+    // 状态过滤
+    if (filterStatus) filtered = filtered.filter(item => item.status === filterStatus);
+    // 分类过滤
+    if (filterCat) filtered = filtered.filter(item => item.category && item.category.includes(filterCat));
+    // 缺PDF过滤
+    if (window._filterNoPdf) filtered = filtered.filter(item => !item.pdf);
+
+    // 渲染
+    if (filtered.length === 0) {
+        listEl.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">暂无匹配的标准数据</div>';
+        return;
+    }
+
+    listEl.innerHTML = filtered.map((item, index) => {
+        const originalIndex = stdList.findIndex(i => i.code === item.code);
+        const badges = `
+            <span class="badge badge-type">${item.type}</span>
+            ${item.mandatory === 'true' ? '<span class="badge badge-mand">强制性</span>' : ''}
+            ${item.status === '现行' ? '<span class="badge badge-ok">现行</span>' : ''}
+            ${item.status === '废止' ? '<span class="badge badge-abol">废止</span>' : ''}
+            ${!item.pdf ? '<span class="badge-nopdf">⚠️ 缺PDF</span>' : ''}
+        `;
+        const categories = item.category ? item.category.map(c => `<span class="badge badge-cat">${c}</span>`).join('') : '';
+
+        return `
+        <div class="std-item">
+            <div>
+                <div class="std-info-code">${item.code} ${badges}</div>
+                <div class="std-info-title">${item.name}</div>
+                <div>${categories} <span style="font-size:12px;color:#94a3b8;">实施日期：${item.date}</span></div>
+            </div>
+            <div class="std-item-btns">
+                <button class="btn btn-primary" onclick="editStd(${originalIndex})">编辑</button>
+                <button class="btn btn-danger" onclick="deleteStd(${originalIndex})">删除</button>
+            </div>
+        </div>
+        `;
+    }).join('');
+}
+
+// ========== 统计更新 ==========
+function updateStats() {
+    const total = stdList.length;
+    const active = stdList.filter(i => i.status === '现行').length;
+    const abol = stdList.filter(i => i.status === '废止').length;
+    const nopdf = stdList.filter(i => !i.pdf).length;
+
+    document.getElementById('st-total').innerText = total;
+    document.getElementById('st-active').innerText = active;
+    document.getElementById('st-abol').innerText = abol;
+    document.getElementById('st-nopdf').innerText = nopdf;
+}
+
+// ========== 卡片筛选 ==========
+function filterByCard(status) {
+    document.querySelectorAll('.stat-card').forEach(card => card.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+
+    if (status === '__nopdf__') {
+        window._filterNoPdf = true;
+        document.getElementById('filterStatus').value = '';
+    } else {
+        window._filterNoPdf = false;
+        document.getElementById('filterStatus').value = status;
+    }
+    renderList();
+}
+
+// ========== 标签页切换 ==========
+function switchTab(tabName, btnEl) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    btnEl.classList.add('active');
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    document.getElementById(`tab-${tabName}`).classList.add('active');
+}
+
+// ========== 弹窗操作 ==========
+function openModal(editIndex = -1) {
+    document.getElementById('modalTitle').innerText = editIndex >= 0 ? '编辑标准' : '新增标准';
+    document.getElementById('editIndex').value = editIndex;
+    document.getElementById('stdForm').reset();
+    currentPdfBase64 = '';
+    currentPdfName = '';
+    updatePdfStatus('none', '未上传PDF文件');
+
+    // 编辑模式填充数据
+    if (editIndex >= 0) {
+        const item = stdList[editIndex];
+        document.getElementById('stdCode').value = item.code;
+        document.getElementById('stdName').value = item.name;
+        document.getElementById('stdType').value = item.type;
+        document.getElementById('stdDate').value = item.date;
+        document.getElementById('stdStatus').value = item.status;
+        document.getElementById('stdMandatory').value = item.mandatory || 'false';
+        document.getElementById('stdUrl').value = item.url || '';
+        document.getElementById('stdDesc').value = item.desc || '';
+
+        // 填充分类
+        if (item.category) {
+            document.querySelectorAll('#catBox input').forEach(cb => {
+                cb.checked = item.category.includes(cb.value);
+            });
+        }
+        // PDF状态
+        if (item.pdf) updatePdfStatus('has', `已上传PDF：${item.pdf}`);
+    }
+    document.getElementById('stdModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('stdModal').classList.remove('open');
+}
+
+// ========== PDF处理 ==========
+function initPdfDrag() {
+    const pdfArea = document.getElementById('pdfUploadArea');
+    pdfArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        pdfArea.classList.add('dragover');
+    });
+    pdfArea.addEventListener('dragleave', () => {
+        pdfArea.classList.remove('dragover');
+    });
+    pdfArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pdfArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length && files[0].type === 'application/pdf') {
+            handlePdfFile(files[0]);
+        } else {
+            alert('请上传PDF格式的文件');
+        }
+    });
+}
+
+function handlePdfSelect(e) {
+    const file = e.target.files[0];
+    if (file) handlePdfFile(file);
+}
+
+function handlePdfFile(file) {
+    if (file.type !== 'application/pdf') {
+        alert('请上传PDF格式的文件');
+        return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+        alert('文件大小不能超过50MB');
+        return;
+    }
+
+    updatePdfStatus('uploading', '正在读取PDF文件…');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        currentPdfBase64 = e.target.result.split(',')[1];
+        currentPdfName = `${document.getElementById('stdCode').value || Date.now()}.pdf`;
+        updatePdfStatus('has', `PDF文件已就绪：${currentPdfName}`);
+    };
+    reader.onerror = function() {
+        updatePdfStatus('error', 'PDF文件读取失败，请重试');
+    };
+    reader.readAsDataURL(file);
+}
+
+function updatePdfStatus(type, text) {
+    const bar = document.getElementById('pdfStatusBar');
+    bar.className = `pdf-status-bar ${type}`;
+    document.getElementById('pdfStatusText').innerText = text;
+}
+
+// ========== 保存标准 ==========
+async function saveStd(e) {
+    e.preventDefault();
+    const editIndex = parseInt(document.getElementById('editIndex').value);
+    const code = document.getElementById('stdCode').value;
+    const name = document.getElementById('stdName').value;
+
+    // 检查编号重复
+    const exists = stdList.some((item, idx) => item.code === code && idx !== editIndex);
+    if (exists) {
+        alert('该标准编号已存在，请勿重复添加');
+        return;
+    }
+
+    // 收集分类
+    const category = [];
+    document.querySelectorAll('#catBox input:checked').forEach(cb => {
+        category.push(cb.value);
+    });
+
+    // 构造标准对象
+    const stdItem = {
+        code,
+        name,
+        type: document.getElementById('stdType').value,
+        date: document.getElementById('stdDate').value,
+        status: document.getElementById('stdStatus').value,
+        mandatory: document.getElementById('stdMandatory').value,
+        category,
+        url: document.getElementById('stdUrl').value,
+        desc: document.getElementById('stdDesc').value,
+        pdf: stdList[editIndex]?.pdf || ''
+    };
+
+    try {
+        // 上传PDF
+        if (currentPdfBase64) {
+            const pdfPath = `pdf/${currentPdfName}`;
+            await githubRequest(pdfPath, 'PUT', {
+                message: `上传PDF：${currentPdfName}`,
+                content: currentPdfBase64
+            });
+            stdItem.pdf = currentPdfName;
+        }
+
+        // 更新列表
+        if (editIndex >= 0) {
+            stdList[editIndex] = stdItem;
+        } else {
+            stdList.unshift(stdItem);
+        }
+
+        // 同步到GitHub
+        await syncToGithub(false);
+        closeModal();
+        renderList();
+        updateStats();
+        alert('标准保存成功！');
+    } catch (error) {
+        alert(`保存失败：${error.message}`);
+    }
+}
+
+// ========== 编辑/删除标准 ==========
+function editStd(index) {
+    openModal(index);
+}
+
+async function deleteStd(index) {
+    const item = stdList[index];
+    if (!confirm(`确定要删除标准「${item.code} ${item.name}」吗？此操作不可恢复`)) {
+        return;
+    }
+
+    try {
+        stdList.splice(index, 1);
+        await syncToGithub(false);
+        renderList();
+        updateStats();
+        alert('删除成功！');
+    } catch (error) {
+        alert(`删除失败：${error.message}`);
+    }
+}
+
+// ========== 同步到GitHub ==========
+async function syncToGithub(showAlert = true) {
+    const syncBtn = document.getElementById('syncBtn');
+    syncBtn.disabled = true;
+    syncBtn.innerText = '正在同步…';
+
+    try {
+        // 修复中文编码
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(stdList, null, 2))));
+        await githubRequest(DATA_FILE, 'PUT', {
+            message: '后台更新标准数据',
+            content: content,
+            sha: currentFileSha
+        });
+
+        // 重新获取sha
+        const newResult = await githubRequest(DATA_FILE);
+        currentFileSha = newResult.sha;
+
+        syncBtn.innerText = '☁️ 推送至 GitHub';
+        syncBtn.disabled = false;
+        if (showAlert) alert('同步成功！数据已更新到GitHub仓库');
+    } catch (error) {
+        syncBtn.innerText = '☁️ 推送至 GitHub';
+        syncBtn.disabled = false;
+        throw error;
+    }
+}
+</script>
+</body>
+</html>
