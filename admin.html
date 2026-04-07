@@ -919,7 +919,9 @@
     var FILE_PATH  = 'data/standards.json';
     // ⚠️ 将你的 GitHub Token 直接填入下方引号内，刷新后无需重新输入
     // Token 需要 repo 权限，在 GitHub → Settings → Developer settings → Personal access tokens 生成
-    var GITHUB_TOKEN_BUILTIN = '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';  // 示例：'ghp_xxxxxxxxxxxxxx'
+    var GITHUB_TOKEN_BUILTIN = '';  // Token 已移至 EdgeOne 环境变量，此处留空
+    // 代理地址：通过 functions/github-proxy.js 转发请求，Token 存在服务器不暴露
+    var PROXY_BASE = '/github-proxy';
 
     var DB = { standards: [] };
     var fileSha = '';
@@ -962,7 +964,7 @@
             if (token) headers['Authorization'] = 'token ' + token;
 
             var resp = await fetch(
-                'https://api.github.com/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH,
+                PROXY_BASE + '/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH,
                 { headers: headers }
             );
 
@@ -1039,7 +1041,7 @@
             DB.version = DB.updated.replace(/-/g, '.');
             var encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(DB, null, 2))));
             var resp = await fetch(
-                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
                 {
                     method: 'PUT',
                     headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
@@ -1435,7 +1437,7 @@
                     var existSha = '';
                     try {
                         var chk = await fetch(
-                            'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
+                            PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
                             { headers: { 'Authorization': 'token ' + token } }
                         );
                         if (chk.ok) { var chkJson = await chk.json(); existSha = chkJson.sha || ''; }
@@ -1448,7 +1450,7 @@
                     if (existSha) body.sha = existSha;
 
                     var resp = await fetch(
-                        'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
+                        PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
                         {
                             method: 'PUT',
                             headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
@@ -1496,7 +1498,7 @@
             var encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
 
             var resp = await fetch(
-                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
                 {
                     method: 'PUT',
                     headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
@@ -1952,7 +1954,7 @@
             if (token) headers['Authorization'] = 'token ' + token;
 
             var resp = await fetch(
-                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
                 { headers: headers }
             );
 
@@ -2027,7 +2029,7 @@
             if (adConfigSha) body.sha = adConfigSha;
 
             var resp = await fetch(
-                'https://api.github.com/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
                 {
                     method: 'PUT',
                     headers: { 'Authorization': 'token ' + token, 'Content-Type': 'application/json' },
