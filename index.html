@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="中国体育建设标准查询平台，收录国家标准、行业标准、地方标准、团标，涵盖合成材料跑道、人造草坪、灯光照明、木地板、围网等全品类体育建设标准。">
   <title>中国体育建设标准查询平台 | 最全体育行业标准数据库</title>
-  <!-- ★ 自动刷新引擎：防止首页白屏/标准加载不出来（localStorage时间戳方案，最稳定） -->
+  <!-- ★ 自动刷新：从链接进入时刷新一次，防白屏/数据加载失败 -->
   <script>
   (function(){
-    var TS_KEY  = '_idx_enter_ts'; // 上次进入首页的时间戳
-    var THRESH  = 3000;            // 3秒内的reload不重复触发，避免循环
-
-    // 浏览器返回键（bfcache恢复），直接刷新
+    // 浏览器返回键（bfcache 恢复）→ 直接刷新
     window.addEventListener('pageshow', function(e){
       if(e.persisted){ location.reload(); }
     });
 
-    var now  = Date.now();
-    var last = parseInt(localStorage.getItem(TS_KEY) || '0', 10);
+    // 用 performance.navigation.type 判断进入方式：
+    //   0 / "navigate" = 从链接/地址栏进入  → 需要刷新
+    //   1 / "reload"   = 本次就是刷新后     → 不再刷新（防死循环）
+    //   2 / "back_forward" = 浏览器前进后退 → pageshow persisted 已处理
+    var t = 0;
+    try {
+      var nav = performance.getEntriesByType('navigation')[0];
+      t = nav ? nav.type : performance.navigation.type;
+    } catch(e) {}
 
-    if(now - last > THRESH){
-      // 距上次进入已超过3秒（首次打开 / 从其他页面返回），刷新一次
-      localStorage.setItem(TS_KEY, now);
+    if(t === 'navigate' || t === 0){
       location.reload();
     }
-    // 否则：是刚刚reload回来的，直接展示内容，不再循环
   })();
   </script>
   <!-- ★ 广告/SEO 注入引擎（HEAD 部分）：优先用 localStorage 缓存快速注入，同时异步拉取 GitHub 最新配置更新缓存 -->
