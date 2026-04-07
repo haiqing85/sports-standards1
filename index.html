@@ -9,19 +9,15 @@
   <script>
   (function(){
     var KEY = '_auto_refreshed';
-    // 情况①：普通打开页面，1秒内刷新一次
+    // 情况②：bfcache恢复（返回键），直接reload；不清除KEY避免触发情况①二次刷新
+    window.addEventListener('pageshow', function(e){
+      if(e.persisted){ location.reload(); }
+    });
+    // 情况①：普通打开，1秒后刷新一次，同一会话只触发一次
     if(!sessionStorage.getItem(KEY)){
       sessionStorage.setItem(KEY, '1');
       setTimeout(function(){ location.reload(); }, 1000);
     }
-    // 情况②：浏览器前进/后退（bfcache恢复），页面JS不重新执行，需用pageshow监听
-    window.addEventListener('pageshow', function(e){
-      if(e.persisted){
-        // 清除标记，让下次普通加载也能再刷新一次
-        sessionStorage.removeItem(KEY);
-        location.reload();
-      }
-    });
   })();
   </script>
   <!-- ★ 广告/SEO 注入引擎（HEAD 部分）：优先用 localStorage 缓存快速注入，同时异步拉取 GitHub 最新配置更新缓存 -->
