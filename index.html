@@ -5,37 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="中国体育建设标准查询平台，收录国家标准、行业标准、地方标准、团标，涵盖合成材料跑道、人造草坪、灯光照明、木地板、围网等全品类体育建设标准。">
   <title>中国体育建设标准查询平台 | 最全体育行业标准数据库</title>
-  <!-- ★ 自动刷新引擎：覆盖3种返回首页方式，确保标准数据正常加载 -->
+  <!-- ★ 自动刷新引擎：防止首页白屏/标准加载不出来 -->
   <script>
   (function(){
-    var FIRST_KEY  = '_auto_refreshed';
-    var REF_PREFIX = '_ref_reloaded:';
+    var KEY      = '_index_loaded';
+    var RELOADING = '_index_reloading';
 
-    // 方式A：浏览器返回键（bfcache恢复）
+    // pagehide 时：若是自己触发的 reload 则不清 KEY，若是离开到其他页面才清 KEY
+    window.addEventListener('pagehide', function(){
+      if(!sessionStorage.getItem(RELOADING)){
+        // 正在离开到其他页面，清除 KEY，确保下次回来会刷新
+        sessionStorage.removeItem(KEY);
+      }
+      // 无论如何清除 RELOADING 标志
+      sessionStorage.removeItem(RELOADING);
+    });
+
+    // 浏览器返回键（bfcache 恢复），直接刷新
     window.addEventListener('pageshow', function(e){
       if(e.persisted){ location.reload(); }
     });
 
-    // 方式B：从同站其他页面点链接跳回首页（如"返回首页"按钮）
-    var ref = document.referrer;
-    var fromSameSiteOtherPage = ref
-      && ref.indexOf(location.hostname) !== -1
-      && ref.indexOf('index.html') === -1
-      && ref.indexOf(location.pathname) === -1;
-
-    if(fromSameSiteOtherPage){
-      var refKey = REF_PREFIX + ref;
-      if(!sessionStorage.getItem(refKey)){
-        sessionStorage.setItem(refKey, '1');
-        location.reload();
-        return;
-      }
-    }
-
-    // 方式C：全新打开/首次访问，1秒后刷新一次
-    if(!sessionStorage.getItem(FIRST_KEY)){
-      sessionStorage.setItem(FIRST_KEY, '1');
-      setTimeout(function(){ location.reload(); }, 1000);
+    // 每次新进入首页刷新一次
+    if(!sessionStorage.getItem(KEY)){
+      sessionStorage.setItem(KEY, '1');
+      sessionStorage.setItem(RELOADING, '1'); // 标记：这次 pagehide 是自己的 reload，不要清 KEY
+      location.reload();
     }
   })();
   </script>
