@@ -920,7 +920,7 @@
     // Token 存储在 EdgeOne 环境变量 GITHUB_TOKEN，通过代理转发，此处不需要填写
     var GITHUB_TOKEN_BUILTIN = '';
     // 代理地址（对应仓库 edge-functions/api/github-proxy.js）
-    var PROXY_BASE = '/edge-functions/api/github-proxy';
+    var PROXY_BASE = '/api/github-proxy';
 
     var DB = { standards: [] };
     var fileSha = '';
@@ -938,7 +938,7 @@
         btn.disabled = true;
         btn.textContent = '验证中…';
         try {
-            var resp = await fetch('/edge-functions/api/admin', {
+            var resp = await fetch('/api/admin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: u, password: p })
