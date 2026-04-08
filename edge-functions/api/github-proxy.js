@@ -24,7 +24,7 @@ export async function onRequest(context) {
 
   const url = new URL(request.url);
   // 将 /edge-functions/api/github-proxy/repos/... 转换为 https://api.github.com/repos/...
-  const githubPath = url.pathname.replace('/edge-functions/api/github-proxy', '');
+  const githubPath = url.pathname.replace('/api/github-proxy', '');
   const githubUrl = `https://api.github.com${githubPath}${url.search}`;
 
   const body = request.method !== 'GET' ? await request.text() : undefined;
