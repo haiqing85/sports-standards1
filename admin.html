@@ -921,6 +921,11 @@
     var GITHUB_TOKEN_BUILTIN = '';
     // 代理地址（对应仓库 edge-functions/api/github-proxy.js）
     var PROXY_BASE = '/api/github-proxy';
+    var GITHUB_API  = 'https://api.github.com';
+    // 构造代理 URL：把目标 GitHub API 地址作为 ?url= 参数传给代理
+    function proxyUrl(path) {
+        return PROXY_BASE + '?url=' + encodeURIComponent(GITHUB_API + path);
+    }
 
     var DB = { standards: [] };
     var fileSha = '';
@@ -973,7 +978,7 @@
     async function loadDataFromGithub() {
         try {
             var resp = await fetch(
-                PROXY_BASE + '/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH,
+                proxyUrl(/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH),
                 { headers: { 'Accept': 'application/vnd.github.v3+json' } }
             );
 
@@ -1032,7 +1037,7 @@
             DB.version = DB.updated.replace(/-/g, '.');
             var encodedContent = btoa(unescape(encodeURIComponent(JSON.stringify(DB, null, 2))));
             var resp = await fetch(
-                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH),
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -1419,7 +1424,7 @@
                     var existSha = '';
                     try {
                         var chk = await fetch(
-                            PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath
+                            proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath)
                         );
                         if (chk.ok) { var chkJson = await chk.json(); existSha = chkJson.sha || ''; }
                     } catch(e2) {}
@@ -1431,7 +1436,7 @@
                     if (existSha) body.sha = existSha;
 
                     var resp = await fetch(
-                        PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath,
+                        proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath),
                         {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
@@ -1472,7 +1477,7 @@
             var encodedContent = btoa(unescape(encodeURIComponent(jsonStr)));
 
             var resp = await fetch(
-                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH,
+                proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH),
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -1923,7 +1928,7 @@
 
         try {
             var resp = await fetch(
-                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH),
                 { headers: { 'Accept': 'application/vnd.github.v3+json' } }
             );
 
@@ -1982,7 +1987,7 @@
             if (adConfigSha) body.sha = adConfigSha;
 
             var resp = await fetch(
-                PROXY_BASE + '/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH,
+                proxyUrl(/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH),
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
