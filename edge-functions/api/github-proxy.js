@@ -1,6 +1,6 @@
-// 路径：functions/api/github-proxy.js
-// 接收 ?url= 参数，代理到对应的 GitHub API 地址
-// 无需子路径路由，只处理 /api/github-proxy 这一个精确路径
+// 路径：edge-functions/api/github-proxy.js
+// URL：/api/github-proxy?url=https://api.github.com/...
+// Token 从 context.env.GITHUB_TOKEN 读取，前端不暴露
 
 export async function onRequest(context) {
   const { request, env } = context;
@@ -17,20 +17,19 @@ export async function onRequest(context) {
 
   const token = env.GITHUB_TOKEN;
   if (!token) {
-    return new Response(JSON.stringify({ error: 'GITHUB_TOKEN 未配置' }), {
-      status: 500,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'GITHUB_TOKEN 未配置' }),
+      { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
+    );
   }
 
-  // 从查询参数中取目标 URL
   const reqUrl = new URL(request.url);
   const targetUrl = reqUrl.searchParams.get('url');
   if (!targetUrl) {
-    return new Response(JSON.stringify({ error: '缺少 url 参数' }), {
-      status: 400,
-      headers: { ...cors, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: '缺少 url 参数' }),
+      { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+    );
   }
 
   const body = request.method !== 'GET' ? await request.text() : undefined;
