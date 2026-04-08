@@ -8,6 +8,18 @@
         :root { --primary: #2563eb; --bg: #f8fafc; }
         body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 0; }
 
+        /* 登录页 */
+        .login-screen { position: fixed; inset: 0; background: #1e293b; display: flex; align-items: center; justify-content: center; z-index: 999; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box h2 { margin-top: 0; margin-bottom: 6px; color: #0f172a; font-size: 20px; }
+        .login-box .sub { font-size: 13px; color: #94a3b8; margin-bottom: 24px; }
+        .login-box label { display: block; text-align: left; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .login-box input { width: 100%; padding: 11px 13px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-radius: 7px; box-sizing: border-box; font-size: 14px; font-family: inherit; color: #1e293b; }
+        .login-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 7px; cursor: pointer; font-size: 15px; font-weight: 700; font-family: inherit; }
+        .login-box button:hover { background: #1d4ed8; }
+        .login-err { color: #dc2626; font-size: 13px; margin-top: 10px; min-height: 18px; }
+
         /* 主界面 */
         .container { max-width: 1100px; margin: 40px auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: none; }
         .header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0; }
@@ -233,9 +245,24 @@
 </head>
 <body>
 
+<!-- 登录页 -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <h2>🏟 体育标准管理后台</h2>
+        <div class="sub">请输入管理员账号登录</div>
+        <label>用户名</label>
+        <input type="text" id="username" placeholder="请输入用户名"
+            onkeydown="if(event.key==='Enter')checkLogin()">
+        <label>密码</label>
+        <input type="password" id="password" placeholder="请输入密码"
+            onkeydown="if(event.key==='Enter')checkLogin()">
+        <button onclick="checkLogin()">登 录</button>
+        <div class="login-err" id="loginErr"></div>
+    </div>
+</div>
 
 <!-- 主界面 -->
-<div class="container" id="adminScreen" style="display:block">
+<div class="container" id="adminScreen">
     <div class="header-bar">
         <h1>🏟 体育标准管理后台</h1>
         <div class="header-btns">
@@ -890,12 +917,9 @@
     var REPO_OWNER = 'haiqing85';
     var REPO_NAME  = 'sports-standards1';
     var FILE_PATH  = 'data/standards.json';
-    // Token 存储在 EdgeOne 环境变量 GITHUB_TOKEN，通过代理转发，此处不需要填写
-    var GITHUB_TOKEN_BUILTIN = '';
-    // 代理地址（对应仓库 edge-functions/api/github-proxy.js）
+    var GITHUB_TOKEN_BUILTIN = '';  // Token 在 EdgeOne 环境变量中，无需填写
     var PROXY_BASE = '/api/github-proxy';
     var GITHUB_API  = 'https://api.github.com';
-    // 构造代理 URL：把目标 GitHub API 地址作为 ?url= 参数传给代理
     function proxyUrl(path) {
         return PROXY_BASE + '?url=' + encodeURIComponent(GITHUB_API + path);
     }
@@ -905,12 +929,49 @@
     var editIndex = -1;
     var pendingPdfFile = null;   // 待上传的 PDF 文件对象
 
-    // Token 由服务端代理处理，前端无需传递
     function getToken() { return ''; }
 
+    // ── 登录（密码由 EdgeOne 环境变量 ADMIN_PASSWORD 验证）──
+    async function checkLogin() {
+        var u = document.getElementById('username').value.trim();
+        var p = document.getElementById('password').value;
+        var btn = document.querySelector('.login-box button');
+        var errEl = document.getElementById('loginErr');
+        btn.disabled = true;
+        btn.textContent = '验证中…';
+        errEl.textContent = '';
+        try {
+            var resp = await fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: u, password: p })
+            });
+            var result = await resp.json();
+            if (result.ok) {
+                sessionStorage.setItem('admin_logged_in', '1');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminScreen').style.display = 'block';
+                loadDataFromGithub();
+            } else {
+                errEl.textContent = '用户名或密码错误，请重新输入';
+                btn.disabled = false;
+                btn.textContent = '登 录';
+            }
+        } catch(e) {
+            errEl.textContent = '登录失败：' + e.message;
+            btn.disabled = false;
+            btn.textContent = '登 录';
+        }
+    }
 
-
-
+    // ── 页面加载时检查登录状态，已登录则跳过登录页 ──
+    (function() {
+        if (sessionStorage.getItem('admin_logged_in') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminScreen').style.display = 'block';
+            // 数据在 DOMContentLoaded 后加载（见页面底部）
+        }
+    })();
 
     // ── 从 GitHub 读取数据（支持公开和私有仓库）──
     async function loadDataFromGithub() {
@@ -1358,19 +1419,13 @@
                 try {
                     var base64 = e.target.result.split(',')[1];
                     var filePath = 'downloads/' + stdId + '.pdf';
-                    // 先查是否已存在（获取旧 sha）
                     var existSha = '';
                     try {
-                        var chk = await fetch(
-                            proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath)
-                        );
+                        var chk = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + filePath));
                         if (chk.ok) { var chkJson = await chk.json(); existSha = chkJson.sha || ''; }
                     } catch(e2) {}
 
-                    var body = {
-                        message: '📄 上传PDF: ' + stdId + '.pdf',
-                        content: base64
-                    };
+                    var body = { message: '📄 上传PDF: ' + stdId + '.pdf', content: base64 };
                     if (existSha) body.sha = existSha;
 
                     var resp = await fetch(
@@ -1435,7 +1490,7 @@
             } else {
                 var err = await resp.json();
                 if (err.message === 'Bad credentials') {
-                    alert('Token 失效！请检查 EdgeOne 环境变量 GITHUB_TOKEN 是否正确配置。');
+                    alert('GitHub Token 失效，请检查 EdgeOne 环境变量 GITHUB_TOKEN 是否正确。');
                 } else {
                     alert('推送失败：' + err.message);
                 }
