@@ -1,6 +1,6 @@
 {
-  "version": "2026.04.03",
-  "updated": "2026-04-09 03:26:11",
+  "version": "2026.04.09",
+  "updated": "2026-04-09",
   "total": 356,
   "standards": [
     {
@@ -71,7 +71,7 @@
       "summary": "本标准规定了中小学合成材料面层田径场地的技术要求、试验方法、检验规则及标识等内容。适用于新建、改建和扩建的中小学田径场地的合成材料面层。旨在保障学生运动安全与健康，提升体育设施质量。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT435642023.pdf",
       "_origIndex": 2
     },
     {
@@ -87,7 +87,10 @@
       "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "合成材料面层",
+      "category": [
+        "合成材料面层",
+        "篮球场地"
+      ],
       "tags": [
         "合成材料",
         "篮球",
@@ -96,7 +99,7 @@
       "summary": "本标准规定了中小学合成材料面层篮球场地的技术要求、试验方法、检验规则及标识等内容。适用于中小学新建、改建和扩建的篮球场地面层的施工与验收。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT435652023.pdf",
       "_origIndex": 3
     },
     {
@@ -112,7 +115,10 @@
       "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "合成材料面层",
+      "category": [
+        "合成材料面层",
+        "综合"
+      ],
       "tags": [
         "运动",
         "合成材料",
@@ -121,7 +127,7 @@
       "summary": "本标准规定了运动场地合成材料面层中有害物质释放量的测定方法，采用环境测试舱法进行检测。适用于各类运动场地用合成材料面层产品。主要涵盖挥发性有机化合物等有害物质的释放量评估。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT390592020.pdf",
       "_origIndex": 4
     },
     {
