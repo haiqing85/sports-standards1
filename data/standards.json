@@ -1,7 +1,7 @@
 {
   "version": "2026.04.10",
-  "updated": "2026-04-10",
-  "total": 366,
+  "updated": "2026-04-11 03:17:26",
+  "total": 364,
   "standards": [
     {
       "id": "TYT350162024",
@@ -147,40 +147,6 @@
       "summary": "本标准适用于体育场馆智慧化工程的新建、改建、扩建的信息系统配置。",
       "localFile": "downloads/TYT21012024.pdf",
       "_origIndex": 7
-    },
-    {
-      "id": "TYT10082024",
-      "code": "TY/T 1008-2024",
-      "title": "体育赛事信息化 故障处理导则",
-      "type": "行业标准",
-      "isMandatory": false,
-      "category": "体育赛事",
-      "status": "现行",
-      "issueDate": "2024-07-05",
-      "implementDate": "2025-01-01",
-      "issuedBy": "国家体育总局",
-      "replaces": null,
-      "replacedBy": null,
-      "summary": "本标准适用于体育赛事信息化故障的处理。",
-      "localFile": "downloads/TYT10082024.pdf",
-      "_origIndex": 8
-    },
-    {
-      "id": "TYT10072024",
-      "code": "TY/T 1007-2024",
-      "title": "体育赛事信息化 软件测试规范",
-      "type": "行业标准",
-      "isMandatory": false,
-      "category": "体育赛事",
-      "status": "现行",
-      "issueDate": "2024-07-05",
-      "implementDate": "2025-01-01",
-      "issuedBy": "国家体育总局",
-      "replaces": null,
-      "replacedBy": null,
-      "summary": "本标准适用于体育赛事信息化软件测试与软件管理。",
-      "localFile": "downloads/TYT10072024.pdf",
-      "_origIndex": 9
     },
     {
       "id": "DB37T29042019",
