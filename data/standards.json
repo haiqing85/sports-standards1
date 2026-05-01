@@ -1,6 +1,6 @@
 {
   "version": "2026.04.10",
-  "updated": "2026-04-29 04:10:34",
+  "updated": "2026-05-01 04:25:00",
   "total": 364,
   "standards": [
     {
@@ -8189,12 +8189,12 @@
       "title": "自行车  照明和回复反射装置  第4部分：自行车发电机供电的照明系统",
       "english": "",
       "type": "国家标准",
-      "status": "现行",
+      "status": "废止",
       "issueDate": "2023-05-23",
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "GB/T 31887.4-2025",
       "issuedBy": "",
       "category": "灯光照明",
       "tags": [
@@ -8212,12 +8212,12 @@
       "title": "自行车  照明和回复反射装置  第5部分：自行车非发电机供电的照明系统",
       "english": "",
       "type": "国家标准",
-      "status": "现行",
+      "status": "废止",
       "issueDate": "2023-05-23",
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "GB/T 31887.5-2025",
       "issuedBy": "",
       "category": "灯光照明",
       "tags": [
