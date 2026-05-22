@@ -182,7 +182,10 @@
       "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "合成材料面层",
+      "category": [
+        "合成材料面层",
+        "综合"
+      ],
       "tags": [
         "运动",
         "合成材料",
@@ -207,7 +210,10 @@
       "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "合成材料面层",
+      "category": [
+        "合成材料面层",
+        "综合"
+      ],
       "tags": [
         "合成材料",
         "田径",
@@ -234,6 +240,7 @@
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
       "category": [
         "合成材料面层",
+        "综合",
         "篮球场地"
       ],
       "tags": [
@@ -798,7 +805,10 @@
       "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
-      "category": "人造草坪",
+      "category": [
+        "人造草坪",
+        "综合"
+      ],
       "tags": [
         "人造草",
         "足球",
@@ -807,7 +817,7 @@
       "summary": "本标准规定了中小学人造草面层足球场地的技术要求、试验方法、检验规则及标识等内容。适用于中小学新建、改建和扩建的人造草面层足球场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT435662023.pdf",
       "_origIndex": 34
     },
     {
