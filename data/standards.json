@@ -1,6 +1,6 @@
 {
   "version": "2026.05.22",
-  "updated": "2026-05-22",
+  "updated": "2026-05-23 04:13:59",
   "total": 364,
   "standards": [
     {
@@ -318,7 +318,7 @@
       "issueDate": "2020-03-31",
       "implementDate": "2021-02-01",
       "abolishDate": null,
-      "replaces": "GB/T 14833-2011",
+      "replaces": null,
       "replacedBy": null,
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
       "category": [
