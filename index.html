@@ -126,11 +126,17 @@
     .qtag{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 13px;font-size:12.5px;color:rgba(255,255,255,.9);cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
     .qtag:hover{background:rgba(255,255,255,.3);color:#fff}
     @media(max-width:480px){
-      .hero-search input{padding:13px 100px 13px 38px;font-size:13.5px}
-      .hero-btn{padding:8px 14px;font-size:12.5px}
-      .quick-tags{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;padding-bottom:4px;scrollbar-width:none}
+      .hero-search input{padding:13px 96px 13px 38px;font-size:14px}
+      .hero-btn{padding:9px 14px;font-size:13px;min-width:72px}
+      .quick-tags{overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start;padding-bottom:6px;scrollbar-width:none}
       .quick-tags::-webkit-scrollbar{display:none}
-      .qtag{flex-shrink:0}
+      .qtag{flex-shrink:0;min-height:32px;display:inline-flex;align-items:center}
+    }
+    @media(max-width:360px){
+      .hero{padding:36px 14px 28px}
+      .hero h1{font-size:20px}
+      .hero-search input{padding:12px 82px 12px 36px;font-size:13px}
+      .hero-btn{padding:8px 10px;font-size:12px;min-width:60px}
     }
 
     /* Main */
@@ -204,6 +210,7 @@
     /* Pagination */
     .pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:28px;flex-wrap:wrap}
     .pg-btn{width:36px;height:36px;border:1px solid var(--border);background:var(--white);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;color:var(--text2);transition:all .15s;font-family:var(--font)}
+    @media(max-width:640px){.pg-btn{width:42px;height:42px;font-size:14px}.pagination{gap:5px;margin-top:20px}}
     .pg-btn:hover,.pg-btn.active{border-color:var(--blue-mid);color:var(--blue-mid);background:var(--blue-dim)}
     .pg-btn.active{font-weight:700}
 
@@ -271,13 +278,17 @@
       .dl-btns{grid-template-columns:1fr}
       .modal-overlay{padding:0;align-items:flex-end}
       .modal{border-radius:16px 16px 0 0;max-height:92vh}
+      .modal-title{font-size:15px}
+      .modal-head{padding:16px 16px 0}
+      .modal-body{padding:0 16px 16px}
       .info-grid{grid-template-columns:1fr}
+      .dl-btn{padding:12px 16px;font-size:13px}
     }
     @media(max-width:640px){
       .main-wrap{padding:0 12px}
       .std-card{padding:14px}
       .card-title{font-size:13.5px}
-      .card-summary{display:none} /* 手机端隐藏摘要节省空间 */
+      .card-summary{display:-webkit-box;-webkit-line-clamp:1;font-size:12px} /* 手机端只显示1行 */
     }
 
     /* ── 验证码弹窗 ── */
@@ -327,8 +338,42 @@
     .footer-bottom p{font-size:12px;color:var(--muted)}
     .footer-bottom p+p{margin-top:4px}
     .btt{position:fixed;bottom:24px;right:20px;width:42px;height:42px;background:var(--blue-mid);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.4);display:none;align-items:center;justify-content:center;z-index:80}
+    @media(max-width:640px){.btt{bottom:calc(env(safe-area-inset-bottom) + 20px);right:16px;width:46px;height:46px}}
     .btt.show{display:flex}
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+    /* ── 移动端 Footer 优化：单列排列，减少留白 ── */
+    @media(max-width:640px){
+      .site-footer{padding:28px 16px 0;margin-top:36px}
+      .footer-inner{grid-template-columns:1fr 1fr;gap:20px}
+      .footer-bottom{margin-top:20px;padding:14px 0 calc(env(safe-area-inset-bottom) + 16px)}
+    }
+    @media(max-width:400px){
+      .footer-inner{grid-template-columns:1fr}
+    }
+
+    /* ── 防止 iOS/安卓 自动放大 font-size ── */
+    input,select,textarea{font-size:16px !important;-webkit-text-size-adjust:100%}
+    @media(max-width:640px){
+      input,select{font-size:16px !important} /* 防止 iOS 聚焦时自动缩放页面 */
+    }
+
+    /* ── iPhone/Android safe-area 支持（刘海/底部手势栏）── */
+    .modal{padding-bottom:env(safe-area-inset-bottom)}
+    @supports(padding-bottom:env(safe-area-inset-bottom)){
+      .preview-overlay.open,.cap-overlay.open,.modal-overlay.open{
+        padding-bottom:env(safe-area-inset-bottom)
+      }
+    }
+
+    /* ── 平板端（641px-1024px）布局优化 ── */
+    @media(min-width:641px) and (max-width:1024px){
+      .std-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+      .main-wrap{padding:0 16px}
+      .hero{padding:44px 20px 32px}
+      .hero-search{max-width:560px}
+      .footer-inner{grid-template-columns:repeat(2,1fr)}
+    }
   </style>
 </head>
 <body>
@@ -354,7 +399,7 @@
   <p>覆盖国标、行标、地标、团标，含合成材料面层、人造草坪、照明、木地板、围网等全品类</p>
   <div class="hero-search">
     <span class="hs-left">🔍</span>
-    <input type="text" id="heroSearch"
+    <input type="search" id="heroSearch" inputmode="search" enterkeyhint="search"
       placeholder="输入标准编号（如 GB 36246）或关键词（如 塑胶跑道）…"
       oninput="syncQ(this.value)" onkeydown="if(event.key==='Enter')doSearch()">
     <button class="hero-btn" onclick="doSearch()">查 询</button>
