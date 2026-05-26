@@ -160,15 +160,18 @@
       .main-wrap{padding:0 12px;margin-top:18px}
       .main-toolbar{flex-direction:column;align-items:stretch;gap:8px;margin-bottom:12px}
       /* 第一行：找到X条 + 排序 */
-      .toolbar-row1{display:flex;align-items:center;justify-content:space-between}
+      .toolbar-row1{display:flex;align-items:center;gap:8px}
+      .toolbar-row1 .result-count{flex:1}
+      .toolbar-row1 .sort-sel{flex-shrink:0;margin-right:0}
       /* 第二行：胶囊横向滚动 */
       .filter-pills{
         flex-wrap:nowrap;
         overflow-x:auto;
         -webkit-overflow-scrolling:touch;
         scrollbar-width:none;
-        padding-bottom:4px;
-        padding-right:12px;
+        padding:0 12px 4px 12px;
+        margin:0 -12px;
+        width:calc(100% + 24px);
         gap:7px;
       }
       .filter-pills::-webkit-scrollbar{display:none}
