@@ -168,11 +168,12 @@
         -webkit-overflow-scrolling:touch;
         scrollbar-width:none;
         padding-bottom:4px;
+        padding-right:12px;
         gap:7px;
       }
       .filter-pills::-webkit-scrollbar{display:none}
       .pill{font-size:12px;padding:5px 11px}
-      .sort-sel{font-size:12px;padding:5px 8px}
+      .sort-sel{font-size:12px;padding:5px 8px;max-width:72px;min-width:60px}
     }
 
     /* Grid */
@@ -326,30 +327,42 @@
     .pill-hot.active{background:linear-gradient(135deg,#dc2626,#ea580c);border-color:transparent;color:#fff}
 
     /* Footer */
-    .site-footer{background:#f8fafc;border-top:1px solid var(--border);padding:40px 20px 0;margin-top:56px}
-    .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:28px}
-    .footer-col h4{font-size:11.5px;font-weight:700;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
-    .footer-col p{font-size:13px;color:var(--muted);line-height:1.7}
+    .site-footer{background:#1e293b;border-top:none;padding:44px 20px 0;margin-top:56px;position:relative}
+    .site-footer::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--blue-light),#0ea5e9)}
+    .footer-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+    .footer-col h4{font-size:11px;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .footer-col p{font-size:13px;color:rgba(255,255,255,.45);line-height:1.8}
     .footer-col ul{list-style:none}
-    .footer-col ul li{margin-bottom:7px}
-    .footer-col ul li a{font-size:13px;color:var(--muted);cursor:pointer;text-decoration:none}
-    .footer-col ul li a:hover{color:var(--blue-mid)}
-    .footer-bottom{max-width:1280px;margin:28px auto 0;padding:16px 0 20px;border-top:1px solid var(--border-l);text-align:center}
-    .footer-bottom p{font-size:12px;color:var(--muted)}
-    .footer-bottom p+p{margin-top:4px}
+    .footer-col ul li{margin-bottom:9px}
+    .footer-col ul li a{font-size:13px;color:rgba(255,255,255,.5);cursor:pointer;text-decoration:none;transition:color .15s;display:inline-flex;align-items:center;gap:5px}
+    .footer-col ul li a::before{content:'›';opacity:0;transform:translateX(-4px);transition:all .15s;color:var(--blue-light)}
+    .footer-col ul li a:hover{color:rgba(255,255,255,.9)}
+    .footer-col ul li a:hover::before{opacity:1;transform:translateX(0)}
+    .footer-bottom{max-width:1280px;margin:32px auto 0;padding:16px 0 calc(env(safe-area-inset-bottom) + 20px);border-top:1px solid rgba(255,255,255,.08);text-align:center;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px}
+    .footer-bottom p{font-size:14px;color:rgba(255,255,255,.45)}
+    .footer-bottom p+p{margin-top:0}
+    .footer-bottom a{color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s}
+    .footer-bottom a:hover{color:rgba(255,255,255,.8)}
+    .footer-bottom .footer-sep{color:rgba(255,255,255,.15);margin:0 4px}
     .btt{position:fixed;bottom:24px;right:20px;width:42px;height:42px;background:var(--blue-mid);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:0 4px 14px rgba(37,99,235,.4);display:none;align-items:center;justify-content:center;z-index:80}
     @media(max-width:640px){.btt{bottom:calc(env(safe-area-inset-bottom) + 20px);right:16px;width:46px;height:46px}}
     .btt.show{display:flex}
     ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-    /* ── 移动端 Footer 优化：单列排列，减少留白 ── */
+    /* ── 移动端 Footer 优化 ── */
     @media(max-width:640px){
       .site-footer{padding:28px 16px 0;margin-top:36px}
-      .footer-inner{grid-template-columns:1fr 1fr;gap:20px}
-      .footer-bottom{margin-top:20px;padding:14px 0 calc(env(safe-area-inset-bottom) + 16px)}
+      .footer-inner{grid-template-columns:repeat(4,1fr);gap:14px 10px;overflow-x:auto}
+      .footer-col h4{font-size:10px;margin-bottom:10px}
+      .footer-col ul li a{font-size:12.5px}
+      .footer-col p{font-size:12px}
+      .footer-bottom{margin-top:20px;flex-direction:column;gap:4px}
+      .footer-sep{display:none}
     }
     @media(max-width:400px){
-      .footer-inner{grid-template-columns:1fr}
+      .footer-inner{grid-template-columns:repeat(4,1fr)}
+      .footer-col h4{font-size:9px}
+      .footer-col ul li a{font-size:11px}
     }
 
     /* ── 防止 iOS/安卓 自动放大 font-size ── */
@@ -426,9 +439,9 @@
     <div class="toolbar-row1">
       <div class="result-count">找到 <strong id="resultCount">0</strong> 条标准</div>
       <select class="sort-sel" id="sortSel" onchange="applyAll()">
-        <option value="date-new">最新发布</option>
-        <option value="date-old">最早发布</option>
-        <option value="code">编号排序</option>
+        <option value="date-new">最新</option>
+        <option value="date-old">最早</option>
+        <option value="code">编号</option>
       </select>
     </div>
     <!-- 筛选胶囊：手机端横向滚动 -->
@@ -487,17 +500,19 @@
       </ul>
     </div>
     <div class="footer-col">
-    <h4>支持中心</h4>
-    <ul style="list-style:none; padding:0; font-size:13px; line-height:2.2">
-        <li><a href="about.html" target="_blank" style="text-decoration:none;color:inherit">关于平台</a></li>
-        <li><a href="contact.html" target="_blank" style="text-decoration:none;color:inherit">反馈与建议</a></li> <li><a href="privacy.html" target="_blank" style="text-decoration:none;color:inherit">隐私政策</a></li>
-        <li><a href="disclaimer.html" target="_blank" style="text-decoration:none;color:inherit">法律声明</a></li>
-    </ul>
-</div>
+      <h4>支持中心</h4>
+      <ul>
+        <li><a href="about.html" target="_blank" rel="noopener">关于平台</a></li>
+        <li><a href="contact.html" target="_blank" rel="noopener">反馈与建议</a></li>
+        <li><a href="privacy.html" target="_blank" rel="noopener">隐私政策</a></li>
+        <li><a href="disclaimer.html" target="_blank" rel="noopener">法律声明</a></li>
+      </ul>
+    </div>
   </div>
   <div class="footer-bottom">
     <p>© <span id="footerYear"></span> 体育建设标准查询平台</p>
-    <p><a href="https://beian.miit.gov.cn/" target="_blank">鲁ICP备2026026260号-1</a></p>
+    <span class="footer-sep">·</span>
+    <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">鲁ICP备2026026260号-1</a></p>
   </div>
 </footer>
 
