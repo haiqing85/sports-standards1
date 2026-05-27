@@ -25,9 +25,9 @@
   "en-gsc": false,
   "code-baidu-verify": "<meta name=\"baidu-site-verification\" content=\"codeva-7b62y0nJ7X\" />",
   "en-baidu-verify": true,
-  "code-bing": "",
-  "en-bing": false,
+  "code-bing": "<meta name=\"msvalidate.01\" content=\"3268CE970E123A3C5E3F5003F748F870\" />",
+  "en-bing": true,
   "code-custom-head": "",
   "en-custom-head": false,
-  "savedAt": "2026-05-27T07:28:30.981Z"
+  "savedAt": "2026-05-27T07:34:53.484Z"
 }
