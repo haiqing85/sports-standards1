@@ -39,9 +39,11 @@
       HEAD_SLOTS.forEach(function(k){
         if(!cfg['en-'+k] || !cfg['code-'+k]) return;
         try {
-          var tmp = document.createElement('div');
-          tmp.innerHTML = cfg['code-'+k];
-          tmp.querySelectorAll('script,meta,link,style').forEach(function(node){
+          // 用 DOMParser 解析，避免浏览器在 div.innerHTML 中静默丢弃 <meta> 标签
+          var doc = (new DOMParser()).parseFromString(
+            '<!DOCTYPE html><html><head>' + cfg['code-'+k] + '</head></html>', 'text/html'
+          );
+          doc.head.querySelectorAll('script,meta,link,style').forEach(function(node){
             var el;
             if(node.tagName==='SCRIPT'){
               el=document.createElement('script');
@@ -51,28 +53,31 @@
               var href=node.getAttribute('href')||'';
               if(!/^https?:\/\//i.test(href))return;
               el=node.cloneNode(true);
-            } else{el=node.cloneNode(true);}
-            if(el)document.head.appendChild(el);
+            } else {
+              el=node.cloneNode(true);
+            }
+            if(el) document.head.appendChild(el);
           });
         }catch(_){}
       });
     }
 
     // 立即用缓存注入（速度快，不阻塞渲染）
+    var _hadCache = false;
     try {
       var cached = localStorage.getItem(CACHE_KEY);
-      if(cached) injectHeadSlots(JSON.parse(cached));
+      if(cached){ _hadCache = true; injectHeadSlots(JSON.parse(cached)); }
     } catch(_) {}
 
-    // 异步拉取 GitHub Pages 上的最新配置，更新缓存供下次使用
+    // 异步拉取最新配置，更新缓存供下次使用
     fetch(CFG_URL + '?v=' + Date.now())
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(cfg){
         if(!cfg) return;
         try { localStorage.setItem(CACHE_KEY, JSON.stringify(cfg)); } catch(_){}
-        // 如果缓存为空（首次访问），立即补注 head slots
-        if(!localStorage.getItem(CACHE_KEY)) injectHeadSlots(cfg);
-        // Body slots 会由页面底部的引擎处理；这里触发一次补注（幂等）
+        // 首次访问（之前无缓存）：立即注入 head slots
+        if(!_hadCache) injectHeadSlots(cfg);
+        // Body slots 补注（幂等）
         if(window._injectBodySlots) window._injectBodySlots(cfg);
       })
       .catch(function(){});
