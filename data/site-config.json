@@ -20,14 +20,14 @@
   "code-ga4": "",
   "en-ga4": false,
   "code-baidu-stat": "<meta name=\"baidu-site-verification\" content=\"codeva-7b62y0nJ7X\" />",
-  "en-baidu-stat": true,
+  "en-baidu-stat": false,
   "code-gsc": "",
   "en-gsc": false,
-  "code-baidu-verify": "",
+  "code-baidu-verify": "<meta name=\"baidu-site-verification\" content=\"codeva-7b62y0nJ7X\" />",
   "en-baidu-verify": false,
   "code-bing": "",
   "en-bing": false,
   "code-custom-head": "",
   "en-custom-head": false,
-  "savedAt": "2026-05-27T06:56:18.955Z"
+  "savedAt": "2026-05-27T06:58:46.147Z"
 }
