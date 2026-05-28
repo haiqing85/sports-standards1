@@ -18,10 +18,10 @@
   "code-custom-body": "",
   "en-custom-body": false,
   "code-ga4": "<!-- Google tag (gtag.js) -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-FR0SD3XFGV\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n\n  gtag('config', 'G-FR0SD3XFGV');\n</script>",
-  "en-ga4": true,
+  "en-ga4": false,
   "code-baidu-stat": "<script>\nvar _hmt = _hmt || [];\n(function() {\n  var hm = document.createElement(\"script\");\n  hm.src = \"https://hm.baidu.com/hm.js?a372f645ecc37ef043f229834ccf0979\";\n  var s = document.getElementsByTagName(\"script\")[0]; \n  s.parentNode.insertBefore(hm, s);\n})();\n</script>",
-  "en-baidu-stat": true,
+  "en-baidu-stat": false,
   "code-custom-head": "",
   "en-custom-head": false,
-  "savedAt": "2026-05-28T02:47:43.130Z"
+  "savedAt": "2026-05-28T03:02:38.994Z"
 }
