@@ -1,0 +1,88 @@
+## ============================================================
+## CNB 自动化配置 — 体育建设标准查询平台
+## 用途：使用境内 Runner 抓取体育标准数据，推回 GitHub 仓库
+## 文档：https://cnb.cool/docs
+## ============================================================
+
+name: 体育标准数据自动更新
+
+on:
+  ## 定时触发：每周一凌晨 3:00（北京时间）全量抓取
+  schedule:
+    - cron: "0 19 * * 0"   # UTC 周日 19:00 = 北京时间周一 03:00
+
+  ## 手动触发（CNB 控制台点「Run」按钮）
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "运行模式"
+        required: false
+        default: "full"
+        type: choice
+        options:
+          - full        # 全量抓取（默认）
+          - scan-only   # 仅扫描现有标准状态
+          - repair-only # 仅本地规则修复
+
+  ## 代码变动触发（仅抓取脚本更新时）
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/update_standards.py"
+      - "scripts/fetch_sactc.py"
+
+jobs:
+  update-standards:
+    name: 抓取并更新标准库
+    runs-on: cnb:any   # 使用 CNB 境内 Runner
+
+    steps:
+      ## 1. 拉取代码
+      - name: 拉取仓库代码
+        uses: cnb/checkout@v1
+        with:
+          fetch-depth: 1
+
+      ## 2. 配置 Python 环境
+      - name: 安装 Python 依赖
+        run: |
+          python3 -m pip install --upgrade pip -q
+          pip3 install requests urllib3 beautifulsoup4 lxml -q
+
+      ## 3. 运行抓取脚本
+      - name: 运行标准抓取
+        env:
+          DEEPSEEK_KEY: ${{ secrets.DEEPSEEK_KEY }}
+          QWEN_KEY: ${{ secrets.QWEN_KEY }}
+        run: |
+          cd $GITHUB_WORKSPACE
+          MODE="${{ github.event.inputs.mode || 'full' }}"
+          echo "运行模式: $MODE"
+          if [ "$MODE" = "scan-only" ]; then
+            python3 scripts/update_standards.py --scan-only
+          elif [ "$MODE" = "repair-only" ]; then
+            python3 scripts/update_standards.py --repair-only
+          else
+            python3 scripts/update_standards.py
+          fi
+
+      ## 4. 推回 GitHub（仅数据文件有变动时才 commit）
+      - name: 推送更新数据到 GitHub
+        run: |
+          git config user.name  "CNB Standards Bot"
+          git config user.email "bot@cnb.cool"
+          git add data/standards.json data/update_log.txt
+          if git diff --cached --quiet; then
+            echo "数据无变化，跳过 commit"
+          else
+            COUNT=$(python3 -c "
+          import json
+          with open('data/standards.json', encoding='utf-8') as f:
+              d = json.load(f)
+          print(d.get('total', len(d.get('standards', []))))
+          " 2>/dev/null || echo "?")
+            git commit -m "chore: 自动更新标准库 $(date '+%Y-%m-%d') 共${COUNT}条"
+            git push origin main
+            echo "✅ 数据已推送，共 ${COUNT} 条标准"
+          fi
