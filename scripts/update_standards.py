@@ -911,7 +911,7 @@ def run(dry=False, debug=False, scan_only=False, repair_only=False, schedule_hou
             continue
 
         # 全量关键词抓取+合并模式
-        log("\n=== 开始全量关键词抓取 ===")
+        log("\n=== 开始全量关键词抓取（国家标准委 samr.gov.cn）===")
         all_new = []
         total_kw = len(KEYWORDS)
         for i, kw in enumerate(KEYWORDS,1):
@@ -925,7 +925,28 @@ def run(dry=False, debug=False, scan_only=False, repair_only=False, schedule_hou
                 log(f"   → 抓取失败：{str(e)}")
                 time.sleep(2)
                 continue
-        log(f"\n抓取完成，去重前总数：{len(all_new)} 条")
+        log(f"\nSAMR 抓取完成，去重前总数：{len(all_new)} 条")
+
+        # ===================== 补充数据源：体育行业标准（sactc456.org.cn）=====================
+        # 仅境内环境（CNB Runner）可访问，境外自动跳过，不影响 GitHub Actions 原有流程
+        log("\n=== 补充抓取体育行业标准（全国体育标委会 sactc456.org.cn）===")
+        try:
+            import sys as _sys
+            import os as _os
+            _scripts_dir = _os.path.dirname(_os.path.abspath(__file__))
+            if _scripts_dir not in _sys.path:
+                _sys.path.insert(0, _scripts_dir)
+            from fetch_sactc import fetch_sactc_all
+            sactc_data = fetch_sactc_all()
+            if sactc_data:
+                log(f"SACTC 抓取到 {len(sactc_data)} 条体育行业标准，合并中...")
+                all_new.extend(sactc_data)
+            else:
+                log("SACTC 未获取到数据（可能为境外环境，已跳过）")
+        except Exception as e:
+            log(f"SACTC 抓取跳过：{str(e)}")
+        # ===================== SACTC 补充结束 =====================
+
         standards, add, upd = merge(standards, all_new)
         log(f"合并结果：新增 {add} 条，更新 {upd} 条基础信息")
 
