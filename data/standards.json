@@ -1,6 +1,6 @@
 {
-  "version": "2026.05.22",
-  "updated": "2026-05-27 04:54:14",
+  "version": "2026.05.28",
+  "updated": "2026-05-28",
   "total": 369,
   "standards": [
     {
@@ -125,7 +125,7 @@
       "replaces": null,
       "replacedBy": null,
       "summary": "本标准适用于新建、改建、扩建的体育场馆的智慧化水平评价。",
-      "localFile": "downloads/TYT21022024.pdf",
+      "localFile": "",
       "_origIndex": 6
     },
     {
@@ -145,7 +145,7 @@
       "replaces": null,
       "replacedBy": null,
       "summary": "本标准适用于体育场馆智慧化工程的新建、改建、扩建的信息系统配置。",
-      "localFile": "downloads/TYT21012024.pdf",
+      "localFile": "",
       "_origIndex": 7
     },
     {
@@ -817,7 +817,7 @@
       "summary": "本标准规定了中小学人造草面层足球场地的技术要求、试验方法、检验规则及标识等内容。适用于中小学新建、改建和扩建的人造草面层足球场地。",
       "isMandatory": false,
       "scope": "",
-      "localFile": "downloads/GBT435662023.pdf",
+      "localFile": "",
       "_origIndex": 34
     },
     {
@@ -8262,7 +8262,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 364
     },
     {
       "id": "GBT200452026",
@@ -8282,7 +8283,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 365
     },
     {
       "id": "GBT325972026",
@@ -8302,7 +8304,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 366
     },
     {
       "id": "GBT35662026",
@@ -8322,7 +8325,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 367
     },
     {
       "id": "GBT199942026",
@@ -8342,7 +8346,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 368
     }
   ]
 }
