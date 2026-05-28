@@ -515,47 +515,73 @@
 
       <!-- ─── 搜索引擎验证 ─── -->
       <div class="ad-section">
-        <div class="ad-section-title">✅ 搜索引擎站点验证</div>
+        <div class="ad-section-title">🛠️ 站点工具</div>
 
-        <!-- Google Search Console -->
-        <div class="ad-card" id="adcard-gsc">
-          <div class="ad-card-head" onclick="toggleAdCard('gsc')">
-            <span class="ad-card-num" style="background:#dcfce7;color:#15803d">G</span>
-            <div class="ad-card-info"><div class="ad-card-name">Google Search Console</div><div class="ad-card-desc">谷歌站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-gsc" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+        <!-- 站点地图管理 -->
+        <div class="ad-card" id="adcard-sitemap">
+          <div class="ad-card-head" onclick="toggleAdCard('sitemap')">
+            <span class="ad-card-num" style="background:#dbeafe;color:#1e40af">🗺</span>
+            <div class="ad-card-info"><div class="ad-card-name">站点地图（Sitemap）</div><div class="ad-card-desc">自动生成 sitemap.xml 并推送到仓库，提升收录速度</div></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-gsc" placeholder='<meta name="google-site-verification" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+              <button class="btn btn-primary" onclick="generateSitemap()" id="sitemapGenBtn">🗺️ 生成并推送 sitemap.xml</button>
+              <span id="sitemapStatus" style="font-size:13px;color:#64748b"></span>
+            </div>
+            <div style="font-size:12px;color:#94a3b8;line-height:1.8">
+              • 自动收录所有标准页面，生成符合 Google / 百度 / Bing 规范的 sitemap.xml<br>
+              • 推送成功后，访问 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">https://你的域名/sitemap.xml</code> 即可查看<br>
+              • 搜索引擎验证需直接写入 index.html &lt;head&gt;，不支持 JS 动态注入
+            </div>
           </div>
         </div>
 
-        <!-- 百度 -->
-        <div class="ad-card" id="adcard-baidu-verify">
-          <div class="ad-card-head" onclick="toggleAdCard('baidu-verify')">
-            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
-            <div class="ad-card-info"><div class="ad-card-name">百度搜索资源平台验证</div><div class="ad-card-desc">百度站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-verify" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+        <!-- 数据导出 -->
+        <div class="ad-card" id="adcard-export">
+          <div class="ad-card-head" onclick="toggleAdCard('export')">
+            <span class="ad-card-num" style="background:#dcfce7;color:#15803d">📤</span>
+            <div class="ad-card-info"><div class="ad-card-name">数据导出</div><div class="ad-card-desc">将标准库导出为 CSV / JSON 文件，方便备份和离线分析</div></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-baidu-verify" placeholder='<meta name="baidu-site-verification" content="XXXXXXXXXX" />'></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+              <button class="btn btn-primary" onclick="exportCSV()">📊 导出 CSV（Excel可用）</button>
+              <button class="btn" onclick="exportJSON()">📄 导出 JSON（完整备份）</button>
+            </div>
+            <div style="font-size:12px;color:#94a3b8;line-height:1.8">
+              • CSV 文件可直接用 Excel / WPS 打开，适合统计和筛选<br>
+              • JSON 文件为完整数据备份，可用于恢复或迁移
+            </div>
           </div>
         </div>
 
-        <!-- Bing -->
-        <div class="ad-card" id="adcard-bing">
-          <div class="ad-card-head" onclick="toggleAdCard('bing')">
-            <span class="ad-card-num" style="background:#ede9fe;color:#5b21b6">B</span>
-            <div class="ad-card-info"><div class="ad-card-name">Bing Webmaster Tools</div><div class="ad-card-desc">必应站长工具所有权验证 meta 标签</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-bing" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+        <!-- PDF 批量管理 -->
+        <div class="ad-card" id="adcard-pdfbatch">
+          <div class="ad-card-head" onclick="toggleAdCard('pdfbatch')">
+            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">📋</span>
+            <div class="ad-card-info"><div class="ad-card-name">PDF 批量管理</div><div class="ad-card-desc">查看缺失 PDF 的标准，批量标记或跳转补传</div></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-bing" placeholder='<meta name="msvalidate.01" content="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" />'></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
+              <button class="btn btn-primary" onclick="loadPdfStatus()">🔄 刷新 PDF 状态</button>
+              <span style="font-size:13px;color:#64748b">缺失：<strong id="pdfMissingCount" style="color:#ef4444">—</strong> 条 &nbsp;|&nbsp; 已有：<strong id="pdfHasCount" style="color:#16a34a">—</strong> 条</span>
+            </div>
+            <div style="max-height:280px;overflow-y:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:13px" id="pdfStatusTable">
+                <thead><tr style="background:#f8fafc;position:sticky;top:0">
+                  <th style="padding:7px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569">标准编号</th>
+                  <th style="padding:7px 10px;text-align:left;border-bottom:1px solid #e2e8f0;color:#475569">名称</th>
+                  <th style="padding:7px 10px;text-align:center;border-bottom:1px solid #e2e8f0;color:#475569">类型</th>
+                  <th style="padding:7px 10px;text-align:center;border-bottom:1px solid #e2e8f0;color:#475569">状态</th>
+                  <th style="padding:7px 10px;text-align:center;border-bottom:1px solid #e2e8f0;color:#475569">PDF</th>
+                </tr></thead>
+                <tbody id="pdfStatusTbody">
+                  <tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8">点击「刷新 PDF 状态」加载数据</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -623,17 +649,17 @@
           </div>
           <div class="dash-card orange">
             <span class="dc-icon">👁️</span>
-            <div class="dc-num" id="dc-today-pv">—</div>
+            <div class="dc-num" id="dc-today-pv" style="font-size:14px;color:#94a3b8">未接入</div>
             <div class="dc-lbl">今日访问量 PV</div>
-            <div class="dc-sub" id="dc-today-pv-sub">—</div>
-            <div class="dc-trend same" id="dc-pv-trend">—</div>
+            <div class="dc-sub" style="color:#f59e0b;font-size:11px">需接入百度统计或 GA4</div>
+            <div class="dc-trend same" id="dc-pv-trend"></div>
           </div>
           <div class="dash-card purple">
             <span class="dc-icon">🧑‍💻</span>
-            <div class="dc-num" id="dc-today-uv">—</div>
+            <div class="dc-num" id="dc-today-uv" style="font-size:14px;color:#94a3b8">未接入</div>
             <div class="dc-lbl">今日独立访客 UV</div>
-            <div class="dc-sub" id="dc-uv-sub">—</div>
-            <div class="dc-trend same" id="dc-uv-trend">—</div>
+            <div class="dc-sub" style="color:#f59e0b;font-size:11px">需接入百度统计或 GA4</div>
+            <div class="dc-trend same" id="dc-uv-trend"></div>
           </div>
         </div>
       </div>
@@ -673,7 +699,7 @@
             <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-crawl-labels"></div>
           </div>
           <div class="dash-chart-box">
-            <div class="dash-chart-title">每日访问量 PV <span>近7天</span></div>
+            <div class="dash-chart-title">每日访问量 PV <span style="color:#f59e0b">（需接入统计）</span></div>
             <div class="bar-chart" id="chart-pv"></div>
             <div style="display:flex;justify-content:space-between;margin-top:6px;" id="chart-pv-labels"></div>
           </div>
@@ -1575,16 +1601,7 @@
             todayUV: 0,
             history: []  // [{date, crawl, pv, uv}]
         };
-        // 生成近6天的历史演示数据
-        for (var i = 6; i >= 1; i--) {
-            var d = new Date(); d.setDate(d.getDate() - i);
-            stats.history.push({
-                date: d.toISOString().slice(0,10),
-                crawl: Math.floor(Math.random()*120 + 30),
-                pv:    Math.floor(Math.random()*600 + 100),
-                uv:    Math.floor(Math.random()*200 + 40)
-            });
-        }
+        // 无历史数据时从空白开始，不生成虚假演示数据
         saveDashStats(stats);
         return stats;
     }
@@ -1603,16 +1620,8 @@
         try { localStorage.setItem(DASH_STORAGE_KEY, JSON.stringify(s)); } catch(_){}
     }
 
-    // ── 模拟访问量递增（实际项目可对接 GA/百度统计 API）──
-    function simulateVisits(stats) {
-        var hour = new Date().getHours();
-        // 白天流量高，夜间低
-        var rate = hour >= 9 && hour <= 22 ? 1 : 0.2;
-        if (Math.random() < rate * 0.4) { stats.todayPV += Math.floor(Math.random()*3 + 1); }
-        if (Math.random() < rate * 0.15) { stats.todayUV += 1; }
-        saveDashStats(stats);
-        return stats;
-    }
+    // PV/UV 需接入真实统计（百度统计/GA4），此处不模拟虚假数据
+    function simulateVisits(stats) { return stats; }
 
     // ── 刷新仪表盘 ──
     function refreshDashboard() {
@@ -1887,7 +1896,7 @@
     var AD_SLOTS = [
         'adsense-script','banner-top','hero-above','hero-below',
         'content-top','content-bottom','footer-above','body-end','custom-body',
-        'ga4','baidu-stat','gsc','baidu-verify','bing','custom-head'
+        'ga4','baidu-stat','custom-head'
     ];
 
     // ── 从表单收集配置对象 ──
