@@ -19,9 +19,9 @@
   "en-custom-body": false,
   "code-ga4": "",
   "en-ga4": false,
-  "code-baidu-stat": "",
-  "en-baidu-stat": false,
+  "code-baidu-stat": "<script>\nvar _hmt = _hmt || [];\n(function() {\n  var hm = document.createElement(\"script\");\n  hm.src = \"https://hm.baidu.com/hm.js?a372f645ecc37ef043f229834ccf0979\";\n  var s = document.getElementsByTagName(\"script\")[0]; \n  s.parentNode.insertBefore(hm, s);\n})();\n</script>",
+  "en-baidu-stat": true,
   "code-custom-head": "",
   "en-custom-head": false,
-  "savedAt": "2026-05-28T01:42:54.434Z"
+  "savedAt": "2026-05-28T02:08:59.034Z"
 }
