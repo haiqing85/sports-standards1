@@ -564,10 +564,12 @@
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px">
-              <button class="btn btn-primary" onclick="loadPdfStatus()">🔄 刷新 PDF 状态</button>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+              <button class="btn btn-primary" onclick="loadPdfStatus()">🔄 刷新状态</button>
+              <button class="btn" style="background:#f0fdf4;border-color:#86efac;color:#15803d" onclick="scanSyncPdf()" id="scanSyncBtn">🔍 扫描并同步 PDF 状态</button>
               <span style="font-size:13px;color:#64748b">缺失：<strong id="pdfMissingCount" style="color:#ef4444">—</strong> 条 &nbsp;|&nbsp; 已有：<strong id="pdfHasCount" style="color:#16a34a">—</strong> 条</span>
             </div>
+            <div id="scanSyncLog" style="display:none;margin-bottom:10px;padding:10px 12px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;font-size:12px;color:#15803d;line-height:1.8;max-height:120px;overflow-y:auto"></div>
             <div style="max-height:280px;overflow-y:auto;">
               <table style="width:100%;border-collapse:collapse;font-size:13px" id="pdfStatusTable">
                 <thead><tr style="background:#f8fafc;position:sticky;top:0">
@@ -2059,6 +2061,248 @@
             if (enEl)   enEl.checked = false;
         });
         alert('✅ 表单已清空。点击"保存"可将空配置推送至 GitHub。');
+    }
+    // ══════════════════════════════════════════════════
+    //  站点地图生成
+    // ══════════════════════════════════════════════════
+    async function generateSitemap() {
+        var btn = document.getElementById('sitemapGenBtn');
+        var st  = document.getElementById('sitemapStatus');
+        btn.disabled = true;
+        btn.textContent = '⏳ 生成中…';
+        st.textContent = '';
+        try {
+            var stds = DB.standards || [];
+            var base = 'https://www.sportstd.cn';
+            var today = new Date().toISOString().slice(0,10);
+            var urls = [
+                { loc: base + '/', priority: '1.0', freq: 'daily' },
+                { loc: base + '/about.html', priority: '0.5', freq: 'monthly' },
+                { loc: base + '/contact.html', priority: '0.5', freq: 'monthly' },
+            ];
+            stds.forEach(function(s) {
+                urls.push({ loc: base + '/?code=' + encodeURIComponent(s.code), priority: '0.8', freq: 'weekly' });
+            });
+            var xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+            xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+            urls.forEach(function(u) {
+                xml += '  <url>\n';
+                xml += '    <loc>' + u.loc + '</loc>\n';
+                xml += '    <lastmod>' + today + '</lastmod>\n';
+                xml += '    <changefreq>' + u.freq + '</changefreq>\n';
+                xml += '    <priority>' + u.priority + '</priority>\n';
+                xml += '  </url>\n';
+            });
+            xml += '</urlset>';
+            var encoded = btoa(unescape(encodeURIComponent(xml)));
+            var existSha = '';
+            try {
+                var chk = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/sitemap.xml'));
+                if (chk.ok) { var cj = await chk.json(); existSha = cj.sha || ''; }
+            } catch(_) {}
+            var body = { message: '🗺️ 更新 sitemap.xml (' + today + ')，共 ' + urls.length + ' 个 URL', content: encoded };
+            if (existSha) body.sha = existSha;
+            var resp = await fetch(
+                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/sitemap.xml'),
+                { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+            );
+            if (resp.ok) {
+                st.textContent = '✅ 推送成功！共 ' + urls.length + ' 个 URL';
+                st.style.color = '#16a34a';
+            } else {
+                var err = await resp.json();
+                throw new Error(err.message);
+            }
+        } catch(e) {
+            st.textContent = '❌ 失败：' + e.message;
+            st.style.color = '#dc2626';
+        }
+        btn.disabled = false;
+        btn.textContent = '🗺️ 生成并推送 sitemap.xml';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  数据导出
+    // ══════════════════════════════════════════════════
+    function exportCSV() {
+        var stds = DB.standards || [];
+        if (!stds.length) { alert('暂无数据，请先加载标准库'); return; }
+        var header = ['标准编号','标准名称','类型','状态','发布日期','实施日期','分类','有无PDF'];
+        var rows = stds.map(function(s) {
+            return [
+                s.code || '',
+                '"' + (s.name || '').replace(/"/g, '""') + '"',
+                s.type || '',
+                s.status || '',
+                s.publishDate || '',
+                s.effectDate || '',
+                '"' + (s.category || '') + '"',
+                s.localFile ? '有' : '无'
+            ].join(',');
+        });
+        var csv = '\uFEFF' + header.join(',') + '\n' + rows.join('\n');
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = '体育建设标准库_' + new Date().toISOString().slice(0,10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function exportJSON() {
+        if (!DB || !DB.standards) { alert('暂无数据，请先加载标准库'); return; }
+        var data = JSON.stringify(DB, null, 2);
+        var blob = new Blob([data], { type: 'application/json;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'standards_backup_' + new Date().toISOString().slice(0,10) + '.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  PDF 批量状态管理
+    // ══════════════════════════════════════════════════
+    async function loadPdfStatus() {
+        var tbody = document.getElementById('pdfStatusTbody');
+        var missingEl = document.getElementById('pdfMissingCount');
+        var hasEl = document.getElementById('pdfHasCount');
+        if (!tbody) return;
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:#94a3b8">⏳ 加载中…</td></tr>';
+        var stds = DB.standards || [];
+        if (!stds.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:16px;color:#94a3b8">暂无数据，请先在标准管理页加载数据</td></tr>';
+            return;
+        }
+        var missing = stds.filter(function(s){ return !s.localFile; });
+        var hasPdf  = stds.filter(function(s){ return !!s.localFile; });
+        if (missingEl) missingEl.textContent = missing.length;
+        if (hasEl) hasEl.textContent = hasPdf.length;
+        var sorted = missing.concat(hasPdf);
+        tbody.innerHTML = sorted.map(function(s) {
+            var hp = !!s.localFile;
+            var pdfCell = hp
+                ? '<td style="text-align:center"><span style="color:#16a34a;font-weight:600">✅ 有</span></td>'
+                : '<td style="text-align:center"><span style="color:#ef4444;font-weight:600">❌ 缺</span></td>';
+            var sc = s.status === '现行' ? '#16a34a' : s.status === '废止' ? '#dc2626' : '#d97706';
+            return '<tr style="border-bottom:1px solid #f1f5f9">' +
+                '<td style="padding:7px 10px;font-family:monospace;font-size:12px;color:#2563eb">' + (s.code||'') + '</td>' +
+                '<td style="padding:7px 10px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (s.name||'').replace(/"/g,'&quot;') + '">' + (s.name||'') + '</td>' +
+                '<td style="padding:7px 10px;text-align:center;font-size:12px">' + (s.type||'') + '</td>' +
+                '<td style="padding:7px 10px;text-align:center;font-size:12px;color:' + sc + ';font-weight:600">' + (s.status||'') + '</td>' +
+                pdfCell + '</tr>';
+        }).join('');
+    }
+
+    // ══════════════════════════════════════════════════
+    //  扫描并同步 PDF 状态
+    //  逻辑：检查 downloads/{id}.pdf 是否存在于 GitHub，
+    //        更新 standards.json 里的 localFile 字段，推送仓库
+    // ══════════════════════════════════════════════════
+    async function scanSyncPdf() {
+        var btn = document.getElementById('scanSyncBtn');
+        var log = document.getElementById('scanSyncLog');
+        if (!DB.standards || !DB.standards.length) {
+            alert('请先在标准管理页加载数据'); return;
+        }
+        btn.disabled = true;
+        btn.textContent = '⏳ 扫描中…';
+        log.style.display = 'block';
+        log.innerHTML = '🔍 开始扫描 downloads/ 目录…<br>';
+
+        try {
+            // 1. 获取 GitHub downloads/ 目录文件列表
+            var dirResp = await fetch(
+                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/downloads')
+            );
+            if (!dirResp.ok) throw new Error('获取 downloads 目录失败 (' + dirResp.status + ')');
+            var dirFiles = await dirResp.json();
+
+            // 提取所有已存在的 PDF 文件名（不含路径和扩展名）
+            var existSet = {};
+            dirFiles.forEach(function(f) {
+                if (f.name && f.name.toLowerCase().endsWith('.pdf')) {
+                    var id = f.name.replace(/\.pdf$/i, '');
+                    existSet[id] = 'downloads/' + f.name;
+                }
+            });
+            log.innerHTML += '📂 发现 ' + Object.keys(existSet).length + ' 个 PDF 文件<br>';
+
+            // 2. 对比 standards.json，找出需要更新的条目
+            var updated = 0;
+            var addedIds = [];
+            var removedIds = [];
+
+            DB.standards.forEach(function(s) {
+                var inGitHub = !!existSet[s.id];
+                var inDB     = !!s.localFile;
+                if (inGitHub && !inDB) {
+                    // GitHub 有文件但 DB 未记录 → 补写
+                    s.localFile = existSet[s.id];
+                    updated++;
+                    addedIds.push(s.code);
+                } else if (!inGitHub && inDB) {
+                    // DB 有记录但 GitHub 已删除文件 → 清除
+                    s.localFile = '';
+                    updated++;
+                    removedIds.push(s.code);
+                }
+            });
+
+            if (addedIds.length) log.innerHTML += '✅ 新增 PDF 记录 ' + addedIds.length + ' 条：' + addedIds.slice(0,5).join('、') + (addedIds.length > 5 ? '…' : '') + '<br>';
+            if (removedIds.length) log.innerHTML += '🗑️ 清除失效记录 ' + removedIds.length + ' 条：' + removedIds.slice(0,5).join('、') + (removedIds.length > 5 ? '…' : '') + '<br>';
+
+            if (updated === 0) {
+                log.innerHTML += '✅ 数据库与 GitHub 已完全一致，无需更新';
+                btn.disabled = false;
+                btn.textContent = '🔍 扫描并同步 PDF 状态';
+                return;
+            }
+
+            // 3. 推送更新后的 standards.json
+            log.innerHTML += '☁️ 正在推送更新到 GitHub…<br>';
+            DB.updated = new Date().toISOString().slice(0, 10);
+            DB.version = DB.updated.replace(/-/g, '.');
+            var encoded = btoa(unescape(encodeURIComponent(JSON.stringify(DB, null, 2))));
+            var pushResp = await fetch(
+                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + FILE_PATH),
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: '🔄 同步PDF状态：+' + addedIds.length + ' -' + removedIds.length,
+                        content: encoded,
+                        sha: fileSha
+                    })
+                }
+            );
+            if (!pushResp.ok) {
+                var err = await pushResp.json();
+                throw new Error(err.message);
+            }
+            var pr = await pushResp.json();
+            fileSha = pr.content.sha;
+
+            log.innerHTML += '✅ 同步完成！共更新 <strong>' + updated + '</strong> 条记录，已推送至 GitHub';
+            log.style.background = '#f0fdf4';
+            log.style.borderColor = '#86efac';
+            log.style.color = '#15803d';
+
+            // 刷新统计卡片和 PDF 状态表
+            applyDB(DB);
+            loadPdfStatus();
+
+        } catch(e) {
+            log.innerHTML += '❌ 失败：' + e.message;
+            log.style.background = '#fef2f2';
+            log.style.borderColor = '#fca5a5';
+            log.style.color = '#dc2626';
+        }
+
+        btn.disabled = false;
+        btn.textContent = '🔍 扫描并同步 PDF 状态';
     }
 
 
