@@ -649,18 +649,18 @@
             <div class="dc-sub" id="dc-total-data-sub">—</div>
             <div class="dc-trend same" id="dc-data-trend">—</div>
           </div>
-          <div class="dash-card orange">
+          <div class="dash-card orange" onclick="window.open('https://tongji.baidu.com/web5/welcome/login','_blank')" style="cursor:pointer" title="点击打开百度统计">
             <span class="dc-icon">👁️</span>
-            <div class="dc-num" id="dc-today-pv" style="font-size:14px;color:#94a3b8">未接入</div>
+            <div class="dc-num" style="font-size:13px;color:#f97316;font-weight:700">百度统计</div>
             <div class="dc-lbl">今日访问量 PV</div>
-            <div class="dc-sub" style="color:#f59e0b;font-size:11px">需接入百度统计或 GA4</div>
+            <div class="dc-sub" style="color:#94a3b8;font-size:11px">点击查看实时数据 →</div>
             <div class="dc-trend same" id="dc-pv-trend"></div>
           </div>
-          <div class="dash-card purple">
+          <div class="dash-card purple" onclick="window.open('https://analytics.google.com/','_blank')" style="cursor:pointer" title="点击打开 Google Analytics">
             <span class="dc-icon">🧑‍💻</span>
-            <div class="dc-num" id="dc-today-uv" style="font-size:14px;color:#94a3b8">未接入</div>
+            <div class="dc-num" style="font-size:13px;color:#8b5cf6;font-weight:700">Google Analytics</div>
             <div class="dc-lbl">今日独立访客 UV</div>
-            <div class="dc-sub" style="color:#f59e0b;font-size:11px">需接入百度统计或 GA4</div>
+            <div class="dc-sub" style="color:#94a3b8;font-size:11px">点击查看实时数据 →</div>
             <div class="dc-trend same" id="dc-uv-trend"></div>
           </div>
         </div>
@@ -1651,15 +1651,12 @@
         var prevTotal = totalStds; // 静态，无历史变化
         setTrend('dc-data-trend', totalStds, prevTotal, true);
 
-        setText('dc-today-pv', stats.todayPV);
+        // PV 卡片已改为跳转链接，不再赋值
         var yesterdayPV = yesterdayHistory ? yesterdayHistory.pv : 0;
-        setText('dc-today-pv-sub', '昨日: ' + yesterdayPV);
-        setTrend('dc-pv-trend', stats.todayPV, yesterdayPV);
 
-        setText('dc-today-uv', stats.todayUV);
+        // UV 卡片已改为跳转链接，不再赋值
         var yesterdayUV = yesterdayHistory ? yesterdayHistory.uv : 0;
         setText('dc-uv-sub', '昨日: ' + yesterdayUV);
-        setTrend('dc-uv-trend', stats.todayUV, yesterdayUV);
 
         setText('dc-db-active',  activeStds);
         setText('dc-db-abol',    abolStds);
