@@ -28,9 +28,19 @@ DEBUG_MODE = False
 
 # ===================== 核心校验规则（永久生效） =====================
 # 合法标准号正则：仅支持国标/行标/团标/地标标准格式，过滤所有无效ID
-STD_CODE_LEGAL_REGEX = re.compile(r'^[A-Z]+\/?T?\s*\d+(?:\.\d+)?\s*[－\-–]\s*\d{4}$', re.IGNORECASE)
+STD_CODE_LEGAL_REGEX = re.compile(
+    r'^(?:'
+    r'T/[A-Z]{2,10}\s+\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'          # 团体标准 T/CSSS 001-2023
+    r'|DB\s*\d{1,2}(?:[/／][A-Z])?\s+\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'  # 地方标准 DB 37/T 2904-2019
+    r'|[A-Z]{1,6}(?:[/／][A-Z])?\s*\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'     # GB/T GB/Z TY/T YD/T 等
+    r')$',
+    re.IGNORECASE
+)
 # 标准主体拆分正则：用于同主体版本匹配、替代关系生成
-STD_BASE_SPLIT_REGEX = re.compile(r'^([A-Z]+\/?T?\s*\d+(?:\.\d+)?)\s*[－\-–]\s*(\d{4})$', re.IGNORECASE)
+STD_BASE_SPLIT_REGEX = re.compile(
+    r'^((?:T/[A-Z]{2,10}|DB\s*\d{1,2}(?:[/／][A-Z])?|[A-Z]{1,6}(?:[/／][A-Z])?)\s*\d+(?:\.\d+)?)\s*[-－–]\s*(\d{4})$',
+    re.IGNORECASE
+)
 
 def is_legal_std_code(code):
     """校验是否为合法标准号，过滤TC198/F772等所有无效ID"""
@@ -565,6 +575,12 @@ def full_library_scan(standards):
         old_status = std.get('status', '现行')
         log(f"[{index}/{total_std}] 正在扫描：{code}")
 
+        # TY/T 体育行业标准来自 sactc456.org.cn，不在 samr.gov.cn，跳过扫描
+        if re.match(r'^TY[/／]?T?\s*\d', code, re.IGNORECASE):
+            log(f"  → TY/T 体育行业标准，跳过 samr 扫描（来源：sactc456.org.cn）")
+            time.sleep(0.1)
+            continue
+
         # 查询官网最新信息
         latest_info = query_std_by_code(code)
         if not latest_info:
@@ -955,6 +971,34 @@ def run(dry=False, debug=False, scan_only=False, repair_only=False, schedule_hou
         except Exception as e:
             log(f"SACTC 抓取跳过：{str(e)}")
         # ===================== SACTC 补充结束 =====================
+
+        # ===================== 补充数据源：行业标准 + 地方标准（sacinfo.org.cn）=====================
+        log("\n=== 补充抓取行业标准 + 地方标准（hbba/dbba.sacinfo.org.cn）===")
+        try:
+            from fetch_sacinfo import fetch_hbba_all, fetch_dbba_all
+            hbba_data = fetch_hbba_all()
+            if hbba_data:
+                log(f"行业标准抓取到 {len(hbba_data)} 条，合并中...")
+                all_new.extend(hbba_data)
+            dbba_data = fetch_dbba_all()
+            if dbba_data:
+                log(f"地方标准抓取到 {len(dbba_data)} 条，合并中...")
+                all_new.extend(dbba_data)
+        except Exception as e:
+            log(f"行业/地方标准抓取跳过：{str(e)}")
+        # ===================== sacinfo 补充结束 =====================
+
+        # ===================== 补充数据源：团体标准（ttbz.org.cn）=====================
+        log("\n=== 补充抓取团体标准（ttbz.org.cn）===")
+        try:
+            from fetch_ttbz import fetch_ttbz_all
+            ttbz_data = fetch_ttbz_all()
+            if ttbz_data:
+                log(f"团体标准抓取到 {len(ttbz_data)} 条，合并中...")
+                all_new.extend(ttbz_data)
+        except Exception as e:
+            log(f"团体标准抓取跳过：{str(e)}")
+        # ===================== ttbz 补充结束 =====================
 
         standards, add, upd = merge(standards, all_new)
         log(f"合并结果：新增 {add} 条，更新 {upd} 条基础信息")
