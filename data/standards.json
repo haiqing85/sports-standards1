@@ -1,6 +1,6 @@
 {
-  "version": "2026.05.28",
-  "updated": "2026-05-29 09:55:28",
+  "version": "2026.05.29",
+  "updated": "2026-05-29",
   "total": 374,
   "standards": [
     {
@@ -3219,7 +3219,7 @@
     },
     {
       "id": "GBZ408362021",
-      "code": "GB/Z 40836-2021",
+      "code": "GB/Z40836-2021",
       "title": "轮椅篮球竞技比赛轮椅车",
       "english": "",
       "type": "国家标准",
@@ -3232,10 +3232,10 @@
       "issuedBy": "国家市场监督管理总局、国家标准化管理委员会",
       "category": "综合",
       "tags": [],
-      "summary": "",
+      "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBZ408362021.pdf",
       "_origIndex": 138
     },
     {
@@ -8367,7 +8367,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 369
     },
     {
       "id": "TYT100212005",
@@ -8390,7 +8391,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 370
     },
     {
       "id": "TYT100222009",
@@ -8414,7 +8416,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 371
     },
     {
       "id": "TYT20022007",
@@ -8434,7 +8437,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 372
     },
     {
       "id": "TYT390412023",
@@ -8456,7 +8460,8 @@
       "summary": "",
       "isMandatory": false,
       "scope": "",
-      "localFile": null
+      "localFile": null,
+      "_origIndex": 373
     }
   ]
 }
