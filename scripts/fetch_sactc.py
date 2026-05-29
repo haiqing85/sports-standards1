@@ -354,6 +354,7 @@ def fetch_sactc_all():
             "isMandatory":    is_mandatory(item["code"]),
             "scope":          "",
             "localFile":      None,
+            "_sactc":         True,   # 标记来源为体育行业标委会，save_db() 直接放行不过滤
         })
 
     slog(f"✅ 抓取完成，共 {len(final)} 条体育行业标准")
