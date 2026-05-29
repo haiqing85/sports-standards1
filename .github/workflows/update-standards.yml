@@ -2,11 +2,12 @@ name: 自动抓取更新体育标准数据库
 
 on:
   schedule:
-    - cron: '0 0 */2 * *'  # 改为每两天的UTC 0点运行（原每天运行）
+    - cron: '0 20 * * 2'  # 每周三 UTC 20:00（北京时间周四 04:00），避开 CNB 周一运行
   push:
     branches: [ main ]
-    paths:                # 仅匹配 update_standards.py 文件的变更
+    paths:
       - 'scripts/update_standards.py'
+      - 'scripts/fetch_sactc.py'
   workflow_dispatch:
     inputs:
       mode:
@@ -37,7 +38,7 @@ jobs:
           python-version: '3.11'
 
       - name: 安装依赖
-        run: pip install requests urllib3
+        run: pip install -r requirements.txt   # 改为从 requirements.txt 安装，含 beautifulsoup4/lxml
 
       - name: 完整抓取
         if: ${{ github.event.inputs.mode == 'full' || github.event.inputs.mode == '' }}
@@ -65,5 +66,6 @@ jobs:
           else
             TODAY=$(date '+%Y-%m-%d')
             git commit -m "🤖 自动更新 $TODAY"
+            git pull --rebase origin main   # 推送前先拉取，避免与 CNB 并发推送冲突
             git push
           fi
