@@ -30,6 +30,9 @@ DBBA_KEYWORDS = [
     "体育", "运动场", "健身", "游泳", "足球", "篮球", "田径",
     "体育设施", "全民健身", "体育公园", "人造草", "塑胶跑道", "木地板",
     "体育场馆", "运动场地",
+    # 新增
+    "悬浮拼装", "拼装运动地板", "悬浮地板", "拼装地板", "运动地板",
+    "橡胶地板", "冰场", "攀岩", "泳池", "体育地板", "气膜",
 ]
 
 PAGE_SIZE     = 15
@@ -57,7 +60,11 @@ def norm_status(raw):
 def norm_date(raw):
     if not raw: return None
     d = re.sub(r"[^\d]", "", str(raw))
-    if len(d) >= 8: return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
+    if len(d) >= 8:
+        year, month, day = int(d[:4]), int(d[4:6]), int(d[6:8])
+        # 合法性校验：过滤乱码日期（如 hbba 返回的 7079-32-80）
+        if 1950 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31:
+            return f"{year:04d}-{month:02d}-{day:02d}"
     return None
 
 def make_id(code):

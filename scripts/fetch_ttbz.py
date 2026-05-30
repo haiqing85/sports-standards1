@@ -48,7 +48,10 @@ def slog(msg):
 def norm_date(raw):
     if not raw: return None
     d = re.sub(r"[^\d]", "", str(raw))
-    if len(d) >= 8: return f"{d[:4]}-{d[4:6]}-{d[6:8]}"
+    if len(d) >= 8:
+        year, month, day = int(d[:4]), int(d[4:6]), int(d[6:8])
+        if 1950 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31:
+            return f"{year:04d}-{month:02d}-{day:02d}"
     return None
 
 def make_id(code):
