@@ -1073,11 +1073,17 @@ function applyAll(){
   var list = DB;
   if(activeQ){
     if(fuse){
-      // ── 第一步：直接从 DB 里挑出标准号精确/前缀匹配，绝对置顶 ──
-      var qNorm = activeQ.trim().replace(/\s+/g,'').toLowerCase();
+      // 规范化函数：统一所有破折号、全角字符、空格
+      function normCode(c){
+        return (c||'').replace(/\s+/g,'')
+                      .replace(/[—–－]/g,'-')  // em dash、en dash、全角连字符 → 普通连字符
+                      .toLowerCase();
+      }
+      // ── 第一步：直接从 DB 里挑出标准号精确/前缀/包含匹配，绝对置顶 ──
+      var qNorm = normCode(activeQ.trim());
       var pinned = {}, exactList = [], prefixList = [], containsList = [];
       DB.forEach(function(s){
-        var c = (s.code||'').replace(/\s+/g,'').toLowerCase();
+        var c = normCode(s.code);
         if(c === qNorm){
           exactList.push(s); pinned[s.id] = true;
         } else if(c.startsWith(qNorm)){
