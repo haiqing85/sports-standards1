@@ -542,7 +542,7 @@
     <span class="footer-sep">·</span>
     <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">鲁ICP备2026026260号-1</a></p>
     <span class="footer-sep">·</span>
-    <p style="opacity:.4;font-size:11px">搜索引擎 v3.1</p>
+    <p style="opacity:.4;font-size:11px">搜索引擎 v3.2</p>
   </div>
 </footer>
 
@@ -1119,9 +1119,21 @@ function applyAll(){
   }
   if(activeType) list=list.filter(function(s){return s.type===activeType;});
   var sort=document.getElementById('sortSel').value;
-  if(sort==='date-new') list=list.slice().sort(function(a,b){return (b.issueDate||'0').localeCompare(a.issueDate||'0');});
-  else if(sort==='date-old') list=list.slice().sort(function(a,b){return (a.issueDate||'0').localeCompare(b.issueDate||'0');});
-  else if(sort==='code') list=list.slice().sort(function(a,b){return a.code.localeCompare(b.code);});
+  if(activeQ && typeof exactList !== 'undefined' && exactList.length){
+    // 有精确匹配时：exactList 固定置顶，只对其余部分排序
+    var pinIds = {};
+    exactList.forEach(function(s){ pinIds[s.id]=true; });
+    var topList  = list.filter(function(s){ return  pinIds[s.id]; });
+    var restList = list.filter(function(s){ return !pinIds[s.id]; });
+    if(sort==='date-new') restList=restList.slice().sort(function(a,b){return (b.issueDate||'0').localeCompare(a.issueDate||'0');});
+    else if(sort==='date-old') restList=restList.slice().sort(function(a,b){return (a.issueDate||'0').localeCompare(b.issueDate||'0');});
+    else if(sort==='code') restList=restList.slice().sort(function(a,b){return a.code.localeCompare(b.code);});
+    list = topList.concat(restList);
+  } else {
+    if(sort==='date-new') list=list.slice().sort(function(a,b){return (b.issueDate||'0').localeCompare(a.issueDate||'0');});
+    else if(sort==='date-old') list=list.slice().sort(function(a,b){return (a.issueDate||'0').localeCompare(b.issueDate||'0');});
+    else if(sort==='code') list=list.slice().sort(function(a,b){return a.code.localeCompare(b.code);});
+  }
   filtered=list; document.getElementById('resultCount').textContent=filtered.length;
   curPage=1; renderGrid(); renderPager();
 }
