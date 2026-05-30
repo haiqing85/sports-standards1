@@ -1107,6 +1107,17 @@ document.getElementById('filterPills').addEventListener('click',function(e){
     setView('hot');
   } else {
     activeType = type; curPage = 1;
+    // 省市栏：仅地方标准时显示
+    var pBar = document.getElementById('provinceBar');
+    if(activeType === '地方标准'){
+      pBar.classList.add('visible');
+    } else {
+      pBar.classList.remove('visible');
+      activeProvince = '';
+      document.querySelectorAll('.p-pill').forEach(function(p){
+        p.classList.toggle('active', p.dataset.prov === '');
+      });
+    }
     setView('all');
     applyAll();
   }
