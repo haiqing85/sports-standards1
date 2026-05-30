@@ -1,6 +1,6 @@
 {
   "version": "2026.05.29",
-  "updated": "2026-05-30 07:31:11",
+  "updated": "2026-05-30 15:52:48",
   "total": 888,
   "standards": [
     {
@@ -9763,7 +9763,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/HSCA 001—2019",
       "issuedBy": "湖北省体育场馆建设协会",
       "category": "综合",
       "tags": [
@@ -10745,7 +10745,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/NBTCL 1—2023",
       "issuedBy": "宁波市体育产业联合会",
       "category": "综合",
       "tags": [
@@ -13720,7 +13720,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/HSIAHB 001—2023",
       "issuedBy": "河北省体育产业协会",
       "category": "综合",
       "tags": [],
@@ -14260,7 +14260,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/CYSF 0004—2024",
       "issuedBy": "全国青少年体育联合会",
       "category": "综合",
       "tags": [],
@@ -14736,7 +14736,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/HSCA 003—2022",
       "issuedBy": "湖北省体育场馆建设协会",
       "category": "合成材料面层",
       "tags": [
@@ -14780,7 +14780,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/HSCA 001—2018",
       "issuedBy": "湖北省体育场馆建设协会",
       "category": "合成材料面层",
       "tags": [
@@ -17470,7 +17470,7 @@
       "implementDate": null,
       "abolishDate": null,
       "replaces": null,
-      "replacedBy": null,
+      "replacedBy": "T/QTL 001—2024",
       "issuedBy": "北京市青少年体育联合会",
       "category": "综合",
       "tags": [
