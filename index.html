@@ -1095,6 +1095,17 @@ setInterval(function(){
     }).catch(function(){});
 }, 60000);
 
+// 省市 pill 点击事件
+document.getElementById('provinceBar').addEventListener('click', function(e){
+  var t = e.target.closest('.p-pill');
+  if(!t) return;
+  document.querySelectorAll('.p-pill').forEach(function(p){ p.classList.remove('active'); });
+  t.classList.add('active');
+  activeProvince = t.dataset.prov;
+  curPage = 1;
+  applyAll();
+});
+
 document.getElementById('filterPills').addEventListener('click',function(e){
   var pill=e.target.closest('.pill'); if(!pill)return;
   document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
