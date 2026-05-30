@@ -102,26 +102,28 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
         items = []
         for row in rows:
             if page == 1 and not items:
-                slog(f"  第一行字段: {list(row.keys())}")  # 只打印一次
+                slog(f"  第一行字段: {sorted(row.keys())}")  # 诊断字段名
 
-            code  = str(row.get("C_STD_CODE") or row.get("STD_CODE") or "").strip()
-            title = str(row.get("C_C_NAME")   or row.get("STD_NAME")  or "").strip()
+            # CNB 日志已确认的实际字段名（hbba/dbba）：
+            # code=标准号, chName=中文名, chargeDept=主管部门
+            # issueDate=发布日期, actDate=实施日期, fzDate=废止日期(dbba), status=状态
+            code  = str(row.get("code")   or row.get("C_STD_CODE") or "").strip()
+            title = str(row.get("chName") or row.get("C_C_NAME")   or "").strip()
             if not code or not title:
                 continue
 
-            d1 = str(row.get("ISSUE_DEPT") or "").strip()
-            d2 = str(row.get("ISSUE_UNIT") or "").strip()
-            issued_by = f"{d1}、{d2}" if (d1 and d2 and d1 != d2) else (d1 or d2)
+            issued_by = str(row.get("chargeDept") or row.get("ISSUE_DEPT") or "").strip()
+            status_raw = str(row.get("status") or row.get("STATE") or "").strip()
 
             items.append({
                 "id":            make_id(code),
                 "code":          code,
                 "title":         title,
                 "type":          std_type,
-                "status":        norm_status(row.get("STATE") or row.get("STD_STATUS")),
-                "issueDate":     norm_date(row.get("ISSUE_DATE")),
-                "implementDate": norm_date(row.get("IMPL_DATE")),
-                "abolishDate":   norm_date(row.get("ABOL_DATE")),
+                "status":        norm_status(status_raw),
+                "issueDate":     norm_date(row.get("issueDate") or row.get("ISSUE_DATE")),
+                "implementDate": norm_date(row.get("actDate")   or row.get("IMPL_DATE")),
+                "abolishDate":   norm_date(row.get("fzDate")    or row.get("ABOL_DATE")),
                 "issuedBy":      issued_by,
                 "replaces":      None,
                 "replacedBy":    None,
