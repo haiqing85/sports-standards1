@@ -223,6 +223,12 @@
     .b-国家标准{background:#dbeafe;color:#1d4ed8;border:1px solid #bfdbfe}
     .b-行业标准{background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd}
     .b-地方标准{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+    .province-bar{display:none;flex-wrap:wrap;gap:6px;padding:8px 0 4px 0;align-items:center;border-top:1px solid var(--border);margin-top:6px}
+    .province-bar.visible{display:flex}
+    .province-bar label{font-size:12px;color:var(--text2);white-space:nowrap;margin-right:2px}
+    .p-pill{padding:3px 10px;border:1px solid var(--border);border-radius:14px;font-size:12px;color:var(--text2);background:var(--white);cursor:pointer;white-space:nowrap;transition:all .15s}
+    .p-pill:hover{border-color:var(--blue-light);color:var(--blue-mid)}
+    .p-pill.active{background:var(--blue-dim);border-color:var(--blue-mid);color:var(--blue-mid);font-weight:600}
     .b-团标,.b-团体标准{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
     .b-企业标准{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0}
     .b-现行{background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0}
@@ -481,6 +487,42 @@
       <span class="pill" data-type="地方标准">地方标准</span>
       <span class="pill" data-type="团体标准">团标</span>
     </div>
+    <!-- 省市筛选行（仅选中「地方标准」时显示）-->
+    <div class="province-bar" id="provinceBar">
+      <label>省市：</label>
+      <span class="p-pill active" data-prov="">全部</span>
+      <span class="p-pill" data-prov="北京">北京</span>
+      <span class="p-pill" data-prov="天津">天津</span>
+      <span class="p-pill" data-prov="河北">河北</span>
+      <span class="p-pill" data-prov="山西">山西</span>
+      <span class="p-pill" data-prov="内蒙古">内蒙古</span>
+      <span class="p-pill" data-prov="辽宁">辽宁</span>
+      <span class="p-pill" data-prov="吉林">吉林</span>
+      <span class="p-pill" data-prov="黑龙江">黑龙江</span>
+      <span class="p-pill" data-prov="上海">上海</span>
+      <span class="p-pill" data-prov="江苏">江苏</span>
+      <span class="p-pill" data-prov="浙江">浙江</span>
+      <span class="p-pill" data-prov="安徽">安徽</span>
+      <span class="p-pill" data-prov="福建">福建</span>
+      <span class="p-pill" data-prov="江西">江西</span>
+      <span class="p-pill" data-prov="山东">山东</span>
+      <span class="p-pill" data-prov="河南">河南</span>
+      <span class="p-pill" data-prov="湖北">湖北</span>
+      <span class="p-pill" data-prov="湖南">湖南</span>
+      <span class="p-pill" data-prov="广东">广东</span>
+      <span class="p-pill" data-prov="广西">广西</span>
+      <span class="p-pill" data-prov="海南">海南</span>
+      <span class="p-pill" data-prov="重庆">重庆</span>
+      <span class="p-pill" data-prov="四川">四川</span>
+      <span class="p-pill" data-prov="贵州">贵州</span>
+      <span class="p-pill" data-prov="云南">云南</span>
+      <span class="p-pill" data-prov="西藏">西藏</span>
+      <span class="p-pill" data-prov="陕西">陕西</span>
+      <span class="p-pill" data-prov="甘肃">甘肃</span>
+      <span class="p-pill" data-prov="青海">青海</span>
+      <span class="p-pill" data-prov="宁夏">宁夏</span>
+      <span class="p-pill" data-prov="新疆">新疆</span>
+    </div>
   </div>
 
   <!-- 热门标准卡片网格（与正式标准同款尺寸） -->
@@ -542,7 +584,7 @@
     <span class="footer-sep">·</span>
     <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">鲁ICP备2026026260号-1</a></p>
     <span class="footer-sep">·</span>
-    <p style="opacity:.4;font-size:11px">搜索引擎 v3.2</p>
+    <p style="opacity:.4;font-size:11px">搜索引擎 v3.3</p>
   </div>
 </footer>
 
@@ -922,7 +964,7 @@ function expandQuery(q) {
 // ═══════════════════════════════════════════════════════════
 //  主逻辑
 // ═══════════════════════════════════════════════════════════
-var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='';
+var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='', activeProvince='';
 
 // ── 数据缓存 key（localStorage，首次访问后立即显示缓存，同时后台拉最新）──
 var DATA_CACHE_KEY = 'stdDataCache';
@@ -995,7 +1037,11 @@ function loadData(){
 // ── 返回首页：恢复热门标准视图 ──
 function goHome(){
   syncQ('');
-  activeQ = ''; activeType = ''; curPage = 1;
+  activeQ = ''; activeType = ''; activeProvince = ''; curPage = 1;
+  document.getElementById('provinceBar').classList.remove('visible');
+  document.querySelectorAll('.p-pill').forEach(function(p){
+    p.classList.toggle('active', p.dataset.prov==='');
+  });
   document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
   var hotPill = document.querySelector('.pill[data-type="__hot__"]');
   if(hotPill) hotPill.classList.add('active');
@@ -1066,6 +1112,20 @@ document.getElementById('filterPills').addEventListener('click',function(e){
   }
 });
 
+// 省份→DB标准号前缀映射
+var PROV_CODES={
+  '北京':'DB11','天津':'DB12','河北':'DB13','山西':'DB14','内蒙古':'DB15',
+  '辽宁':'DB21','吉林':'DB22','黑龙江':'DB23','上海':'DB31','江苏':'DB32',
+  '浙江':'DB33','安徽':'DB34','福建':'DB35','江西':'DB36','山东':'DB37',
+  '河南':'DB41','湖北':'DB42','湖南':'DB43','广东':'DB44','广西':'DB45',
+  '海南':'DB46','重庆':'DB50','四川':'DB51','贵州':'DB52','云南':'DB53',
+  '西藏':'DB54','陕西':'DB61','甘肃':'DB62','青海':'DB63','宁夏':'DB64','新疆':'DB65'
+};
+function _codeMatchProv(code, prov){
+  var prefix=PROV_CODES[prov]; if(!prefix) return false;
+  return code.replace(/\s/g,'').toUpperCase().startsWith(prefix);
+}
+
 function applyAll(){
   // 搜索时强制切到 all 视图
   if(activeQ) setView('all');
@@ -1118,6 +1178,14 @@ function applyAll(){
     }
   }
   if(activeType) list=list.filter(function(s){return s.type===activeType;});
+  // 省市过滤（仅地方标准有效）
+  if(activeProvince && activeType==='地方标准'){
+    list=list.filter(function(s){
+      var by=s.issuedBy||''; var code=s.code||'';
+      // 从 issuedBy（发布机构）或标准号前缀匹配省份
+      return by.indexOf(activeProvince)!==-1 || _codeMatchProv(code,activeProvince);
+    });
+  }
   var sort=document.getElementById('sortSel').value;
   if(activeQ && typeof exactList !== 'undefined' && exactList.length){
     // 有精确匹配时：exactList 固定置顶，只对其余部分排序
