@@ -1073,34 +1073,33 @@ function applyAll(){
   var list = DB;
   if(activeQ){
     if(fuse){
+      // ── 第一步：直接从 DB 里挑出标准号精确/前缀匹配，绝对置顶 ──
+      var qNorm = activeQ.trim().replace(/\s+/g,'').toLowerCase();
+      var pinned = {}, exactList = [], prefixList = [], containsList = [];
+      DB.forEach(function(s){
+        var c = (s.code||'').replace(/\s+/g,'').toLowerCase();
+        if(c === qNorm){
+          exactList.push(s); pinned[s.id] = true;
+        } else if(c.startsWith(qNorm)){
+          prefixList.push(s); pinned[s.id] = true;
+        } else if(c.indexOf(qNorm) !== -1){
+          containsList.push(s); pinned[s.id] = true;
+        }
+      });
+      // ── 第二步：Fuse 模糊搜索，排除已置顶的 ──
       var terms = expandQuery(activeQ);
-      var seen = {}, merged = [];
+      var seen = {}, fuseItems = [];
       terms.forEach(function(term){
         fuse.search(term).forEach(function(r){
-          if(!seen[r.item.id]){ seen[r.item.id]=true; merged.push(r); }
+          if(!seen[r.item.id] && !pinned[r.item.id]){
+            seen[r.item.id] = true; fuseItems.push(r);
+          }
         });
       });
-      // 精确排序：① 标准号完全匹配 ② 标准号开头匹配 ③ Fuse评分
-      var qNorm = activeQ.replace(/\s+/g,'').toLowerCase();
-      merged.sort(function(a,b){
-        var ac = (a.item.code||'').replace(/\s+/g,'').toLowerCase();
-        var bc = (b.item.code||'').replace(/\s+/g,'').toLowerCase();
-        // 完全匹配标准号优先
-        var aExact = (ac === qNorm) ? 0 : 1;
-        var bExact = (bc === qNorm) ? 0 : 1;
-        if(aExact !== bExact) return aExact - bExact;
-        // 标准号开头匹配其次
-        var aStart = ac.startsWith(qNorm) ? 0 : 1;
-        var bStart = bc.startsWith(qNorm) ? 0 : 1;
-        if(aStart !== bStart) return aStart - bStart;
-        // 标准号包含匹配再次
-        var aIncl = ac.indexOf(qNorm) !== -1 ? 0 : 1;
-        var bIncl = bc.indexOf(qNorm) !== -1 ? 0 : 1;
-        if(aIncl !== bIncl) return aIncl - bIncl;
-        // 最后按 Fuse 评分
-        return (a.score||0)-(b.score||0);
-      });
-      list = merged.map(function(r){ return r.item; });
+      fuseItems.sort(function(a,b){ return (a.score||0)-(b.score||0); });
+      // ── 第三步：拼接：完全匹配 > 前缀匹配 > 包含匹配 > Fuse结果 ──
+      list = exactList.concat(prefixList).concat(containsList)
+                      .concat(fuseItems.map(function(r){ return r.item; }));
     } else {
       var q = activeQ.toLowerCase();
       list = DB.filter(function(s){
