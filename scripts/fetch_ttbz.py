@@ -103,6 +103,7 @@ def fetch_ttbz_page(keyword, page=1):
                 "category":      "综合",
                 "scope":         "",
                 "localFile":     None,
+                "_ttbz":         True,  # 来源标记，save_db 直接放行
             })
         return items, total
 

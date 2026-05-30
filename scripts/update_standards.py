@@ -30,15 +30,15 @@ DEBUG_MODE = False
 # 合法标准号正则：仅支持国标/行标/团标/地标标准格式，过滤所有无效ID
 STD_CODE_LEGAL_REGEX = re.compile(
     r'^(?:'
-    r'T/[A-Z]{2,10}\s+\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'          # 团体标准 T/CSSS 001-2023
-    r'|DB\s*\d{1,2}(?:[/／][A-Z])?\s+\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'  # 地方标准 DB 37/T 2904-2019
-    r'|[A-Z]{1,6}(?:[/／][A-Z])?\s*\d+(?:\.\d+)?\s*[-－–]\s*\d{4}'     # GB/T GB/Z TY/T YD/T 等
+    r'T/[A-Z]{2,10}\s+\d+(?:\.\d+)?\s*[-－–—]\s*\d{4}'          # 团体标准 T/CSSS 001-2023
+    r'|DB\s*\d{1,2}(?:[/／][A-Z])?\s+\d+(?:\.\d+)?\s*[-－–—]\s*\d{4}'  # 地方标准 DB 37/T 2904-2019
+    r'|[A-Z]{1,6}(?:[/／][A-Z])?\s*\d+(?:\.\d+)?\s*[-－–—]\s*\d{4}'     # GB/T GB/Z TY/T YD/T 等
     r')$',
     re.IGNORECASE
 )
 # 标准主体拆分正则：用于同主体版本匹配、替代关系生成
 STD_BASE_SPLIT_REGEX = re.compile(
-    r'^((?:T/[A-Z]{2,10}|DB\s*\d{1,2}(?:[/／][A-Z])?|[A-Z]{1,6}(?:[/／][A-Z])?)\s*\d+(?:\.\d+)?)\s*[-－–]\s*(\d{4})$',
+    r'^((?:T/[A-Z]{2,10}|DB\s*\d{1,2}(?:[/／][A-Z])?|[A-Z]{1,6}(?:[/／][A-Z])?)\s*\d+(?:\.\d+)?)\s*[-－–—]\s*(\d{4})$',
     re.IGNORECASE
 )
 
@@ -575,9 +575,13 @@ def full_library_scan(standards):
         old_status = std.get('status', '现行')
         log(f"[{index}/{total_std}] 正在扫描：{code}")
 
-        # TY/T 体育行业标准来自 sactc456.org.cn，不在 samr.gov.cn，跳过扫描
+        # TY/T 体育行业标准、T/ 团体标准均不在 samr.gov.cn，直接跳过扫描
         if re.match(r'^TY[/／]?T?\s*\d', code, re.IGNORECASE):
-            log(f"  → TY/T 体育行业标准，跳过 samr 扫描（来源：sactc456.org.cn）")
+            log(f"  → TY/T 体育行业标准，跳过 samr 扫描")
+            time.sleep(0.1)
+            continue
+        if re.match(r'^T/', code, re.IGNORECASE):
+            log(f"  → T/ 团体标准，跳过 samr 扫描")
             time.sleep(0.1)
             continue
 
@@ -866,9 +870,11 @@ def save_db(db, standards, dry):
     """保存标准库，执行最终全量规则校验"""
     # 过滤非体育内容
     before = len(standards)
-    # SACTC 体育行业标委会来源数据直接放行（均为体育标准，无需二次过滤）
+    # SACTC/TTBZ/SACINFO 来源及团体/地方标准直接放行（均为体育相关，来源可信）
     standards = [s for s in standards if
-                 s.get('_sactc') or is_sports(clean_sacinfo(s.get('title','')))]
+                 s.get('_sactc') or s.get('_ttbz') or
+                 s.get('type') in ('团体标准', '地方标准') or
+                 is_sports(clean_sacinfo(s.get('title','')))]
     removed = before - len(standards)
     if removed > 0:
         log(f"🗑️ 自动清理：移除 {removed} 条非体育/重复标准")

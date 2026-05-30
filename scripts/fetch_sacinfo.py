@@ -91,12 +91,12 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
 
         data  = resp.json()
 
-        # 诊断：首次打印结构
+        # 日志确认响应结构：列表在 records 字段（不是 rows）
         if page == 1:
             slog(f"  响应顶层字段: {list(data.keys())}")
-            slog(f"  total={data.get('total', '无')}  rows={len(data.get('rows', []))}")
+            slog(f"  total={data.get('total','无')}  records={len(data.get('records',[]))}")
 
-        rows  = data.get("rows", [])
+        rows  = data.get("records", [])   # ← 修复：records 不是 rows
         total = int(data.get("total", 0))
 
         items = []
