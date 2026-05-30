@@ -479,7 +479,7 @@
       <span class="pill" data-type="国家标准">国家标准</span>
       <span class="pill" data-type="行业标准">行业标准</span>
       <span class="pill" data-type="地方标准">地方标准</span>
-      <span class="pill" data-type="团标">团标</span>
+      <span class="pill" data-type="团体标准">团标</span>
     </div>
   </div>
 
@@ -1080,7 +1080,26 @@ function applyAll(){
           if(!seen[r.item.id]){ seen[r.item.id]=true; merged.push(r); }
         });
       });
-      merged.sort(function(a,b){ return (a.score||0)-(b.score||0); });
+      // 精确排序：① 标准号完全匹配 ② 标准号开头匹配 ③ Fuse评分
+      var qNorm = activeQ.replace(/\s+/g,'').toLowerCase();
+      merged.sort(function(a,b){
+        var ac = (a.item.code||'').replace(/\s+/g,'').toLowerCase();
+        var bc = (b.item.code||'').replace(/\s+/g,'').toLowerCase();
+        // 完全匹配标准号优先
+        var aExact = (ac === qNorm) ? 0 : 1;
+        var bExact = (bc === qNorm) ? 0 : 1;
+        if(aExact !== bExact) return aExact - bExact;
+        // 标准号开头匹配其次
+        var aStart = ac.startsWith(qNorm) ? 0 : 1;
+        var bStart = bc.startsWith(qNorm) ? 0 : 1;
+        if(aStart !== bStart) return aStart - bStart;
+        // 标准号包含匹配再次
+        var aIncl = ac.indexOf(qNorm) !== -1 ? 0 : 1;
+        var bIncl = bc.indexOf(qNorm) !== -1 ? 0 : 1;
+        if(aIncl !== bIncl) return aIncl - bIncl;
+        // 最后按 Fuse 评分
+        return (a.score||0)-(b.score||0);
+      });
       list = merged.map(function(r){ return r.item; });
     } else {
       var q = activeQ.toLowerCase();
