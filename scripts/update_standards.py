@@ -902,6 +902,19 @@ def save_db(db, standards, dry):
                  s.get('_sactc') or s.get('_ttbz') or
                  s.get('type') in ('团体标准', '地方标准') or
                  is_sports(clean_sacinfo(s.get('title','')))]
+
+    # 清洗所有日期字段，过滤乱码（年份不在1950-2100范围内的）
+    def _clean_date(raw):
+        if not raw: return None
+        d = re.sub(r'[^\d]', '', str(raw))
+        if len(d) >= 8:
+            y, m, dd = int(d[:4]), int(d[4:6]), int(d[6:8])
+            if 1950 <= y <= 2100 and 1 <= m <= 12 and 1 <= dd <= 31:
+                return f"{y:04d}-{m:02d}-{dd:02d}"
+        return None
+    for s in standards:
+        for _f in ('issueDate', 'implementDate', 'abolishDate'):
+            if s.get(_f): s[_f] = _clean_date(s[_f])
     removed = before - len(standards)
     if removed > 0:
         log(f"🗑️ 自动清理：移除 {removed} 条非体育/重复标准")
