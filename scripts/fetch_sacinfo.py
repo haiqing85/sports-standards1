@@ -58,16 +58,38 @@ def norm_status(raw):
     return "现行"
 
 def norm_date(raw):
-    if not raw: return None
+    """
+    日期格式化，统一为 YYYY-MM-DD，支持两种格式：
+    1. 毫秒时间戳（13位，如1739462400000）→ 北京时间UTC+8转换
+    2. 普通日期字符串（如20250214、2025-02-14）
+    """
+    if raw is None or str(raw).strip() == "":
+        return None
+    # 毫秒时间戳：13位整数
+    try:
+        val = int(str(raw).strip())
+        if val > 10000000000:
+            from datetime import datetime, timezone, timedelta
+            dt = datetime.fromtimestamp(val / 1000, tz=timezone(timedelta(hours=8)))
+            return dt.strftime('%Y-%m-%d')
+    except (ValueError, TypeError):
+        pass
+    # 普通日期字符串
     d = re.sub(r"[^\d]", "", str(raw))
     if len(d) >= 8:
         year, month, day = int(d[:4]), int(d[4:6]), int(d[6:8])
-        # 合法性校验：过滤乱码日期（如 hbba 返回的 7079-32-80）
         if 1950 <= year <= 2100 and 1 <= month <= 12 and 1 <= day <= 31:
             return f"{year:04d}-{month:02d}-{day:02d}"
     return None
 
-def make_id(code):
+def year_from_code(code):
+    """从标准号末尾提取年份作为日期兜底，如 DB37/T 4831-2025 → 2025-01-01"""
+    m = re.search(r'[-—]\s*(\d{4})\s*$', str(code or ''))
+    if m:
+        y = int(m.group(1))
+        if 1950 <= y <= 2100:
+            return f"{y}-01-01"
+    return None
     c = re.sub(r"[^A-Za-z0-9]", "", code.strip())[:30]
     return c if c else hashlib.md5(code.encode()).hexdigest()[:12]
 
@@ -128,8 +150,22 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
                 "title":         title,
                 "type":          std_type,
                 "status":        norm_status(status_raw),
-                "issueDate":     norm_date(row.get("issueDate") or row.get("ISSUE_DATE")),
-                "implementDate": norm_date(row.get("actDate")   or row.get("IMPL_DATE")),
+                # 日期字段尝试顺序：
+                # issueDate/recordDate/approveDate → 批准日期
+                # actDate/executeDate → 实施日期
+                # 如均为乱码，用标准号年份兜底
+                "issueDate":     (
+                    norm_date(row.get("issueDate"))    or
+                    norm_date(row.get("recordDate"))   or
+                    norm_date(row.get("approveDate"))  or
+                    norm_date(row.get("ISSUE_DATE"))   or
+                    year_from_code(code)
+                ),
+                "implementDate": (
+                    norm_date(row.get("actDate"))      or
+                    norm_date(row.get("executeDate"))  or
+                    norm_date(row.get("IMPL_DATE"))
+                ),
                 "abolishDate":   norm_date(row.get("fzDate")    or row.get("ABOL_DATE")),
                 "issuedBy":      issued_by,
                 "replaces":      None,
