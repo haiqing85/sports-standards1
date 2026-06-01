@@ -226,7 +226,10 @@
     .province-bar{display:none;flex-wrap:wrap;gap:6px;padding:8px 0 4px 0;align-items:center;border-top:1px solid var(--border);margin-top:6px}
     .province-bar.visible{display:flex}
     .province-bar label{font-size:12px;color:var(--text2);white-space:nowrap;margin-right:2px}
-    .p-pill{padding:3px 10px;border:1px solid var(--border);border-radius:14px;font-size:12px;color:var(--text2);background:var(--white);cursor:pointer;white-space:nowrap;transition:all .15s}
+    .s-pill{padding:3px 10px;border:1px solid var(--border);border-radius:14px;font-size:12px;color:var(--text2);background:var(--white);cursor:pointer;white-space:nowrap;transition:all .15s}
+    .s-pill:hover{border-color:var(--blue-light);color:var(--blue-mid)}
+    .s-pill.active{background:var(--blue-dim);border-color:var(--blue-mid);color:var(--blue-mid);font-weight:600}
+    #statusBar{display:flex}
     .p-pill:hover{border-color:var(--blue-light);color:var(--blue-mid)}
     .p-pill.active{background:var(--blue-dim);border-color:var(--blue-mid);color:var(--blue-mid);font-weight:600}
     .b-团标,.b-团体标准{background:#ffedd5;color:#c2410c;border:1px solid #fed7aa}
@@ -487,7 +490,14 @@
       <span class="pill" data-type="地方标准">地方标准</span>
       <span class="pill" data-type="团体标准">团标</span>
     </div>
-    <!-- 省市筛选行（仅选中「地方标准」时显示）-->
+    <!-- 状态筛选行 -->
+    <div class="province-bar" id="statusBar">
+      <label>状态：</label>
+      <span class="s-pill active" data-status="">全部</span>
+      <span class="s-pill" data-status="现行">✅ 现行</span>
+      <span class="s-pill" data-status="即将实施">🔔 即将实施</span>
+      <span class="s-pill" data-status="废止">🚫 废止</span>
+    </div>
     <div class="province-bar" id="provinceBar">
       <label>省市：</label>
       <span class="p-pill active" data-prov="">全部</span>
@@ -584,7 +594,7 @@
     <span class="footer-sep">·</span>
     <p><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">鲁ICP备2026026260号-1</a></p>
     <span class="footer-sep">·</span>
-    <p style="opacity:.4;font-size:11px">搜索引擎 v3.3</p>
+    <p style="opacity:.4;font-size:11px">搜索引擎 v3.4</p>
   </div>
 </footer>
 
@@ -964,7 +974,7 @@ function expandQuery(q) {
 // ═══════════════════════════════════════════════════════════
 //  主逻辑
 // ═══════════════════════════════════════════════════════════
-var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='', activeProvince='';
+var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='', activeProvince='', activeStatus='';
 
 // ── 数据缓存 key（localStorage，首次访问后立即显示缓存，同时后台拉最新）──
 var DATA_CACHE_KEY = 'stdDataCache';
@@ -1037,10 +1047,13 @@ function loadData(){
 // ── 返回首页：恢复热门标准视图 ──
 function goHome(){
   syncQ('');
-  activeQ = ''; activeType = ''; activeProvince = ''; curPage = 1;
+  activeQ = ''; activeType = ''; activeProvince = ''; activeStatus = ''; curPage = 1;
   document.getElementById('provinceBar').classList.remove('visible');
   document.querySelectorAll('.p-pill').forEach(function(p){
     p.classList.toggle('active', p.dataset.prov==='');
+  });
+  document.querySelectorAll('.s-pill').forEach(function(p){
+    p.classList.toggle('active', p.dataset.status==='');
   });
   document.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('active'); });
   var hotPill = document.querySelector('.pill[data-type="__hot__"]');
@@ -1094,6 +1107,17 @@ setInterval(function(){
       }
     }).catch(function(){});
 }, 60000);
+
+// 状态 pill 点击事件
+document.getElementById('statusBar').addEventListener('click', function(e){
+  var t = e.target.closest('.s-pill');
+  if(!t) return;
+  document.querySelectorAll('.s-pill').forEach(function(p){ p.classList.remove('active'); });
+  t.classList.add('active');
+  activeStatus = t.dataset.status;
+  curPage = 1;
+  applyAll();
+});
 
 // 省市 pill 点击事件
 document.getElementById('provinceBar').addEventListener('click', function(e){
@@ -1200,6 +1224,8 @@ function applyAll(){
     }
   }
   if(activeType) list=list.filter(function(s){return s.type===activeType;});
+  // 状态筛选
+  if(activeStatus) list=list.filter(function(s){return s.status===activeStatus;});
   // 省市过滤（仅地方标准有效）
   if(activeProvince && activeType==='地方标准'){
     list=list.filter(function(s){
