@@ -38,6 +38,7 @@ DBBA_KEYWORDS = [
 PAGE_SIZE     = 15
 REQUEST_DELAY = 0.8
 MAX_PAGES     = 100
+DETAIL_DELAY  = 0.3   # 详情页请求间隔（秒）
 
 SESSION = requests.Session()
 SESSION.headers.update({
@@ -46,6 +47,55 @@ SESSION.headers.update({
     "X-Requested-With": "XMLHttpRequest",
     "Content-Type":     "application/x-www-form-urlencoded; charset=UTF-8",
 })
+
+def _init_session(base_url):
+    """访问首页获取 Cookie，否则 API 可能返回空响应"""
+    try:
+        SESSION.headers.update({"Referer": base_url, "Origin": base_url})
+        SESSION.get(base_url.replace("/stdQueryList", "/stdList"), timeout=10)
+    except Exception:
+        pass
+
+def fetch_detail_dates(pk, base_url):
+    """
+    抓取详情页获取精确日期。
+    详情页 URL：{base_url}/stdDetail/{pk}
+    页面为 SSR HTML，解析 <td>发布日期</td><td>YYYY-MM-DD</td> 格式
+    返回 {'issueDate': ..., 'implementDate': ..., 'issuedBy': ...}
+    """
+    if not pk:
+        return {}
+    detail_base = base_url.replace("sacinfo.org.cn/stdQueryList",
+                                   "sacinfo.org.cn/stdDetail")
+    url = f"{detail_base}/{pk}"
+    try:
+        headers = {"Accept": "text/html,application/xhtml+xml,*/*",
+                   "X-Requested-With": ""}
+        resp = SESSION.get(url, headers=headers, timeout=15)
+        if resp.status_code != 200:
+            return {}
+        from bs4 import BeautifulSoup
+        soup = BeautifulSoup(resp.text, "lxml")
+        info = {}
+        # 解析所有 <tr><td>字段名</td><td>值</td></tr> 结构
+        for row in soup.find_all("tr"):
+            cells = row.find_all("td")
+            if len(cells) >= 2:
+                key = cells[0].get_text(strip=True)
+                val = cells[1].get_text(strip=True)
+                info[key] = val
+        result = {}
+        if "发布日期" in info:
+            result["issueDate"] = norm_date(info["发布日期"])
+        if "实施日期" in info:
+            result["implementDate"] = norm_date(info["实施日期"])
+        if "批准发布部门" in info:
+            result["issuedBy"] = _clean_issuer(info["批准发布部门"])
+        elif "归口单位" in info:
+            result["issuedBy"] = _clean_issuer(info["归口单位"])
+        return result
+    except Exception as e:
+        return {}
 
 def slog(msg):
     print(f"[{datetime.now().strftime('%H:%M:%S')}][SACINFO] {msg}", flush=True)
@@ -189,8 +239,8 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
                     norm_date(row.get("issueDate"))    or
                     norm_date(row.get("recordDate"))   or
                     norm_date(row.get("approveDate"))  or
-                    norm_date(row.get("ISSUE_DATE"))   or
-                    year_from_code(code)
+                    norm_date(row.get("ISSUE_DATE"))
+                    # 不用 year_from_code 兜底，留给详情页抓精确日期
                 ),
                 "implementDate": (
                     norm_date(row.get("actDate"))      or
@@ -210,6 +260,7 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
                 "category":      "综合",
                 "scope":         "",
                 "localFile":     None,
+                "_pk":           str(row.get("pk") or ""),   # 详情页 key，用完后删除
             })
         return items, total
 
@@ -221,6 +272,9 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
 def _fetch_all(api_url, keywords, std_type, label):
     all_results, seen = [], set()
     slog(f"开始抓取{label}...")
+
+    # 初始化 Session Cookie
+    _init_session(api_url)
 
     for kw in keywords:
         slog(f"  关键词: {kw}")
@@ -248,6 +302,31 @@ def _fetch_all(api_url, keywords, std_type, label):
                     all_results.append(item)
             if page % 10 == 0:
                 slog(f"    {page}/{total_pages} 累计 {len(all_results)} 条")
+
+    # 补充详情页：对 issueDate 缺失的条目抓精确日期
+    missing = [s for s in all_results if not s.get("issueDate") and s.get("_pk")]
+    if missing:
+        slog(f"  补充详情页日期（{len(missing)} 条缺失日期）...")
+        for i, item in enumerate(missing):
+            pk = item.pop("_pk", "")
+            detail = fetch_detail_dates(pk, api_url)
+            if detail:
+                if detail.get("issueDate"):     item["issueDate"]     = detail["issueDate"]
+                if detail.get("implementDate"): item["implementDate"] = detail["implementDate"]
+                if detail.get("issuedBy"):      item["issuedBy"]      = detail["issuedBy"]
+            else:
+                # 详情页也拿不到，最后用年份兜底
+                item["issueDate"] = year_from_code(item.get("code",""))
+            time.sleep(DETAIL_DELAY)
+            if (i+1) % 20 == 0:
+                slog(f"    详情进度: {i+1}/{len(missing)}")
+
+    # 清理剩余 _pk 字段
+    for item in all_results:
+        item.pop("_pk", None)
+
+    slog(f"✅ {label}抓取完成，共 {len(all_results)} 条")
+    return all_results
 
     slog(f"✅ {label}抓取完成，共 {len(all_results)} 条")
     return all_results
