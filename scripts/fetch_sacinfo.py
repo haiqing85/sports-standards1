@@ -90,8 +90,27 @@ def year_from_code(code):
         if 1950 <= y <= 2100:
             return f"{y}-01-01"
     return None
+
+def make_id(code):
     c = re.sub(r"[^A-Za-z0-9]", "", code.strip())[:30]
     return c if c else hashlib.md5(code.encode()).hexdigest()[:12]
+
+# 主机构名称列表：归口部门截断到主机构
+_MAIN_BODIES = [
+    "国家体育总局", "住房和城乡建设部", "国家市场监督管理总局",
+    "国家标准化管理委员会", "工业和信息化部", "交通运输部",
+    "农业农村部", "国家林业和草原局", "生态环境部", "教育部",
+    "国家发展和改革委员会", "商务部", "文化和旅游部",
+]
+
+def _clean_issuer(raw):
+    """截断归口部门到主机构，如 '国家体育总局体育经济司' → '国家体育总局'"""
+    if not raw:
+        return raw
+    for body in _MAIN_BODIES:
+        if raw.startswith(body) and len(raw) > len(body):
+            return body
+    return raw
 
 def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
     """
@@ -135,14 +154,29 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
 
             # CNB 日志已确认的实际字段名（hbba/dbba）：
             # code=标准号, chName=中文名, chargeDept=主管部门
-            # issueDate=发布日期, actDate=实施日期, fzDate=废止日期(dbba), status=状态
+            # issueDate=发布日期(毫秒时间戳), actDate=实施日期, fzDate=废止日期, status=状态
             code  = str(row.get("code")   or row.get("C_STD_CODE") or "").strip()
             title = str(row.get("chName") or row.get("C_C_NAME")   or "").strip()
             if not code or not title:
                 continue
 
-            issued_by = str(row.get("chargeDept") or row.get("ISSUE_DEPT") or "").strip()
+            # 发布机构：取批准发布部门（多个字段尝试），截断到主机构名
+            issued_by_raw = str(
+                row.get("approveDept") or       # 批准发布部门（优先）
+                row.get("publishDept") or
+                row.get("chargeDept") or         # 归口部门（备用）
+                row.get("ISSUE_DEPT") or ""
+            ).strip()
+            issued_by = _clean_issuer(issued_by_raw)
+
             status_raw = str(row.get("status") or row.get("STATE") or "").strip()
+
+            # 摘要：尝试多个可能字段
+            summary = str(
+                row.get("scope") or row.get("range") or
+                row.get("summary") or row.get("remark") or
+                row.get("applicableScope") or ""
+            ).strip()
 
             items.append({
                 "id":            make_id(code),
@@ -150,10 +184,7 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
                 "title":         title,
                 "type":          std_type,
                 "status":        norm_status(status_raw),
-                # 日期字段尝试顺序：
-                # issueDate/recordDate/approveDate → 批准日期
-                # actDate/executeDate → 实施日期
-                # 如均为乱码，用标准号年份兜底
+                # issueDate/actDate 均为毫秒时间戳，norm_date 已支持转换
                 "issueDate":     (
                     norm_date(row.get("issueDate"))    or
                     norm_date(row.get("recordDate"))   or
@@ -174,7 +205,7 @@ def fetch_sacinfo_page(api_url, keyword, page=1, std_type="行业标准"):
                     re.match(r"^(GB|TY|DB\d+)\d", re.sub(r"\s+", "", code).upper())
                     and "/T" not in code
                 ),
-                "summary":       "",
+                "summary":       summary,
                 "tags":          [],
                 "category":      "综合",
                 "scope":         "",
