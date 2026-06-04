@@ -8,6 +8,21 @@
         :root { --primary: #2563eb; --bg: #f8fafc; }
         body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg); margin: 0; padding: 0; }
 
+        /* ── 顶部进度条 ── */
+        #topBar {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, #2563eb, #60a5fa, #2563eb);
+            background-size: 200% 100%;
+            z-index: 9999; transition: width .3s ease;
+            animation: barShimmer 1.2s linear infinite;
+            display: none;
+        }
+        #topBar.active { display: block; }
+        @keyframes barShimmer {
+            0%   { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
         /* 登录页 */
         .login-screen { position: fixed; inset: 0; background: #1e293b; display: flex; align-items: center; justify-content: center; z-index: 999; }
         .login-box { background: white; padding: 40px; border-radius: 12px; width: 340px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -244,6 +259,9 @@
     </style>
 </head>
 <body>
+
+<!-- 顶部进度条 -->
+<div id="topBar"></div>
 
 <!-- 登录页 -->
 <div class="login-screen" id="loginScreen">
@@ -952,6 +970,61 @@
         return PROXY_BASE + '?url=' + encodeURIComponent(GITHUB_API + path);
     }
 
+    // ══════════════════════════════════════════════════
+    //  顶部进度条：所有异步操作共用
+    // ══════════════════════════════════════════════════
+    var _barTimer = null;
+    var _barWidth = 0;
+    function barStart() {
+        var bar = document.getElementById('topBar');
+        if (!bar) return;
+        clearInterval(_barTimer);
+        _barWidth = 5;
+        bar.style.width = _barWidth + '%';
+        bar.className = 'active';
+        _barTimer = setInterval(function() {
+            // 缓慢爬升到 85%，不到 100%（等真正完成再收尾）
+            if (_barWidth < 85) {
+                _barWidth += (_barWidth < 40 ? 3 : _barWidth < 70 ? 1 : 0.3);
+                bar.style.width = _barWidth + '%';
+            }
+        }, 150);
+    }
+    function barDone() {
+        var bar = document.getElementById('topBar');
+        if (!bar) return;
+        clearInterval(_barTimer);
+        bar.style.width = '100%';
+        setTimeout(function() {
+            bar.style.transition = 'opacity .4s';
+            bar.style.opacity = '0';
+            setTimeout(function() {
+                bar.className = '';
+                bar.style.width = '0%';
+                bar.style.opacity = '1';
+                bar.style.transition = 'width .3s ease';
+            }, 400);
+        }, 300);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  预热 Edge Function（解决冷启动慢）
+    //  页面加载时静默 ping 两个 EdgeOne Function，
+    //  让它们在用户点击前就处于热启动状态
+    // ══════════════════════════════════════════════════
+    (function prewarmEdgeFunctions() {
+        // ping /api/admin (POST 空body，忽略结果)
+        fetch('/api/admin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ _ping: true })
+        }).catch(function(){});
+        // ping /api/github-proxy (GET 无效路径，只为唤醒函数)
+        fetch(PROXY_BASE + '?url=' + encodeURIComponent('https://api.github.com'), {
+            headers: { 'Accept': 'application/json' }
+        }).catch(function(){});
+    })();
+
     var DB = { standards: [] };
     var fileSha = '';
     var editIndex = -1;
@@ -968,6 +1041,7 @@
         btn.disabled = true;
         btn.textContent = '验证中…';
         errEl.textContent = '';
+        barStart();
         try {
             var resp = await fetch('/api/admin', {
                 method: 'POST',
@@ -975,6 +1049,7 @@
                 body: JSON.stringify({ username: u, password: p })
             });
             var result = await resp.json();
+            barDone();
             if (result.ok) {
                 sessionStorage.setItem('admin_logged_in', '1');
                 document.getElementById('loginScreen').style.display = 'none';
@@ -986,6 +1061,7 @@
                 btn.textContent = '登 录';
             }
         } catch(e) {
+            barDone();
             errEl.textContent = '登录失败：' + e.message;
             btn.disabled = false;
             btn.textContent = '登 录';
@@ -1003,6 +1079,18 @@
 
     // ── 从 GitHub 读取数据（支持公开和私有仓库）──
     async function loadDataFromGithub() {
+        // ① 有 sessionStorage 缓存时先立即渲染，避免白屏等待
+        var cached = sessionStorage.getItem('admin_db_cache');
+        if (cached) {
+            try {
+                DB = JSON.parse(cached);
+                if (!DB.standards) DB.standards = [];
+                renderList();
+                document.getElementById('statusText').textContent =
+                    '⚡ 从缓存加载 ' + DB.standards.length + ' 条，后台同步中…';
+            } catch(_) {}
+        }
+        barStart();
         try {
             var resp = await fetch(
                 proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+FILE_PATH),
@@ -1017,9 +1105,12 @@
                 var jsonStr = decodeURIComponent(escape(atob(result.content.replace(/\n/g,''))));
                 DB = JSON.parse(jsonStr);
                 if (!DB.standards) DB.standards = [];
+                // 存入 sessionStorage 供本次会话其他页面复用
+                sessionStorage.setItem('admin_db_cache', JSON.stringify(DB));
 
                 var changed = autoUpdateStatuses();
                 renderList();
+                barDone();
 
                 if (changed > 0) {
                     document.getElementById('statusText').textContent =
@@ -1033,6 +1124,7 @@
                 }
             }
         } catch (e) {
+            barDone();
             document.getElementById('statusText').textContent = '❌ 无法连接到 GitHub：' + e.message;
         }
     }
@@ -1490,7 +1582,7 @@
         var btn = document.getElementById('syncBtn');
         btn.textContent = '⏳ 正在推送…';
         btn.disabled = true;
-
+        barStart();
         try {
             DB.updated = new Date().toISOString().slice(0, 10);
             DB.version = DB.updated.replace(/-/g, '.');
@@ -1513,6 +1605,8 @@
             if (resp.ok) {
                 var result = await resp.json();
                 fileSha = result.content.sha;
+                // 更新 session 缓存
+                sessionStorage.setItem('admin_db_cache', JSON.stringify(DB));
                 document.getElementById('statusText').textContent =
                     '🎉 推送成功！数据已更新至 GitHub，网站约 1 分钟后自动更新。';
             } else {
@@ -1526,6 +1620,7 @@
         } catch (e) {
             alert('网络请求失败，请检查网络连接。\n' + e.message);
         } finally {
+            barDone();
             btn.textContent = '☁️ 推送至 GitHub';
             btn.disabled = false;
         }
@@ -1922,11 +2017,31 @@
     }
 
     // ── 从 GitHub 加载广告/SEO配置（切换到广告Tab时调用）──
+    var _adConfigLoaded = false;  // 本会话已从 GitHub 同步过，不重复请求
+
     async function loadAdConfig() {
         var st = document.getElementById('adSaveStatus');
-        st.textContent = '⏳ 正在从 GitHub 加载配置…';
-        st.className = 'ad-save-status';
 
+        // ① 立即从 localStorage 恢复表单（无延迟）
+        var cached = localStorage.getItem(AD_STORAGE_KEY);
+        if (cached) {
+            try {
+                applyAdCfgToForm(JSON.parse(cached));
+                if (!_adConfigLoaded) {
+                    st.textContent = '⚡ 已从本地缓存加载，后台同步中…';
+                    st.className = 'ad-save-status';
+                }
+            } catch(_) {}
+        }
+
+        // ② 本次会话已同步过，不再请求 GitHub
+        if (_adConfigLoaded) {
+            st.textContent = '';
+            return;
+        }
+
+        // ③ 后台从 GitHub 同步最新配置
+        barStart();
         try {
             var resp = await fetch(
                 proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + AD_CONFIG_PATH),
@@ -1934,11 +2049,10 @@
             );
 
             if (resp.status === 404) {
-                // 文件不存在，尝试从 localStorage 恢复（首次使用）
-                st.textContent = '📝 GitHub 尚无配置文件，请保存后自动创建';
-                var cached = localStorage.getItem(AD_STORAGE_KEY);
-                if (cached) applyAdCfgToForm(JSON.parse(cached));
+                st.textContent = '📝 GitHub 尚无配置文件，保存后自动创建';
                 adConfigSha = '';
+                _adConfigLoaded = true;
+                barDone();
                 return;
             }
             if (!resp.ok) throw new Error('读取失败 (' + resp.status + ')');
@@ -1948,20 +2062,19 @@
             var jsonStr = decodeURIComponent(escape(atob(result.content.replace(/\n/g,''))));
             var cfg = JSON.parse(jsonStr);
 
-            // 同步到 localStorage 作为离线缓存
             localStorage.setItem(AD_STORAGE_KEY, jsonStr);
-
             applyAdCfgToForm(cfg);
-            st.textContent = '✅ 已从 GitHub 加载配置';
+            _adConfigLoaded = true;
+            barDone();
+            st.textContent = '✅ 已与 GitHub 同步';
             st.className = 'ad-save-status ok';
-            setTimeout(function(){ st.textContent = ''; st.className = 'ad-save-status'; }, 3000);
+            setTimeout(function(){ st.textContent = ''; st.className = 'ad-save-status'; }, 2000);
 
         } catch(e) {
-            // GitHub 读取失败，回落 localStorage 缓存
-            st.textContent = '⚠️ GitHub 读取失败，使用本地缓存：' + e.message;
+            barDone();
+            _adConfigLoaded = true;  // 即使失败也标记，避免反复重试
+            st.textContent = cached ? '⚠️ GitHub 同步失败，显示本地缓存' : '⚠️ ' + e.message;
             st.className = 'ad-save-status';
-            var cached = localStorage.getItem(AD_STORAGE_KEY);
-            if (cached) { try{ applyAdCfgToForm(JSON.parse(cached)); }catch(_){} }
         }
     }
 
@@ -1972,6 +2085,7 @@
         btn.disabled = true;
         btn.textContent = '⏳ 正在推送至 GitHub…';
         st.textContent = '';
+        barStart();
 
         var cfg = collectAdCfg();
         var jsonStr = JSON.stringify(cfg, null, 2);
@@ -2010,10 +2124,12 @@
                 throw new Error(err.message);
             }
         } catch(e) {
+            barDone();
             st.textContent = '❌ GitHub 推送失败：' + e.message + '（配置已保存在本地）';
             st.className = 'ad-save-status err';
         }
 
+        barDone();
         btn.disabled = false;
         btn.textContent = '💾 保存广告与SEO配置';
     }
@@ -2068,6 +2184,7 @@
         btn.disabled = true;
         btn.textContent = '⏳ 生成中…';
         st.textContent = '';
+        barStart();
         try {
             var stds = DB.standards || [];
             var base = 'https://www.sportstd.cn';
@@ -2114,6 +2231,7 @@
             st.textContent = '❌ 失败：' + e.message;
             st.style.color = '#dc2626';
         }
+        barDone();
         btn.disabled = false;
         btn.textContent = '🗺️ 生成并推送 sitemap.xml';
     }
@@ -2128,12 +2246,12 @@
         var rows = stds.map(function(s) {
             return [
                 s.code || '',
-                '"' + (s.name || '').replace(/"/g, '""') + '"',
+                '"' + (s.title || '').replace(/"/g, '""') + '"',
                 s.type || '',
                 s.status || '',
-                s.publishDate || '',
-                s.effectDate || '',
-                '"' + (s.category || '') + '"',
+                s.issueDate || '',
+                s.implementDate || '',
+                '"' + (Array.isArray(s.category) ? s.category.join(' / ') : (s.category || '')) + '"',
                 s.localFile ? '有' : '无'
             ].join(',');
         });
@@ -2208,6 +2326,7 @@
         btn.textContent = '⏳ 扫描中…';
         log.style.display = 'block';
         log.innerHTML = '🔍 开始扫描 downloads/ 目录…<br>';
+        barStart();
 
         try {
             // 1. 获取 GitHub downloads/ 目录文件列表
@@ -2298,6 +2417,7 @@
             log.style.color = '#dc2626';
         }
 
+        barDone();
         btn.disabled = false;
         btn.textContent = '🔍 扫描并同步 PDF 状态';
     }
