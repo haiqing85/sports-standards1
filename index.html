@@ -1524,11 +1524,9 @@ function eh(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</
 // ══════════════════════════════════════════════════════
 var activeView = 'hot'; // 默认热门标准
 
-var HOT_STANDARD_IDS = [
-  'GB_T-14833-2011','GB-36246-2018','GB-T-22517_6-2011',
-  'GB-T-19851_11-2005','WS-792-2022','CJJ-T-90-2009',
-  'GB-T-10250-2007','GB-T-31641-2015'
-];
+// ── 首页"热门标准"现由后台手动勾选生成（admin.html 编辑标准时勾选"🔥 设为首页热门标准"）
+//    不再使用固定 ID 列表，改为读取每条标准的 isHot 字段。
+var HOT_CARDS_LIMIT = 12;  // 最多展示数量，避免运营误选过多导致卡片墙过长
 
 function renderHotCards(){
   var grid = document.getElementById('hotCardsGrid');
@@ -1537,12 +1535,13 @@ function renderHotCards(){
     // DB 尚未加载，保持 loading 占位，不清空内容
     return;
   }
-  var items = [];
-  HOT_STANDARD_IDS.forEach(function(id){
-    var s = DB.find(function(x){ return x.id === id; });
-    if(s) items.push(s);
+  var items = DB.filter(function(s){ return s.isHot; });
+  // 按实施/发布日期倒序，最新的热门标准排在最前面
+  items.sort(function(a,b){
+    return (b.implementDate||b.issueDate||'').localeCompare(a.implementDate||a.issueDate||'');
   });
-  // 若精选 ID 未命中，退而显示最新8条现行标准
+  items = items.slice(0, HOT_CARDS_LIMIT);
+  // 若后台尚未手动勾选任何热门标准，退而显示最新8条现行标准
   if(!items.length){
     items = DB.filter(function(s){ return s.status==='现行'; }).slice(0,8);
   }
