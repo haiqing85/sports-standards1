@@ -359,7 +359,7 @@
       "summary": "GB/T 14833-1993规定了塑胶跑道的分类、技术要求、试验方法、检验规则及标志、包装、运输和贮存等内容。适用于以合成材料为面层，用于体育场馆和学校等场所的全天候塑胶跑道。标准主要针对其物理机械性能和环保要求进行规范。",
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT148331993.pdf",
       "_origIndex": 15
     },
     {
@@ -7995,7 +7995,7 @@
       "abolishDate": null,
       "replaces": null,
       "replacedBy": "GB/T 14833-2020",
-      "issuedBy": "",
+      "issuedBy": null,
       "category": "合成材料面层",
       "tags": [
         "合成材料跑道"
@@ -8003,7 +8003,7 @@
       "summary": null,
       "isMandatory": false,
       "scope": "",
-      "localFile": null,
+      "localFile": "downloads/GBT148332011.pdf",
       "_origIndex": 353
     },
     {
