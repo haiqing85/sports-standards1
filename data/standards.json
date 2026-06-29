@@ -195,7 +195,8 @@
       "isMandatory": true,
       "scope": "",
       "localFile": "downloads/GB362462018.pdf",
-      "_origIndex": 9
+      "_origIndex": 9,
+      "isHot": true
     },
     {
       "id": "GBT435642023",
@@ -223,7 +224,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": "downloads/GBT435642023.pdf",
-      "_origIndex": 10
+      "_origIndex": 10,
+      "isHot": true
     },
     {
       "id": "GBT435652023",
@@ -252,7 +254,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": "downloads/GBT435652023.pdf",
-      "_origIndex": 11
+      "_origIndex": 11,
+      "isHot": true
     },
     {
       "id": "GBT390592020",
@@ -336,7 +339,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": "downloads/GBT148332020.pdf",
-      "_origIndex": 14
+      "_origIndex": 14,
+      "isHot": true
     },
     {
       "id": "GBT148331993",
@@ -409,7 +413,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 17
+      "_origIndex": 17,
+      "isHot": true
     },
     {
       "id": "GBT1999522005",
@@ -818,7 +823,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": "",
-      "_origIndex": 34
+      "_origIndex": 34,
+      "isHot": true
     },
     {
       "id": "GBT2251752024",
@@ -869,7 +875,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 36
+      "_origIndex": 36,
+      "isHot": true
     },
     {
       "id": "GBT1999512005",
@@ -2018,7 +2025,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 84
+      "_origIndex": 84,
+      "isHot": true
     },
     {
       "id": "GBT202392015",
@@ -2092,7 +2100,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 87
+      "_origIndex": 87,
+      "isHot": true
     },
     {
       "id": "GBT203942013",
