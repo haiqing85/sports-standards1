@@ -849,7 +849,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 35
+      "_origIndex": 35,
+      "isHot": true
     },
     {
       "id": "GBT2003332006",
@@ -926,7 +927,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 38
+      "_origIndex": 38,
+      "isHot": true
     },
     {
       "id": "GBT1985142005",
@@ -1001,7 +1003,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 41
+      "_origIndex": 41,
+      "isHot": true
     },
     {
       "id": "GBT2003322005",
@@ -1076,7 +1079,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 44
+      "_origIndex": 44,
+      "isHot": true
     },
     {
       "id": "GBT2251762011",
@@ -1274,7 +1278,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 52
+      "_origIndex": 52,
+      "isHot": true
     },
     {
       "id": "GBT2251722008",
@@ -1577,7 +1582,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 65
+      "_origIndex": 65,
+      "isHot": true
     },
     {
       "id": "GBT2251782024",
@@ -1602,7 +1608,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 66
+      "_origIndex": 66,
+      "isHot": true
     },
     {
       "id": "GBT22517102014",
@@ -1626,7 +1633,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 67
+      "_origIndex": 67,
+      "isHot": true
     },
     {
       "id": "GBT22517112014",
@@ -1650,7 +1658,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 68
+      "_origIndex": 68,
+      "isHot": true
     },
     {
       "id": "GBT302282013",
@@ -2792,7 +2801,8 @@
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 117
+      "_origIndex": 117,
+      "isHot": true
     },
     {
       "id": "GBT2251732008",
