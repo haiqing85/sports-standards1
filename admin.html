@@ -1442,6 +1442,12 @@
         if (!code) { alert('标准编号不能为空！'); return; }
         if (!id)   { alert('系统ID生成失败，请重新输入编号！'); return; }
 
+        // ⚠️ localFile 不再无条件写入！只在以下情况设置：
+        //   ① 编辑现有标准且未选新PDF → 保留原有 localFile（不管真假，维持原状）
+        //   ② 新建/编辑且选择了新PDF → 暂不设置，等 uploadPdfToGithub 真正上传成功后才写入
+        // 这样才不会把"从未上传过PDF"的标准误标记为"已有PDF"
+        var existingLocalFile = (index !== -1 && DB.standards[index]) ? DB.standards[index].localFile : '';
+
         var newStd = {
             id:             id,
             code:           code,
@@ -1456,11 +1462,12 @@
             replaces:       document.getElementById('f_replaces').value.trim() || null,
             replacedBy:     document.getElementById('f_replacedBy').value.trim() || null,
             summary:        document.getElementById('f_summary').value.trim() || null,
-            localFile:      'downloads/' + id + '.pdf'
+            localFile:      pendingPdfFile ? '' : existingLocalFile   // 见上方说明
         };
 
         if (index === -1) {
             DB.standards.unshift(newStd);
+            index = 0; // 新增后实际所在下标，供下面上传成功回调定位
         } else {
             DB.standards[index] = Object.assign({}, DB.standards[index], newStd);
         }
@@ -1471,15 +1478,40 @@
         DB.total = DB.standards.length;
         renderList();
 
-        // 若有待上传的PDF，立即上传到GitHub
+        // 若有待上传的PDF，立即上传到GitHub —— 只有上传成功才写入 localFile
         if (pendingPdfFile) {
+            var targetIdx = index;
+            var savedCode = newStd.code; // 闭包内备用，弹窗关闭后 alert 仍可引用
+
+            // ⚠️ 不立即关闭弹窗！必须等上传结果出来，否则用户看不到失败提示
+            var saveBtn = document.querySelector('#editModal button[onclick="saveData()"]');
+            if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ 正在上传PDF…'; }
+
             setPdfStatus('uploading', '⏳ 正在上传PDF至GitHub…');
+            document.getElementById('statusText').textContent = '⏳ 标准信息已暂存，等待PDF上传完成…';
+
             uploadPdfToGithub(newStd.id, pendingPdfFile).then(function() {
+                // ✅ 确认上传成功后才标记该标准"已有PDF"
+                if (DB.standards[targetIdx] && DB.standards[targetIdx].id === newStd.id) {
+                    DB.standards[targetIdx].localFile = 'downloads/' + newStd.id + '.pdf';
+                }
+                renderList();
                 setPdfStatus('has', '✅ PDF已成功上传：downloads/' + newStd.id + '.pdf');
                 pendingPdfFile = null;
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 暂存修改'; }
+                closeModal();   // 上传确认成功后才关闭
+                document.getElementById('statusText').textContent =
+                    '✅ 标准信息与PDF均已暂存，共 ' + DB.standards.length + ' 条。点击"推送至 GitHub"保存到云端。';
             }).catch(function(e) {
-                setPdfStatus('error', '❌ PDF上传失败：' + e.message + '（可稍后重试）');
+                // ❌ 上传失败：localFile 保持为空，列表正确显示"缺PDF"
+                // 弹窗保持打开，让用户清楚看到失败原因并可立即重试，不会被"已暂存"误导
+                setPdfStatus('error', '❌ PDF上传失败：' + e.message + '（标准信息已暂存，但PDF未上传，请重试或稍后在编辑窗口重新上传）');
+                if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 暂存修改'; }
+                document.getElementById('statusText').textContent =
+                    '⚠️ 「' + savedCode + '」PDF上传失败，请重试。';
+                alert('⚠️ PDF上传失败：\n' + e.message + '\n\n标准「' + savedCode + '」的其它信息已暂存，但PDF文件未能上传成功，列表会正确显示"缺PDF"。\n请重新点击文件区域选择PDF并重试。');
             });
+            return; // 不执行下方立即关闭弹窗的逻辑
         }
 
         closeModal();
@@ -2323,11 +2355,37 @@
 
         try {
             // 1. 获取 GitHub downloads/ 目录文件列表
-            var dirResp = await fetch(
-                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/downloads')
-            );
-            if (!dirResp.ok) throw new Error('获取 downloads 目录失败 (' + dirResp.status + ')');
-            var dirFiles = await dirResp.json();
+            //    ⚠️ 不用 Contents API 直接列目录——它单次最多只返回 1000 个文件，
+            //    超过后会被静默截断，导致后面的 PDF 被误判为"不存在"而清空 localFile。
+            //    改用 Git Trees API（recursive=1），可以拿到整个仓库的完整文件树。
+            log.innerHTML += '📡 正在获取仓库默认分支…<br>';
+            var repoResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME));
+            if (!repoResp.ok) throw new Error('获取仓库信息失败 (' + repoResp.status + ')');
+            var repoInfo = await repoResp.json();
+            var defaultBranch = repoInfo.default_branch || 'main';
+
+            var branchResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/branches/' + defaultBranch));
+            if (!branchResp.ok) throw new Error('获取分支信息失败 (' + branchResp.status + ')');
+            var branchInfo = await branchResp.json();
+            var treeSha = branchInfo.commit.sha;
+
+            var treeResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/trees/' + treeSha + '?recursive=1'));
+            if (!treeResp.ok) throw new Error('获取文件树失败 (' + treeResp.status + ')');
+            var treeData = await treeResp.json();
+
+            if (treeData.truncated) {
+                log.innerHTML += '⚠️ 仓库文件数量过多，GitHub API 返回结果被截断，本次扫描结果可能不完整！建议分批清理仓库历史或联系 GitHub 支持提升限额。<br>';
+            }
+
+            var dirFiles = (treeData.tree || [])
+                .filter(function(item) {
+                    return item.type === 'blob'
+                        && item.path.indexOf('downloads/') === 0
+                        && item.path.toLowerCase().endsWith('.pdf');
+                })
+                .map(function(item) {
+                    return { name: item.path.replace(/^downloads\//, '') };
+                });
 
             // 提取所有已存在的 PDF 文件名（不含路径和扩展名）
             var existSet = {};
