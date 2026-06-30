@@ -555,7 +555,7 @@
         <div class="ad-card" id="adcard-sitemap">
           <div class="ad-card-head" onclick="toggleAdCard('sitemap')">
             <span class="ad-card-num" style="background:#dbeafe;color:#1e40af">🗺</span>
-            <div class="ad-card-info"><div class="ad-card-name">站点地图（Sitemap）</div><div class="ad-card-desc">自动生成 sitemap.xml 并推送到仓库，提升收录速度</div></div>
+            <div class="ad-card-info"><div class="ad-card-name">站点地图（Sitemap）</div><div class="ad-card-desc">自动生成 sitemap.xml + robots.txt 并推送到仓库，提升收录速度</div></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
@@ -564,9 +564,37 @@
               <span id="sitemapStatus" style="font-size:13px;color:#64748b"></span>
             </div>
             <div style="font-size:12px;color:#94a3b8;line-height:1.8">
-              • 自动收录所有标准页面，生成符合 Google / 百度 / Bing 规范的 sitemap.xml<br>
+              • 自动收录所有标准的静态详情页地址，生成符合 Google / 百度 / Bing 规范的 sitemap.xml<br>
+              • 同时生成 robots.txt，声明 sitemap 位置，加快搜索引擎发现速度<br>
               • 推送成功后，访问 <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">https://你的域名/sitemap.xml</code> 即可查看<br>
-              • 搜索引擎验证需直接写入 index.html &lt;head&gt;，不支持 JS 动态注入
+              • ⚠️ 请先点下方"生成静态详情页"，sitemap 里的链接才会真正有内容可看
+            </div>
+          </div>
+        </div>
+
+        <!-- 静态详情页生成（SEO核心）-->
+        <div class="ad-card" id="adcard-staticpages">
+          <div class="ad-card-head" onclick="toggleAdCard('staticpages')">
+            <span class="ad-card-num" style="background:#fef3c7;color:#92400e">📄</span>
+            <div class="ad-card-info"><div class="ad-card-name">静态详情页生成（SEO核心）</div><div class="ad-card-desc">为每条标准生成独立静态页面，搜索引擎才能精确收录</div></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div style="padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:12px;color:#92400e;line-height:1.7;margin-bottom:12px">
+              ⚠️ <strong>为什么需要这个？</strong>首页内容是 JS 异步加载的，搜索引擎爬虫不会执行 JS，
+              所以原来"按编号搜索后直接定位标准"的链接全部失效（每个链接在爬虫看来都是同一个空白首页）。
+              此功能会为每条标准单独生成一个 <code style="background:#fff;padding:1px 4px;border-radius:3px">/s/{ID}.html</code>
+              静态页面，标题、描述、正文直接写在 HTML 里，搜索引擎才能真正抓取并精确跳转。
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px">
+              <button class="btn btn-primary" onclick="generateStaticPages()" id="staticPagesBtn">📄 生成并推送静态详情页</button>
+              <span id="staticPagesStatus" style="font-size:13px;color:#64748b"></span>
+            </div>
+            <div id="staticPagesLog" style="display:none;max-height:200px;overflow-y:auto;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:12px;font-family:monospace;color:#475569;line-height:1.8;margin-bottom:10px"></div>
+            <div style="font-size:12px;color:#94a3b8;line-height:1.8">
+              • 首次生成耗时较长（1000+条数据，预计1-3分钟），请勿中途关闭页面<br>
+              • 之后每次只需重新点击即可全量覆盖更新，建议在批量修改标准数据后执行一次<br>
+              • 生成完成后，记得再次点击上方"生成并推送 sitemap.xml"，让链接指向最新内容
             </div>
           </div>
         </div>
@@ -2348,6 +2376,7 @@
         btn.disabled = true;
         btn.textContent = '⏳ 生成中…';
         st.textContent = '';
+        barStart();
         try {
             var stds = DB.standards || [];
             var base = 'https://www.sportstd.cn';
@@ -2357,8 +2386,11 @@
                 { loc: base + '/about.html', priority: '0.5', freq: 'monthly' },
                 { loc: base + '/contact.html', priority: '0.5', freq: 'monthly' },
             ];
+            // ⚠️ 不再用 /?code=xxx 这种死链接（前端从未读取过这个参数，对爬虫和用户都无效）。
+            //    改为指向独立的静态详情页 /s/{id}.html —— 这些页面由"生成静态详情页"功能单独生成，
+            //    内容直接写死在HTML里，搜索引擎才能真正收录并精确跳转到具体标准。
             stds.forEach(function(s) {
-                urls.push({ loc: base + '/?code=' + encodeURIComponent(s.code), priority: '0.8', freq: 'weekly' });
+                urls.push({ loc: base + '/s/' + encodeURIComponent(s.id) + '.html', priority: '0.8', freq: 'weekly' });
             });
             var xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
             xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
@@ -2371,6 +2403,10 @@
                 xml += '  </url>\n';
             });
             xml += '</urlset>';
+
+            // robots.txt 同步生成/更新，声明 sitemap 位置，便于搜索引擎主动发现
+            var robotsTxt = 'User-agent: *\nAllow: /\nSitemap: ' + base + '/sitemap.xml\n';
+
             var encoded = btoa(unescape(encodeURIComponent(xml)));
             var existSha = '';
             try {
@@ -2383,19 +2419,234 @@
                 proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/sitemap.xml'),
                 { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
             );
-            if (resp.ok) {
-                st.textContent = '✅ 推送成功！共 ' + urls.length + ' 个 URL';
-                st.style.color = '#16a34a';
-            } else {
-                var err = await resp.json();
-                throw new Error(err.message);
-            }
+            if (!resp.ok) { var err = await resp.json(); throw new Error(err.message); }
+
+            // 顺带推送 robots.txt
+            var robotsEncoded = btoa(unescape(encodeURIComponent(robotsTxt)));
+            var robotsSha = '';
+            try {
+                var rchk = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/robots.txt'));
+                if (rchk.ok) { var rcj = await rchk.json(); robotsSha = rcj.sha || ''; }
+            } catch(_) {}
+            var robotsBody = { message: '🤖 更新 robots.txt', content: robotsEncoded };
+            if (robotsSha) robotsBody.sha = robotsSha;
+            await fetch(
+                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/robots.txt'),
+                { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(robotsBody) }
+            );
+
+            st.textContent = '✅ 推送成功！sitemap.xml 共 ' + urls.length + ' 个 URL，robots.txt 已同步更新。';
+            st.style.color = '#16a34a';
         } catch(e) {
             st.textContent = '❌ 失败：' + e.message;
             st.style.color = '#dc2626';
         }
+        barDone();
         btn.disabled = false;
         btn.textContent = '🗺️ 生成并推送 sitemap.xml';
+    }
+
+    // ── 属性值专用转义（meta content="..." 内还需转义引号，eh() 只转义了 & < >）──
+    function ehAttr(s) {
+        return eh(s).replace(/"/g, '&quot;');
+    }
+
+    // ── 生成单条标准的静态详情页 HTML（内容直接写死，爬虫无需执行JS即可读取）──
+    function buildStaticPageHtml(s) {
+        var base = 'https://www.sportstd.cn';
+        var catText = Array.isArray(s.category) ? s.category.join('、') : (s.category || '');
+        var summary = s.summary && s.summary.trim()
+            ? s.summary.trim()
+            : (s.code + ' ' + s.title + '，由' + (s.issuedBy||'相关主管部门') + '发布' + (catText ? '，适用于' + catText + '相关领域' : '') + '。');
+        var metaDesc = (s.code + ' ' + s.title + ' - ' + summary).slice(0, 150);
+        var statusColor = s.status === '废止' ? '#dc2626' : (s.status === '即将实施' ? '#d97706' : '#16a34a');
+        var statusIcon  = s.status === '废止' ? '🚫' : (s.status === '即将实施' ? '🔔' : '✅');
+        var mainSiteLink = base + '/?id=' + encodeURIComponent(s.id);
+        var pdfExists = !!s.localFile;
+
+        var infoRows = [
+            ['标准类型', eh(s.type || '—')],
+            ['强制程度', s.isMandatory ? '⚡ 强制性标准' : '推荐性标准'],
+            ['当前状态', '<span style="color:' + statusColor + ';font-weight:700">' + statusIcon + ' ' + eh(s.status || '现行') + '</span>'],
+            ['发布日期', eh(s.issueDate || '—')],
+            ['实施日期', eh(s.implementDate || '—')],
+            ['发布机构', eh(s.issuedBy || '—')],
+            ['标准分类', eh(catText || '—')],
+        ];
+        if (s.replaces)    infoRows.push(['替代旧标准', eh(s.replaces)]);
+        if (s.replacedBy)  infoRows.push(['已被替代为', '<span style="color:#dc2626">' + eh(s.replacedBy) + '</span>']);
+
+        var infoHtml = infoRows.map(function(r) {
+            return '<tr><th>' + r[0] + '</th><td>' + r[1] + '</td></tr>';
+        }).join('');
+
+        var abolishNotice = s.status === '废止'
+            ? '<div class="notice">⚠️ 此标准已废止' + (s.replacedBy ? '，已被 <strong>' + eh(s.replacedBy) + '</strong> 代替' : '') + '，请使用最新有效版本。</div>'
+            : '';
+
+        // JSON-LD 结构化数据，帮助搜索引擎更好理解页面内容
+        var jsonLd = JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "TechArticle",
+            "headline": s.code + ' ' + s.title,
+            "description": summary,
+            "datePublished": s.issueDate || undefined,
+            "publisher": { "@type": "Organization", "name": s.issuedBy || "体育建设标准查询平台" }
+        });
+
+        return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n'
+            + '<meta charset="UTF-8">\n'
+            + '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+            + '<title>' + eh(s.code) + ' ' + eh(s.title) + ' - 体育建设标准查询平台</title>\n'
+            + '<meta name="description" content="' + ehAttr(metaDesc) + '">\n'
+            + '<link rel="canonical" href="' + base + '/s/' + encodeURIComponent(s.id) + '.html">\n'
+            + '<meta property="og:title" content="' + ehAttr(s.code + ' ' + s.title) + '">\n'
+            + '<meta property="og:description" content="' + ehAttr(metaDesc) + '">\n'
+            + '<meta property="og:type" content="article">\n'
+            + '<meta property="og:url" content="' + base + '/s/' + encodeURIComponent(s.id) + '.html">\n'
+            + '<script type="application/ld+json">' + jsonLd + '<\/script>\n'
+            + '<style>\n'
+            + '  body{font-family:"PingFang SC",system-ui,-apple-system,sans-serif;line-height:1.8;color:#334155;max-width:800px;margin:40px auto;padding:20px;background:#f4f6f9}\n'
+            + '  .card{background:#fff;padding:32px 36px;border-radius:12px;box-shadow:0 4px 6px -1px rgba(0,0,0,.1)}\n'
+            + '  .back{display:inline-block;margin-bottom:16px;color:#2563eb;text-decoration:none;font-size:14px}\n'
+            + '  h1{color:#1e293b;font-size:22px;border-bottom:2px solid #2563eb;padding-bottom:12px;margin:0 0 6px}\n'
+            + '  .code{display:inline-block;font-family:monospace;font-size:14px;color:#2563eb;background:#eff6ff;padding:3px 10px;border-radius:6px;margin-bottom:14px}\n'
+            + '  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:14px}\n'
+            + '  th{text-align:left;color:#64748b;width:110px;padding:8px 10px;font-weight:500;vertical-align:top}\n'
+            + '  td{padding:8px 10px;color:#1e293b}\n'
+            + '  tr{border-bottom:1px solid #f1f5f9}\n'
+            + '  .notice{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;border-radius:8px;padding:12px 14px;font-size:13px;margin:16px 0}\n'
+            + '  .summary{background:#f8fafc;border-radius:8px;padding:14px 16px;font-size:14px;color:#475569;margin:16px 0}\n'
+            + '  .cta{display:inline-block;margin-top:10px;background:#2563eb;color:#fff;text-decoration:none;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600}\n'
+            + '  .cta:hover{background:#1d4ed8}\n'
+            + '  .nopdf{color:#ea580c;font-size:13px;margin-top:10px}\n'
+            + '</style>\n</head>\n<body>\n'
+            + '<div class="card">\n'
+            + '  <a href="' + base + '/" class="back">← 返回首页查询更多标准</a>\n'
+            + '  <div class="code">' + eh(s.code) + '</div>\n'
+            + '  <h1>' + eh(s.title) + '</h1>\n'
+            + '  ' + abolishNotice + '\n'
+            + '  <table>' + infoHtml + '</table>\n'
+            + '  <div class="summary">' + eh(summary) + '</div>\n'
+            + '  <a href="' + mainSiteLink + '" class="cta">🔍 在线查询页查看完整详情' + (pdfExists ? '与下载PDF' : '') + '</a>\n'
+            + (!pdfExists ? '  <div class="nopdf">📭 该标准PDF文件暂未收录，如需获取请联系平台</div>\n' : '')
+            + '</div>\n</body>\n</html>';
+    }
+
+    // ── 批量生成静态详情页并推送至 GitHub（Git Trees API，单次commit）──
+    async function generateStaticPages() {
+        var btn = document.getElementById('staticPagesBtn');
+        var st  = document.getElementById('staticPagesStatus');
+        var log = document.getElementById('staticPagesLog');
+        var stds = DB.standards || [];
+        if (!stds.length) { alert('请先在标准管理页加载数据'); return; }
+
+        btn.disabled = true;
+        btn.textContent = '⏳ 生成中…';
+        st.textContent = '';
+        log.style.display = 'block';
+        log.innerHTML = '🚀 开始生成 ' + stds.length + ' 个静态详情页…<br>';
+        barStart();
+
+        try {
+            // 1. 获取默认分支 → 父提交 → 基础 tree
+            var repoR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME)));
+            var branch = (repoR.ok && repoR.data.default_branch) || 'main';
+
+            var refR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch)));
+            if (!refR.ok) throw new Error('获取分支引用失败');
+            var parentSha = refR.data.object.sha;
+
+            var parentCommitR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits/'+parentSha)));
+            if (!parentCommitR.ok) throw new Error('获取父提交失败');
+            var baseTreeSha = parentCommitR.data.tree.sha;
+
+            // 2. 逐条创建 blob（受控并发，避免一次性发起上千个请求压垮代理/触发限流）
+            var CONCURRENCY = 8;
+            var treeEntries = [];
+            var doneCount = 0;
+            var failedCodes = [];
+
+            async function createOneBlob(s) {
+                var html = buildStaticPageHtml(s);
+                var resp = await fetch(
+                    proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/blobs'),
+                    { method:'POST', headers:{'Content-Type':'application/json'},
+                      body: JSON.stringify({ content: html, encoding: 'utf-8' }) }
+                );
+                var r = await safeReadJson(resp);
+                if (!r.ok || !r.data?.sha) {
+                    failedCodes.push(s.code);
+                    return null;
+                }
+                return { path: 's/' + s.id + '.html', mode: '100644', type: 'blob', sha: r.data.sha };
+            }
+
+            // 简单并发池
+            var queue = stds.slice();
+            async function worker() {
+                while (queue.length) {
+                    var s = queue.shift();
+                    var entry = await createOneBlob(s);
+                    if (entry) treeEntries.push(entry);
+                    doneCount++;
+                    if (doneCount % 20 === 0 || queue.length === 0) {
+                        log.innerHTML = '🚀 开始生成 ' + stds.length + ' 个静态详情页…<br>'
+                            + '⏳ 已生成 ' + doneCount + ' / ' + stds.length + ' 个页面…';
+                        st.textContent = '进度 ' + doneCount + ' / ' + stds.length;
+                    }
+                }
+            }
+            await Promise.all(Array.from({length: CONCURRENCY}, worker));
+
+            if (!treeEntries.length) throw new Error('全部页面生成失败，请检查网络或稍后重试');
+
+            log.innerHTML += '<br>📦 全部页面已生成（成功 ' + treeEntries.length + ' / ' + stds.length + '），正在合并提交…<br>';
+
+            // 3. 创建新 tree（一次性携带所有文件条目）
+            var treeR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/trees'),
+                { method:'POST', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ base_tree: baseTreeSha, tree: treeEntries }) }
+            ));
+            if (!treeR.ok) throw new Error('创建 tree 失败：' + (treeR.data?.message || treeR.raw));
+
+            // 4. 创建新 commit
+            var newCommitR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits'),
+                { method:'POST', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({
+                      message: '📄 批量生成静态详情页 (' + treeEntries.length + ' 个) ' + new Date().toISOString().slice(0,10),
+                      tree: treeR.data.sha, parents: [parentSha]
+                  }) }
+            ));
+            if (!newCommitR.ok) throw new Error('创建 commit 失败：' + (newCommitR.data?.message || newCommitR.raw));
+
+            // 5. 更新分支指针
+            var updateR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch),
+                { method:'PATCH', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ sha: newCommitR.data.sha }) }
+            ));
+            if (!updateR.ok) throw new Error('更新分支指针失败：' + (updateR.data?.message || updateR.raw));
+
+            log.innerHTML += '✅ 推送成功！共生成并提交 ' + treeEntries.length + ' 个静态详情页（单次 commit）。<br>';
+            if (failedCodes.length) {
+                log.innerHTML += '⚠️ 以下 ' + failedCodes.length + ' 条生成失败，可重新点击按钮重试：' + failedCodes.slice(0,20).join('、') + (failedCodes.length>20?' 等…':'') + '<br>';
+            }
+            log.innerHTML += '💡 接下来请点击上方"生成并推送 sitemap.xml"，让站点地图指向这些新页面。';
+            st.textContent = '✅ 完成：' + treeEntries.length + ' / ' + stds.length;
+            st.style.color = '#16a34a';
+
+        } catch(e) {
+            log.innerHTML += '❌ 失败：' + e.message;
+            st.textContent = '❌ ' + e.message;
+            st.style.color = '#dc2626';
+        }
+
+        barDone();
+        btn.disabled = false;
+        btn.textContent = '📄 生成并推送静态详情页';
     }
 
     // ══════════════════════════════════════════════════
@@ -2408,12 +2659,12 @@
         var rows = stds.map(function(s) {
             return [
                 s.code || '',
-                '"' + (s.name || '').replace(/"/g, '""') + '"',
+                '"' + (s.title || '').replace(/"/g, '""') + '"',
                 s.type || '',
                 s.status || '',
-                s.publishDate || '',
-                s.effectDate || '',
-                '"' + (s.category || '') + '"',
+                s.issueDate || '',
+                s.implementDate || '',
+                '"' + (Array.isArray(s.category) ? s.category.join(' / ') : (s.category || '')) + '"',
                 s.localFile ? '有' : '无'
             ].join(',');
         });
@@ -2466,7 +2717,7 @@
             var sc = s.status === '现行' ? '#16a34a' : s.status === '废止' ? '#dc2626' : '#d97706';
             return '<tr style="border-bottom:1px solid #f1f5f9">' +
                 '<td style="padding:7px 10px;font-family:monospace;font-size:12px;color:#2563eb">' + (s.code||'') + '</td>' +
-                '<td style="padding:7px 10px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (s.name||'').replace(/"/g,'&quot;') + '">' + (s.name||'') + '</td>' +
+                '<td style="padding:7px 10px;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (s.title||'').replace(/"/g,'&quot;') + '">' + (s.title||'') + '</td>' +
                 '<td style="padding:7px 10px;text-align:center;font-size:12px">' + (s.type||'') + '</td>' +
                 '<td style="padding:7px 10px;text-align:center;font-size:12px;color:' + sc + ';font-weight:600">' + (s.status||'') + '</td>' +
                 pdfCell + '</tr>';

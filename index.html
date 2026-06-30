@@ -1001,6 +1001,29 @@ function applyDBUpdate(data){
   renderHotCards();
   // 若当前是热门视图，不触发 applyAll（避免切换到 all 视图）
   if(activeView !== 'hot') applyAll();
+
+  // ── 深链接支持：URL 带 ?id=xxx 时，数据加载完成后自动定位并打开该标准详情 ──
+  // 用于：① 静态详情页 /s/{id}.html 里的"查看完整详情/在线查询"按钮跳转回主站
+  //      ② sitemap.xml 中收录的深链接，用户从搜索引擎结果点入时能直达目标标准
+  if (!window._deepLinkHandled) {
+    window._deepLinkHandled = true;
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var targetId = params.get('id');
+      var legacyCode = params.get('code'); // 兼容旧版 sitemap 里可能已被搜索引擎收录的 ?code= 链接
+      var target = null;
+      if (targetId) {
+        target = DB.find(function(s){ return s.id === targetId; });
+      } else if (legacyCode) {
+        target = DB.find(function(s){ return s.code === legacyCode; });
+      }
+      if (target) {
+        // 更新页面 title，方便用户分享/收藏时显示具体标准名（爬虫不执行JS，此处仅为用户体验优化）
+        document.title = target.code + ' ' + target.title + ' - 体育建设标准查询平台';
+        openModal(target.id);
+      }
+    } catch(e) {}
+  }
 }
 
 function loadData(){
