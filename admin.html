@@ -1617,7 +1617,7 @@
     // 阈值设为 2MB，base64膨胀后约2.67MB，仍在安全区间内
     var SMALL_FILE_LIMIT = 2 * 1024 * 1024; // 2MB
     var CHUNK_SIZE_BYTES = 800 * 1024;       // 每块800KB binary（base64后≈1.07MB，安全区间内）
-    var PDF_MAX_SIZE_MB  = 20;
+    var PDF_MAX_SIZE_MB  = 25;
 
     async function safeReadJson(resp) {
         var text = await resp.text();
