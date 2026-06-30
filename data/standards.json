@@ -1,6 +1,6 @@
 {
-  "version": "2026.06.29",
-  "updated": "2026-06-29",
+  "version": "2026.06.30",
+  "updated": "2026-06-30",
   "total": 1291,
   "standards": [
     {
@@ -125,7 +125,7 @@
       "replaces": null,
       "replacedBy": null,
       "summary": "本标准适用于新建、改建、扩建的体育场馆的智慧化水平评价。",
-      "localFile": "",
+      "localFile": "downloads/TYT21022024.pdf",
       "_origIndex": 6,
       "isHot": false
     },
@@ -146,8 +146,9 @@
       "replaces": null,
       "replacedBy": null,
       "summary": "本标准适用于体育场馆智慧化工程的新建、改建、扩建的信息系统配置。",
-      "localFile": "",
-      "_origIndex": 7
+      "localFile": "downloads/TYT21012024.pdf",
+      "_origIndex": 7,
+      "isHot": false
     },
     {
       "id": "DB37T29042019",
