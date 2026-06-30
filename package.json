@@ -1,0 +1,9 @@
+{
+  "name": "sports-standards1",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "体育建设标准查询平台",
+  "dependencies": {
+    "@edgeone/pages-blob": "latest"
+  }
+}

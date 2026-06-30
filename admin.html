@@ -1611,120 +1611,135 @@
         bar.textContent = msg;
     }
 
-    // ── PDF 实际上传到 GitHub downloads/ ──
-    // ⚠️ 不再用 Contents API 的单次 PUT（GitHub 官方文档：该接口仅适合 1MB 以内的文件，
-    //    超过后大概率失败或被中间层拒绝，base64 膨胀后请求体更大）。
-    //    改用 Git Data API（blob → tree → commit → 更新分支引用），单文件最高可达 100MB，
-    //    与 EdgeOne Pages 项目本身 25MB/文件 的限制更匹配。
-    var PDF_MAX_SIZE_MB = 20;  // 留出余量，低于 EdgeOne Pages 的 25MB/文件硬限制
+    // ── PDF 上传到 GitHub ──
+    // 小文件 (≤2MB)：直接走 github-proxy → Git Data API（轻量，单次请求）
+    // 大文件 (>2MB)：分块上传到 Blob 暂存，再由 Cloud Function 统一推送 GitHub
+    // 阈值设为 2MB，base64膨胀后约2.67MB，仍在安全区间内
+    var SMALL_FILE_LIMIT = 2 * 1024 * 1024; // 2MB
+    var CHUNK_SIZE_BYTES = 800 * 1024;       // 每块800KB binary（base64后≈1.07MB，安全区间内）
+    var PDF_MAX_SIZE_MB  = 20;
 
     async function safeReadJson(resp) {
-        // 有些网关/边缘函数对超大请求返回的是纯文本错误页（非JSON），
-        // 直接 resp.json() 会抛 "Unexpected token" 把真正的错误信息吞掉。
-        // 这里统一先读文本，能解析就解析，不能解析就把原文露出来，方便定位问题。
         var text = await resp.text();
-        try { return { ok: true, data: JSON.parse(text) }; }
-        catch (e) { return { ok: false, raw: text }; }
+        try { return { ok: resp.ok, data: JSON.parse(text) }; }
+        catch(e) { return { ok: false, data: null, raw: text.slice(0, 200) }; }
     }
 
     async function uploadPdfToGithub(stdId, file) {
-        // ① 提前做大小校验，避免无谓地等待网络往返才报错
         var sizeMB = file.size / 1024 / 1024;
         if (sizeMB > PDF_MAX_SIZE_MB) {
             throw new Error(
-                '文件大小 ' + sizeMB.toFixed(1) + 'MB，超过 ' + PDF_MAX_SIZE_MB + 'MB 限制。' +
-                '请先用 PDF 压缩工具（如 Adobe Acrobat「压缩PDF」、小工具网站，或 Mac 预览的"导出→减小文件大小"）' +
-                '把文件压小后再上传，扫描件通常能压缩到原大小的 1/5～1/10。'
+                '文件大小 ' + sizeMB.toFixed(1) + 'MB，超过 ' + PDF_MAX_SIZE_MB + 'MB 上限。' +
+                '请先压缩PDF（扫描件可缩小至1/5~1/10），再重新选择上传。'
             );
         }
 
-        var base64 = await new Promise(function(resolve, reject) {
+        // ① 读取文件为 base64
+        var fullBase64 = await new Promise(function(resolve, reject) {
             var reader = new FileReader();
             reader.onload = function(e) { resolve(e.target.result.split(',')[1]); };
             reader.onerror = function() { reject(new Error('文件读取失败')); };
             reader.readAsDataURL(file);
         });
 
-        var filePath = 'downloads/' + stdId + '.pdf';
-        var branch = 'main';
+        if (file.size <= SMALL_FILE_LIMIT) {
+            // ════════════════════════════════
+            //  小文件：走 github-proxy 单次上传
+            // ════════════════════════════════
+            var branch = 'main';
+            var repoR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME)));
+            if (repoR.ok && repoR.data.default_branch) branch = repoR.data.default_branch;
 
-        // ② 获取默认分支真实名称（部分仓库用 master）
-        var repoInfoResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME));
-        var repoInfoR = await safeReadJson(repoInfoResp);
-        if (repoInfoR.ok && repoInfoR.data.default_branch) branch = repoInfoR.data.default_branch;
+            var blobResp = await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/blobs'),
+                { method:'POST', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ content: fullBase64, encoding: 'base64' }) }
+            );
+            var blobR = await safeReadJson(blobResp);
+            if (!blobR.ok || !blobR.data?.sha) throw new Error(blobR.ok ? (blobR.data?.message||'创建blob失败') : '服务器返回非预期内容：'+blobR.raw);
+            var blobSha = blobR.data.sha;
 
-        // ③ 创建 blob（这一步携带 base64 内容，但走 Git Data API，支持远大于 1MB 的文件）
-        var blobResp = await fetch(
-            proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/blobs'),
-            {
+            var refR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch)));
+            if (!refR.ok) throw new Error('获取分支引用失败');
+            var parentSha = refR.data.object.sha;
+
+            var parentCommitR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits/'+parentSha)));
+            if (!parentCommitR.ok) throw new Error('获取父提交失败');
+
+            var treeR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/trees'),
+                { method:'POST', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ base_tree: parentCommitR.data.tree.sha,
+                    tree:[{path:'downloads/'+stdId+'.pdf', mode:'100644', type:'blob', sha:blobSha}] }) }
+            ));
+            if (!treeR.ok) throw new Error('创建tree失败');
+
+            var newCommitR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits'),
+                { method:'POST', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ message:'📄 上传PDF: '+stdId+'.pdf', tree:treeR.data.sha, parents:[parentSha] }) }
+            ));
+            if (!newCommitR.ok) throw new Error('创建commit失败');
+
+            var updateR = await safeReadJson(await fetch(
+                proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch),
+                { method:'PATCH', headers:{'Content-Type':'application/json'},
+                  body: JSON.stringify({ sha: newCommitR.data.sha }) }
+            ));
+            if (!updateR.ok) throw new Error('更新分支指针失败');
+            return true;
+
+        } else {
+            // ════════════════════════════════════════
+            //  大文件：分块 → Cloud Function 拼装推送
+            // ════════════════════════════════════════
+            // 把 base64 字符串按 CHUNK_SIZE_BYTES 对应的 base64 长度切块
+            // base64 膨胀率 ≈ 4/3，所以 base64 块长度 = CHUNK_SIZE_BYTES * 4/3
+            var chunkBase64Len = Math.ceil(CHUNK_SIZE_BYTES * 4 / 3);
+            var chunks = [];
+            for (var i = 0; i < fullBase64.length; i += chunkBase64Len) {
+                chunks.push(fullBase64.slice(i, i + chunkBase64Len));
+            }
+            var totalChunks = chunks.length;
+
+            // 生成本次上传的唯一 ID（防止多个并发上传互相干扰）
+            var uploadId = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+            setPdfStatus('uploading', '⏳ 正在分块上传 (0/' + totalChunks + ')…');
+
+            // 逐块上传
+            for (var ci = 0; ci < totalChunks; ci++) {
+                var chunkResp = await fetch('/api/pdf-upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'chunk',
+                        uploadId: uploadId,
+                        chunkIndex: ci,
+                        totalChunks: totalChunks,
+                        data: chunks[ci]
+                    })
+                });
+                var chunkR = await safeReadJson(chunkResp);
+                if (!chunkR.ok || !chunkR.data?.ok) {
+                    throw new Error('第 '+(ci+1)+'/'+totalChunks+' 块上传失败：' + (chunkR.data?.error || chunkR.raw || '未知错误'));
+                }
+                setPdfStatus('uploading', '⏳ 分块上传中 ('+(ci+1)+'/'+totalChunks+')…');
+            }
+
+            // 触发拼装与 GitHub 推送
+            setPdfStatus('uploading', '⏳ 所有分块上传完成，正在合并并推送至 GitHub…');
+            var finalResp = await fetch('/api/pdf-upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: base64, encoding: 'base64' })
+                body: JSON.stringify({ action:'finalize', uploadId:uploadId, totalChunks:totalChunks, stdId:stdId })
+            });
+            var finalR = await safeReadJson(finalResp);
+            if (!finalR.ok || !finalR.data?.ok) {
+                throw new Error('GitHub 推送失败：' + (finalR.data?.error || finalR.raw || '未知错误'));
             }
-        );
-        var blobR = await safeReadJson(blobResp);
-        if (!blobResp.ok || !blobR.ok) {
-            throw new Error(blobR.ok ? (blobR.data.message || '创建文件 blob 失败') : ('服务器返回了非预期内容：' + blobR.raw.slice(0, 120)));
+            return true;
         }
-        var blobSha = blobR.data.sha;
-
-        // ④ 取当前分支最新 commit → 取其 tree
-        var refResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/refs/heads/' + branch));
-        var refR = await safeReadJson(refResp);
-        if (!refResp.ok || !refR.ok) throw new Error('获取分支引用失败：' + (refR.ok ? refR.data.message : refR.raw.slice(0,120)));
-        var parentCommitSha = refR.data.object.sha;
-
-        var commitResp = await fetch(proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/commits/' + parentCommitSha));
-        var commitR = await safeReadJson(commitResp);
-        if (!commitResp.ok || !commitR.ok) throw new Error('获取父提交失败：' + (commitR.ok ? commitR.data.message : commitR.raw.slice(0,120)));
-        var baseTreeSha = commitR.data.tree.sha;
-
-        // ⑤ 基于原 tree 创建新 tree，只新增/替换这一个文件路径
-        var treeResp = await fetch(
-            proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/trees'),
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    base_tree: baseTreeSha,
-                    tree: [{ path: filePath, mode: '100644', type: 'blob', sha: blobSha }]
-                })
-            }
-        );
-        var treeR = await safeReadJson(treeResp);
-        if (!treeResp.ok || !treeR.ok) throw new Error('创建文件树失败：' + (treeR.ok ? treeR.data.message : treeR.raw.slice(0,120)));
-        var newTreeSha = treeR.data.sha;
-
-        // ⑥ 创建新 commit
-        var newCommitResp = await fetch(
-            proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/commits'),
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: '📄 上传PDF: ' + stdId + '.pdf',
-                    tree: newTreeSha,
-                    parents: [parentCommitSha]
-                })
-            }
-        );
-        var newCommitR = await safeReadJson(newCommitResp);
-        if (!newCommitResp.ok || !newCommitR.ok) throw new Error('创建提交失败：' + (newCommitR.ok ? newCommitR.data.message : newCommitR.raw.slice(0,120)));
-        var newCommitSha = newCommitR.data.sha;
-
-        // ⑦ 把分支指针移动到新 commit（相当于完成一次 push）
-        var updateRefResp = await fetch(
-            proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/git/refs/heads/' + branch),
-            {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sha: newCommitSha })
-            }
-        );
-        var updateRefR = await safeReadJson(updateRefResp);
-        if (!updateRefResp.ok || !updateRefR.ok) throw new Error('更新分支指针失败：' + (updateRefR.ok ? updateRefR.data.message : updateRefR.raw.slice(0,120)));
-
-        return true; // 上传成功
     }
 
     // ── 删除标准 ──
