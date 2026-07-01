@@ -708,6 +708,12 @@
           <button class="dl-btn" id="mDownload">⬇️ 下载 PDF</button>
         </div>
         <p class="dl-note">预览和下载需完成人机验证 · 若 PDF 尚未收录请稍后再试</p>
+        <p style="text-align:center;margin:6px 0 0;font-size:12px;color:#94a3b8">
+          <a id="mDetailLink" href="#" target="_blank"
+             style="color:#2563eb;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+            🔗 查看此标准的独立详情页（可收藏/分享）
+          </a>
+        </p>
       </div>
     </div>
   </div>
@@ -1379,6 +1385,10 @@ function _doOpenModal(id){
 
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow='hidden';
+
+  // ── 独立详情页链接（静态页，可收藏/分享/被搜索引擎收录）──
+  var detailLink = document.getElementById('mDetailLink');
+  if (detailLink) detailLink.href = '/s/' + encodeURIComponent(s.id) + '.html';
 }
 
 // ── 在线预览弹窗：稳定 iframe，不销毁重建，彻底消除闪烁 ──

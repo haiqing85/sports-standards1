@@ -1201,6 +1201,7 @@
                 + '</div>'
                 + '<div class="std-item-btns">'
                 + '<button class="btn" style="padding:6px 12px;font-size:12px;background:' + (s.isHot ? '#fef2f2;color:#dc2626;border:1px solid #fecaca' : '#f8fafc;color:#94a3b8;border:1px solid #e2e8f0') + '" onclick="toggleHot('+idx+')" title="' + (s.isHot ? '点击取消热门' : '点击设为热门') + '">' + (s.isHot ? '🔥 已设热门' : '🔥 设为热门') + '</button>'
+                + '<a class="btn" href="https://www.sportstd.cn/s/' + encodeURIComponent(s.id) + '.html" target="_blank" style="padding:6px 12px;font-size:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;text-decoration:none" title="预览该标准的静态详情页（搜索引擎收录的独立页面）">🔗 详情页</a>'
                 + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
                 + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
                 + '</div></div>';
@@ -2358,9 +2359,10 @@
         var st  = document.getElementById('triggerGenStatus');
         btn.disabled = true;
         btn.textContent = '⏳ 触发中…';
+        st.textContent = '';
+        st.style.color = '';
         barStart();
         try {
-            // 通过 github-proxy 代理调用 GitHub Actions workflow_dispatch API
             var resp = await fetch(
                 proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/actions/workflows/generate-pages.yml/dispatches'),
                 {
@@ -2369,29 +2371,34 @@
                     body: JSON.stringify({ ref: 'main' })
                 }
             );
-            barDone();
+            // ⚠️ workflow_dispatch 成功时 GitHub 返回 204 No Content（无响应体），
+            //    不能调 resp.json() 或 safeReadJson()，否则会抛异常导致 finally 前代码被打断。
             if (resp.status === 204) {
                 st.innerHTML = '✅ <strong>触发成功！</strong>GitHub Actions 已启动，约 10-30 秒后自动完成所有静态页面、sitemap.xml、robots.txt 的生成与提交。<br>'
-                    + '<span style="color:#64748b;font-size:12px">可点击右侧"查看最近运行状态"确认进度，或去 '
-                    + '<a href="https://github.com/' + REPO_OWNER + '/' + REPO_NAME + '/actions" target="_blank" style="color:#2563eb">GitHub Actions 页面</a> 查看详情。</span>';
+                    + '<span style="color:#64748b;font-size:12px">下方会在 5 秒后自动刷新运行状态，或点击"🔄 查看最近运行状态"手动查询。</span>';
                 st.style.color = '#16a34a';
-                // 5秒后自动查一次状态
                 setTimeout(checkWorkflowStatus, 5000);
+            } else if (resp.status === 404) {
+                st.innerHTML = '⚠️ 未找到 workflow 文件，请确认 <code>.github/workflows/generate-pages.yml</code> 已提交到仓库。';
+                st.style.color = '#d97706';
             } else if (resp.status === 422) {
-                st.innerHTML = '⚠️ 触发失败：<code>.github/workflows/generate-pages.yml</code> 文件尚未提交到仓库，请先按部署文档完成该文件的提交。';
+                st.innerHTML = '⚠️ 触发失败（422）：workflow 文件存在但分支 main 不正确，或文件格式有误。';
                 st.style.color = '#d97706';
             } else {
-                var r = await safeReadJson(resp);
-                st.textContent = '❌ 触发失败（HTTP ' + resp.status + '）：' + (r.data?.message || r.raw || '未知错误');
+                var errText = '';
+                try { var errR = await safeReadJson(resp); errText = errR.data?.message || errR.raw || ''; } catch(_) {}
+                st.textContent = '❌ 触发失败（HTTP ' + resp.status + '）' + (errText ? '：' + errText : '');
                 st.style.color = '#dc2626';
             }
         } catch(e) {
-            barDone();
             st.textContent = '❌ 网络请求失败：' + e.message;
             st.style.color = '#dc2626';
+        } finally {
+            // ✅ finally 保证无论成功/失败/异常，按钮一定会被恢复
+            barDone();
+            btn.disabled = false;
+            btn.textContent = '⚡ 立即触发生成（GitHub Actions）';
         }
-        btn.disabled = false;
-        btn.textContent = '⚡ 立即触发生成（GitHub Actions）';
     }
 
     async function checkWorkflowStatus() {
