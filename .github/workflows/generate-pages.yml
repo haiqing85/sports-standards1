@@ -1,0 +1,49 @@
+name: 生成静态详情页与Sitemap
+
+# 触发条件：
+#   ① push: 当 data/standards.json 发生变化时自动触发（无论是后台推送还是CNB爬虫同步）
+#   ② workflow_dispatch: 支持手动触发，也供 admin.html 后台按钮通过 API 远程触发
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/standards.json'
+  workflow_dispatch: {}
+
+# 防止同一时间有多个生成任务并发执行导致提交冲突
+concurrency:
+  group: generate-static-pages
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 配置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 生成静态详情页 + sitemap.xml + robots.txt
+        run: node scripts/generate-static-pages.js
+
+      - name: 提交并推送变更（若有改动）
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add s/ sitemap.xml robots.txt
+          if git diff --staged --quiet; then
+            echo "📭 没有需要提交的变更（静态页内容与上次一致）"
+          else
+            git commit -m "🤖 自动生成静态详情页与sitemap [skip ci]"
+            git push
+            echo "✅ 已提交并推送变更"
+          fi
