@@ -7,8 +7,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'data/standards.json'
-  workflow_dispatch: {}
+      - 'data/standards.json'   # 自动触发：后台推送数据时
+      - 'data/.trigger'         # 手动触发：后台点"立即触发生成"按钮时
+  workflow_dispatch: {}         # 保留：有 workflow 权限的 token 也可用
 
 # 防止同一时间有多个生成任务并发执行导致提交冲突
 concurrency:
