@@ -2354,6 +2354,10 @@
     //  generateStaticPages()，不再在浏览器里跑繁重逻辑，
     //  改为调 GitHub API 触发 workflow，由 CI 服务器处理。
     // ══════════════════════════════════════════════════
+    // ── 手动触发静态页生成 ──
+    // 不使用 workflow_dispatch API（需要 token 额外有 workflow 权限），
+    // 改为向仓库写入 data/.trigger 文件触发 push 事件。
+    // 只需 repo 权限即可，和正常推送数据完全一样的机制，100% 可靠。
     async function triggerPageGeneration() {
         var btn = document.getElementById('triggerGenBtn');
         var st  = document.getElementById('triggerGenStatus');
@@ -2363,38 +2367,49 @@
         st.style.color = '';
         barStart();
         try {
+            var triggerPath = 'data/.trigger';
+            // 1. 先查是否已有此文件（需要 sha 才能覆盖写入）
+            var existSha = '';
+            try {
+                var chk = await safeReadJson(await fetch(
+                    proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + triggerPath)
+                ));
+                if (chk.ok && chk.data?.sha) existSha = chk.data.sha;
+            } catch(_) {}
+
+            // 2. 写入当前时间戳（内容本身无意义，变化即可触发 push 事件）
+            var content = btoa(new Date().toISOString());
+            var body = {
+                message: '⚡ 手动触发静态页生成 ' + new Date().toISOString().slice(0, 19).replace('T', ' '),
+                content: content
+            };
+            if (existSha) body.sha = existSha;
+
             var resp = await fetch(
-                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/actions/workflows/generate-pages.yml/dispatches'),
-                {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ref: 'main' })
-                }
+                proxyUrl('/repos/' + REPO_OWNER + '/' + REPO_NAME + '/contents/' + triggerPath),
+                { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
             );
-            // ⚠️ workflow_dispatch 成功时 GitHub 返回 204 No Content（无响应体），
-            //    不能调 resp.json() 或 safeReadJson()，否则会抛异常导致 finally 前代码被打断。
-            if (resp.status === 204) {
-                st.innerHTML = '✅ <strong>触发成功！</strong>GitHub Actions 已启动，约 10-30 秒后自动完成所有静态页面、sitemap.xml、robots.txt 的生成与提交。<br>'
-                    + '<span style="color:#64748b;font-size:12px">下方会在 5 秒后自动刷新运行状态，或点击"🔄 查看最近运行状态"手动查询。</span>';
+            var r = await safeReadJson(resp);
+
+            if (resp.ok) {
+                st.innerHTML = '✅ <strong>触发成功！</strong>GitHub Actions 已收到推送事件，约 15-30 秒后完成静态页、sitemap.xml、robots.txt 的生成与提交。<br>'
+                    + '<span style="color:#64748b;font-size:12px">可点"🔄 查看最近运行状态"确认进度。</span>';
                 st.style.color = '#16a34a';
-                setTimeout(checkWorkflowStatus, 5000);
-            } else if (resp.status === 404) {
-                st.innerHTML = '⚠️ 未找到 workflow 文件，请确认 <code>.github/workflows/generate-pages.yml</code> 已提交到仓库。';
-                st.style.color = '#d97706';
-            } else if (resp.status === 422) {
-                st.innerHTML = '⚠️ 触发失败（422）：workflow 文件存在但分支 main 不正确，或文件格式有误。';
-                st.style.color = '#d97706';
+                // 8秒后自动查一次状态
+                setTimeout(checkWorkflowStatus, 8000);
             } else {
-                var errText = '';
-                try { var errR = await safeReadJson(resp); errText = errR.data?.message || errR.raw || ''; } catch(_) {}
-                st.textContent = '❌ 触发失败（HTTP ' + resp.status + '）' + (errText ? '：' + errText : '');
+                var errMsg = r.data?.message || r.raw || '未知错误';
+                if (resp.status === 401 || resp.status === 403) {
+                    st.innerHTML = '❌ 认证失败（HTTP ' + resp.status + '）：GitHub Token 无效或已过期，请到 EdgeOne 环境变量中更新 GITHUB_TOKEN。';
+                } else {
+                    st.textContent = '❌ 触发失败（HTTP ' + resp.status + '）：' + errMsg;
+                }
                 st.style.color = '#dc2626';
             }
         } catch(e) {
             st.textContent = '❌ 网络请求失败：' + e.message;
             st.style.color = '#dc2626';
         } finally {
-            // ✅ finally 保证无论成功/失败/异常，按钮一定会被恢复
             barDone();
             btn.disabled = false;
             btn.textContent = '⚡ 立即触发生成（GitHub Actions）';
