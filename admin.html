@@ -1001,6 +1001,12 @@
         return PROXY_BASE + '?url=' + encodeURIComponent(GITHUB_API + path);
     }
 
+    // ── 安全兜底：顶部进度条功能在此版本中未启用，但代码里仍有历史调用点。
+    //    定义为空函数，防止任何遗留调用（如 barStart/barDone 未定义）
+    //    在 try/finally 中抛出 ReferenceError，导致按钮卡死在"处理中"状态。
+    function barStart() {}
+    function barDone() {}
+
     var DB = { standards: [] };
     var fileSha = '';
     var editIndex = -1;
