@@ -984,6 +984,7 @@ function expandQuery(q) {
 //  主逻辑
 // ═══════════════════════════════════════════════════════════
 var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='', activeProvince='', activeStatus='';
+var currentDataVersion = ''; // 记录当前已渲染数据的版本号，避免轮询时误判"有变化"导致不必要的重渲染
 
 // ── 数据缓存 key（localStorage，首次访问后立即显示缓存，同时后台拉最新）──
 var DATA_CACHE_KEY = 'stdDataCache';
@@ -998,6 +999,8 @@ function buildFuse(list){
 
 function applyDBUpdate(data){
   DB = data.standards || [];
+  currentDataVersion = data.version || '';
+  // footerVer 元素当前 HTML 中未启用页脚版本号展示，此处仅做防御性兼容（若未来加回该元素仍可正常工作）
   var footerVerEl = document.getElementById('footerVer');
   if (footerVerEl) {
     footerVerEl.textContent = data.version || '—';
@@ -1055,10 +1058,8 @@ function loadData(){
       try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(data)); } catch(_){}
       // 版本或数量有变化才重渲，避免闪烁
       var newVer = data.version || '';
-      var footerVerEl2 = document.getElementById('footerVer');
-      var curVer = footerVerEl2 ? footerVerEl2.textContent : '';
       var newLen = (data.standards||[]).length;
-      if(newLen !== DB.length || newVer !== curVer){
+      if(newLen !== DB.length || newVer !== currentDataVersion){
         applyDBUpdate(data);
       }
     })
@@ -1131,9 +1132,7 @@ setInterval(function(){
       if (!data) return;
       var newLen = (data.standards||[]).length;
       var newVer = data.version || '';
-      var footerVerEl2 = document.getElementById('footerVer');
-      var curVer = footerVerEl2 ? footerVerEl2.textContent : '';
-      if(newLen !== DB.length || newVer !== curVer){
+      if(newLen !== DB.length || newVer !== currentDataVersion){
         try{ localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(data)); }catch(_){}
         applyDBUpdate(data);
       }
@@ -1651,10 +1650,8 @@ window.addEventListener('load', function(){
         if(!data || !data.standards) return;
         var newLen = data.standards.length;
         var newVer = data.version || '';
-        var footerVerEl2 = document.getElementById('footerVer');
-        var curVer = footerVerEl2 ? footerVerEl2.textContent : '';
         // 只有数据有变化才更新，完全无闪烁
-        if(newLen !== DB.length || newVer !== curVer){
+        if(newLen !== DB.length || newVer !== currentDataVersion){
           try{ localStorage.setItem(DATA_CACHE_KEY, JSON.stringify(data)); }catch(_){}
           applyDBUpdate(data);
         }

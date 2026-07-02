@@ -502,34 +502,60 @@
 
       <!-- ─── SEO 统计分析 ─── -->
       <div class="ad-section">
-        <div class="ad-section-title">📊 SEO 统计分析</div>
+        <div class="ad-section-title">🔎 搜索引擎站长验证</div>
 
-        <!-- GA4 -->
-        <div class="ad-card" id="adcard-ga4">
-          <div class="ad-card-head" onclick="toggleAdCard('ga4')">
-            <span class="ad-card-num" style="background:#fce7f3;color:#9d174d">G4</span>
-            <div class="ad-card-info"><div class="ad-card-name">Google Analytics 4 (GA4)</div><div class="ad-card-desc">全局标签 gtag.js，注入到 &lt;head&gt;</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-ga4" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+        <!-- Google Search Console -->
+        <div class="ad-card" id="adcard-gsc">
+          <div class="ad-card-head" onclick="toggleAdCard('gsc')">
+            <span class="ad-card-num" style="background:#e0f2fe;color:#0369a1">G</span>
+            <div class="ad-card-info"><div class="ad-card-name">Google Search Console 验证</div><div class="ad-card-desc">HTML 标记验证码，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-gsc" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div class="ad-code-label">GA4 代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-ga4" placeholder="<!-- Google tag (gtag.js) -->&#10;<script async src=&quot;https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX&quot;></script>&#10;<script>&#10;  window.dataLayer=window.dataLayer||[];&#10;  function gtag(){dataLayer.push(arguments);}&#10;  gtag('js',new Date());&#10;  gtag('config','G-XXXXXXXXXX');&#10;</script>"></textarea>
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-gsc" style="min-height:60px" placeholder='<meta name="google-site-verification" content="你的验证码" />'></textarea>
+            <div style="font-size:12px;color:#94a3b8;margin-top:6px">在 Google Search Console 添加资源 → 选"HTML 标记"验证方式 → 复制完整 &lt;meta&gt; 标签粘贴到此处</div>
           </div>
         </div>
 
-        <!-- 百度统计 -->
-        <div class="ad-card" id="adcard-baidu-stat">
-          <div class="ad-card-head" onclick="toggleAdCard('baidu-stat')">
+        <!-- 百度站长平台验证 -->
+        <div class="ad-card" id="adcard-baidu-verify">
+          <div class="ad-card-head" onclick="toggleAdCard('baidu-verify')">
             <span class="ad-card-num" style="background:#fef3c7;color:#92400e">百</span>
-            <div class="ad-card-info"><div class="ad-card-name">百度统计</div><div class="ad-card-desc">hm.js 统计代码，注入到 &lt;head&gt;</div></div>
-            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-stat" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <div class="ad-card-info"><div class="ad-card-name">百度站长平台验证</div><div class="ad-card-desc">HTML 标签验证码，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-baidu-verify" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
             <span class="ad-card-arrow">▼</span>
           </div>
           <div class="ad-card-body">
-            <div class="ad-code-label">百度统计代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
-            <textarea class="ad-textarea" id="code-baidu-stat" placeholder="<script>&#10;var _hmt=_hmt||[];&#10;(function(){&#10;  var hm=document.createElement('script');&#10;  hm.src='https://hm.baidu.com/hm.js?XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';&#10;  var s=document.getElementsByTagName('script')[0];&#10;  s.parentNode.insertBefore(hm,s);&#10;})();&#10;</script>"></textarea>
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-baidu-verify" style="min-height:60px" placeholder='<meta name="baidu-site-verification" content="你的验证码" />'></textarea>
+            <div style="font-size:12px;color:#94a3b8;margin-top:6px">在百度搜索资源平台「用户中心-站点管理」添加网站 → 选"HTML标签验证" → 复制完整 &lt;meta&gt; 标签粘贴到此处</div>
           </div>
+        </div>
+
+        <!-- Bing Webmaster Tools 验证 -->
+        <div class="ad-card" id="adcard-bing">
+          <div class="ad-card-head" onclick="toggleAdCard('bing')">
+            <span class="ad-card-num" style="background:#dbeafe;color:#1e40af">B</span>
+            <div class="ad-card-info"><div class="ad-card-name">Bing 站长工具验证</div><div class="ad-card-desc">HTML 标记验证码，注入到 &lt;head&gt;</div></div>
+            <div class="ad-toggle-wrap"><span class="ad-toggle-label">启用</span><label class="toggle-sw"><input type="checkbox" id="en-bing" onchange="updateAdDash()"><span class="toggle-track"></span></label></div>
+            <span class="ad-card-arrow">▼</span>
+          </div>
+          <div class="ad-card-body">
+            <div class="ad-code-label">验证代码 <span class="ad-pos-tag">注入：&lt;head&gt;</span></div>
+            <textarea class="ad-textarea" id="code-bing" style="min-height:60px" placeholder='<meta name="msvalidate.01" content="你的验证码" />'></textarea>
+            <div style="font-size:12px;color:#94a3b8;margin-top:6px">在 Bing Webmaster Tools 添加站点 → 选"HTML Meta Tag"验证方式 → 复制完整 &lt;meta&gt; 标签粘贴到此处</div>
+          </div>
+        </div>
+
+        <div class="ad-section-title">📊 SEO 统计分析</div>
+
+        <!-- GA4 / 百度统计：已从可配置项移除 -->
+        <div style="padding:12px 14px;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:8px;font-size:12px;color:#94a3b8;line-height:1.8;margin-bottom:16px">
+          ℹ️ <strong>Google Analytics 4 与百度统计</strong>已直接硬编码在 <code style="background:#fff;padding:1px 4px;border-radius:3px">index.html</code> 的 &lt;head&gt; 中，始终生效，无需在此配置。<br>
+          （此前这里曾有对应的开关卡片，但与硬编码版本同时存在会有重复注入统计代码、导致访问量数据翻倍失真的风险，故已移除，避免误触启用。）<br>
+          如需更换统计账号 ID，请直接联系开发者修改 index.html 源码。
         </div>
 
         <!-- 自定义 Body 底部 -->
@@ -1475,6 +1501,26 @@
         if (!code) { alert('标准编号不能为空！'); return; }
         if (!id)   { alert('系统ID生成失败，请重新输入编号！'); return; }
 
+        // ⚠️ ID 唯一性校验：不同的标准编号经过符号清洗后可能生成相同的系统ID
+        //    （例如 "T/HSCA 001-2017" 与 "T/HSCA 001.—2017" 都会清洗成 THSCA0012017）。
+        //    若不校验，两条记录会共享同一个 /s/{id}.html 静态详情页，后保存的会
+        //    悄悄覆盖先保存的，导致其中一条标准的数据彻底从详情页/搜索结果中消失。
+        var conflictIndex = DB.standards.findIndex(function(s, i) {
+            return s.id === id && i !== index;
+        });
+        if (conflictIndex !== -1) {
+            var conflictStd = DB.standards[conflictIndex];
+            alert(
+                '⚠️ 系统ID冲突，无法保存！\n\n' +
+                '当前编号「' + code + '」清洗后生成的系统ID「' + id + '」，' +
+                '与已存在的另一条标准冲突：\n\n' +
+                '「' + conflictStd.code + '」' + (conflictStd.title || '') + '\n\n' +
+                '两条标准会共享同一个详情页地址，导致其中一条的信息丢失。\n' +
+                '请检查标准编号是否有重复，或手动修改编号中的符号使其生成不同的ID。'
+            );
+            return;
+        }
+
         // ⚠️ localFile 不再无条件写入！只在以下情况设置：
         //   ① 编辑现有标准且未选新PDF → 保留原有 localFile（不管真假，维持原状）
         //   ② 新建/编辑且选择了新PDF → 暂不设置，等 uploadPdfToGithub 真正上传成功后才写入
@@ -2190,7 +2236,10 @@
     var AD_SLOTS = [
         'adsense-script','banner-top','hero-above','hero-below',
         'content-top','content-bottom','footer-above','body-end','custom-body',
-        'ga4','baidu-stat','custom-head'
+        'gsc','baidu-verify','bing',
+        'custom-head'
+        // ⚠️ 'ga4'、'baidu-stat' 已移除：这两项统计代码已硬编码在 index.html <head> 中
+        // 始终生效，若在此重新启用会导致统计脚本被注入两次，造成访问量数据翻倍失真
     ];
 
     // ── 从表单收集配置对象 ──
