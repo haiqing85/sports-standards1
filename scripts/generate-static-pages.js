@@ -155,9 +155,18 @@ function main() {
   let ok = 0, fail = 0;
   for (const s of stds) {
     if (!s.id) { fail++; continue; }
+    // ⚠️ 防御性校验：id 正常应由 admin.html 自动生成（纯字母数字下划线），但此脚本
+    //    直接用 id 拼接文件路径写盘，若 standards.json 未来被其它工具或手工编辑，
+    //    混入 "../" 之类的字符可能导致写出到仓库预期目录之外。此处做白名单过滤兜底。
+    const safeId = String(s.id).replace(/[^a-zA-Z0-9_\-]/g, '');
+    if (!safeId || safeId !== s.id) {
+      console.error(`⚠️ 跳过不安全的 id: ${JSON.stringify(s.id)}（标准: ${s.code || '未知'}）`);
+      fail++;
+      continue;
+    }
     try {
       const html = buildStaticPageHtml(s);
-      fs.writeFileSync(path.join(PAGES_DIR, `${s.id}.html`), html, 'utf-8');
+      fs.writeFileSync(path.join(PAGES_DIR, `${safeId}.html`), html, 'utf-8');
       ok++;
     } catch (e) {
       console.error(`⚠️ 生成失败: ${s.code || s.id} — ${e.message}`);
