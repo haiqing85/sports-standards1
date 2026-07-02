@@ -27,7 +27,20 @@ export async function onRequest(context) {
     );
   }
 
-  const { username, password } = await request.json();
+  // ⚠️ 请求体解析必须做异常保护：空 body / 非 JSON 格式都会导致 request.json() 抛出
+  //    未捕获异常，EdgeOne 此时会返回非 JSON 的原始错误页，前端 resp.json() 解析时
+  //    会崩成 "Unexpected token" 报错（与 PDF 上传曾遇到的问题是同一类根因）。
+  let username, password;
+  try {
+    var body = await request.json();
+    username = body.username;
+    password = body.password;
+  } catch (e) {
+    return new Response(
+      JSON.stringify({ ok: false, error: '请求体格式错误，需为合法 JSON' }),
+      { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+    );
+  }
 
   if (username === 'admin' && password === adminPassword) {
     return new Response(
