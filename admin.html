@@ -1351,7 +1351,8 @@
             btn.style.background = '#fef3c7';
             btn.style.color = '#92400e';
             hint.innerHTML = '⚠️ 已解锁手动编辑。仅在两个官方编号不同但清洗后ID冲突时使用，' +
-                '请手动加后缀区分（如 THSCA0012017B），<strong>不要修改上方"标准编号"字段本身</strong>。';
+                '请手动加后缀区分（如 THSCA0012017B），<strong>不要修改上方"标准编号"字段本身</strong>。' +
+                '若该标准已有PDF，保存时会自动把PDF文件搬迁到新ID对应的路径，无需手动重传。';
             hint.style.color = '#d97706';
         }
     }
@@ -1511,6 +1512,7 @@
         document.getElementById('pdfFileInput').value = '';
         setPdfStatus('none', '📭 暂未选择文件');
         document.getElementById('f_id').dataset.index = '-1';
+        document.getElementById('f_id').dataset.originalId = ''; // 新建标准无原始ID
         resetIdLockState();
         document.getElementById('editModal').classList.add('open');
     }
@@ -1544,6 +1546,7 @@
             setPdfStatus('none', '📭 该标准暂无PDF，可上传文件');
         }
         document.getElementById('f_id').dataset.index = index;
+        document.getElementById('f_id').dataset.originalId = s.id || ''; // 用于保存时判断ID是否被手动改动
         resetIdLockState();
         document.getElementById('editModal').classList.add('open');
     }
@@ -1557,6 +1560,7 @@
         var index   = parseInt(document.getElementById('f_id').dataset.index);
         var code    = document.getElementById('f_code').value.trim();
         var id      = document.getElementById('f_id').value.trim();
+        var originalId = document.getElementById('f_id').dataset.originalId || ''; // 打开弹窗时的原始ID，用于检测手动改ID
         var typeVal = getFieldVal('f_type', 'f_type_custom');
         var mandVal = getFieldVal('f_mandatory', 'f_mandatory_custom');
         var catArr  = getCategoryVals();
@@ -1661,6 +1665,42 @@
             return; // 不执行下方立即关闭弹窗的逻辑
         }
 
+        // ── ID 被手动改动过，且该标准已有PDF、这次没有重新上传 → 自动把旧PDF搬到新路径 ──
+        // 场景：下载/预览按钮是按"当前ID"现场拼接路径的（downloads/{id}.pdf），
+        // 不是读 localFile 存的字符串。若ID变了但PDF文件名没跟着变，下载会直接404。
+        if (originalId && id !== originalId && existingLocalFile) {
+            var oldPdfPath = existingLocalFile;
+            var newPdfPath = 'downloads/' + id + '.pdf';
+            var targetIdx2 = index;
+            var savedCode2 = newStd.code;
+
+            var saveBtn2 = document.querySelector('#editModal button[onclick="saveData()"]');
+            if (saveBtn2) { saveBtn2.disabled = true; saveBtn2.textContent = '⏳ 正在搬迁PDF文件…'; }
+            setPdfStatus('uploading', '⏳ ID已变更，正在将PDF从 ' + oldPdfPath + ' 搬迁到 ' + newPdfPath + '…');
+            document.getElementById('statusText').textContent = '⏳ 标准信息已暂存，等待PDF文件搬迁完成…';
+
+            renamePdfOnGithub(oldPdfPath, newPdfPath).then(function() {
+                if (DB.standards[targetIdx2] && DB.standards[targetIdx2].id === id) {
+                    DB.standards[targetIdx2].localFile = newPdfPath;
+                }
+                renderList();
+                setPdfStatus('has', '✅ PDF已搬迁至：' + newPdfPath);
+                if (saveBtn2) { saveBtn2.disabled = false; saveBtn2.textContent = '💾 暂存修改'; }
+                closeModal();
+                document.getElementById('statusText').textContent =
+                    '✅ 标准信息已暂存，PDF文件已随新ID同步搬迁，共 ' + DB.standards.length + ' 条。点击"推送至 GitHub"保存到云端。';
+            }).catch(function(e) {
+                setPdfStatus('error', '❌ PDF搬迁失败：' + e.message);
+                if (saveBtn2) { saveBtn2.disabled = false; saveBtn2.textContent = '💾 暂存修改'; }
+                document.getElementById('statusText').textContent =
+                    '⚠️ 「' + savedCode2 + '」PDF搬迁失败，请重试或手动重新上传PDF。';
+                alert('⚠️ PDF文件搬迁失败：\n' + e.message +
+                    '\n\n标准「' + savedCode2 + '」的其它信息已暂存，但PDF文件未能跟着新ID搬迁，' +
+                    '此时下载/预览会404。\n请重试，或直接在此弹窗重新上传一份PDF覆盖。');
+            });
+            return;
+        }
+
         closeModal();
         document.getElementById('statusText').textContent =
             '✏️ 已暂存修改，共 ' + DB.standards.length + ' 条。点击"推送至 GitHub"保存到云端。';
@@ -1751,6 +1791,69 @@
         var text = await resp.text();
         try { return { ok: resp.ok, data: JSON.parse(text) }; }
         catch(e) { return { ok: false, data: null, raw: text.slice(0, 200) }; }
+    }
+
+    // ── 重命名 GitHub 上的PDF文件（手动改ID后，原PDF需跟着搬到新路径）──
+    // 原理：GitHub blob 是内容寻址的，"重命名"不需要重新上传整个文件内容——
+    // 只需在同一次 commit 里：① 删除旧路径的树节点 ② 新路径的树节点指向同一个 blob sha。
+    // 比重新读取/上传PDF二进制内容快得多，尤其对大文件更明显。
+    async function renamePdfOnGithub(oldPath, newPath) {
+        var branch = 'main';
+        var repoR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME)));
+        if (repoR.ok && repoR.data.default_branch) branch = repoR.data.default_branch;
+
+        // ① 拿旧文件的 blob sha（不下载内容，只要 sha 引用）
+        var oldFileR = await safeReadJson(await fetch(
+            proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/contents/'+oldPath)
+        ));
+        if (!oldFileR.ok || !oldFileR.data?.sha) {
+            throw new Error('原PDF文件不存在于仓库中（' + oldPath + '），可能已被移动或删除，请直接重新上传新PDF');
+        }
+        var blobSha = oldFileR.data.sha;
+
+        // ② 取分支当前 commit → tree
+        var refR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch)));
+        if (!refR.ok) throw new Error('获取分支引用失败');
+        var parentSha = refR.data.object.sha;
+
+        var parentCommitR = await safeReadJson(await fetch(proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits/'+parentSha)));
+        if (!parentCommitR.ok) throw new Error('获取父提交失败');
+        var baseTreeSha = parentCommitR.data.tree.sha;
+
+        // ③ 新建 tree：旧路径置 sha:null 表示删除，新路径指向同一个 blob sha
+        var treeR = await safeReadJson(await fetch(
+            proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/trees'),
+            { method:'POST', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({
+                  base_tree: baseTreeSha,
+                  tree: [
+                      { path: oldPath, mode: '100644', type: 'blob', sha: null },
+                      { path: newPath, mode: '100644', type: 'blob', sha: blobSha }
+                  ]
+              }) }
+        ));
+        if (!treeR.ok) throw new Error('创建tree失败：' + (treeR.data?.message || treeR.raw));
+
+        // ④ 新建 commit
+        var newCommitR = await safeReadJson(await fetch(
+            proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/commits'),
+            { method:'POST', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({
+                  message: '📦 重命名PDF: ' + oldPath + ' → ' + newPath,
+                  tree: treeR.data.sha, parents: [parentSha]
+              }) }
+        ));
+        if (!newCommitR.ok) throw new Error('创建commit失败：' + (newCommitR.data?.message || newCommitR.raw));
+
+        // ⑤ 更新分支指针
+        var updateR = await safeReadJson(await fetch(
+            proxyUrl('/repos/'+REPO_OWNER+'/'+REPO_NAME+'/git/refs/heads/'+branch),
+            { method:'PATCH', headers:{'Content-Type':'application/json'},
+              body: JSON.stringify({ sha: newCommitR.data.sha }) }
+        ));
+        if (!updateR.ok) throw new Error('更新分支指针失败：' + (updateR.data?.message || updateR.raw));
+
+        return true;
     }
 
     async function uploadPdfToGithub(stdId, file) {
