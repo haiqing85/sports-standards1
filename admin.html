@@ -329,8 +329,8 @@
         <div class="stat-card nopdf" onclick="filterByCard('__nopdf__')" title="点击查看缺少PDF的标准，逐条上传">
             <div class="s-num" id="st-nopdf">—</div><div class="s-lbl">⚠️ 缺PDF ↓点击补传</div>
         </div>
-        <div class="stat-card hot" onclick="filterByCard('__hot__')" title="点击查看已设为首页热门的标准">
-            <div class="s-num" id="st-hot">—</div><div class="s-lbl">🔥 首页热门 ↓点击查看</div>
+        <div class="stat-card hot" onclick="filterByCard('__hot__')" title="点击查看已设为首页热门的标准，可用▲▼调整首页展示顺序">
+            <div class="s-num" id="st-hot">—</div><div class="s-lbl">🔥 首页热门 ↓点击查看/排序</div>
         </div>
     </div>
 
@@ -1196,6 +1196,22 @@
             if (q && !((s.code+' '+s.title+' '+(s.summary||'')).toLowerCase().includes(q))) return false;
             return true;
         });
+
+        // 热门筛选视图：按手动排序字段 hotOrder 升序展示，方便调整首页展示顺序
+        if (hotMode) {
+            // 首次进入时，若有热门标准还没有 hotOrder（老数据/刚设为热门），
+            // 按当前的"实施/发布日期倒序"给它们一次性回填初始序号，形成一个稳定的起点
+            var needsBackfill = list.some(function(s){ return s.hotOrder == null; });
+            if (needsBackfill) {
+                list.slice().sort(function(a, b){
+                    return (b.implementDate||b.issueDate||'').localeCompare(a.implementDate||a.issueDate||'');
+                }).forEach(function(s, i){
+                    if (s.hotOrder == null) s.hotOrder = i + 1;
+                });
+            }
+            list.sort(function(a, b){ return (a.hotOrder||0) - (b.hotOrder||0); });
+        }
+
         _lastFilteredList = list;
 
         var listEl  = document.getElementById('list');
@@ -1235,6 +1251,12 @@
                 + (!s.localFile ? '<div class="upload-hint">⬆️ 点击编辑按钮为该标准上传PDF文件</div>' : '')
                 + '</div>'
                 + '<div class="std-item-btns">'
+                + (hotMode ? (
+                    '<span style="display:flex;flex-direction:column;gap:2px;margin-right:2px">'
+                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',-1)" title="上移">▲</button>'
+                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',1)" title="下移">▼</button>'
+                    + '</span>'
+                  ) : '')
                 + '<button class="btn" style="padding:6px 12px;font-size:12px;background:' + (s.isHot ? '#fef2f2;color:#dc2626;border:1px solid #fecaca' : '#f8fafc;color:#94a3b8;border:1px solid #e2e8f0') + '" onclick="toggleHot('+idx+')" title="' + (s.isHot ? '点击取消热门' : '点击设为热门') + '">' + (s.isHot ? '🔥 已设热门' : '🔥 设为热门') + '</button>'
                 + '<a class="btn" href="https://www.sportstd.cn/s/' + encodeURIComponent(s.id) + '.html" target="_blank" style="padding:6px 12px;font-size:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;text-decoration:none" title="预览该标准的静态详情页（搜索引擎收录的独立页面）">🔗 详情页</a>'
                 + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
@@ -1990,10 +2012,41 @@
         var s = DB.standards[index];
         if (!s) return;
         s.isHot = !s.isHot;
+        if (s.isHot) {
+            // 新设为热门：排到当前热门列表末尾（取现有最大 hotOrder + 1）
+            var maxOrder = DB.standards.reduce(function(max, item) {
+                return (item.isHot && item.hotOrder != null && item.hotOrder > max) ? item.hotOrder : max;
+            }, 0);
+            s.hotOrder = maxOrder + 1;
+        }
         renderList();
         document.getElementById('statusText').textContent = s.isHot
             ? '🔥 已将「' + s.code + '」设为首页热门标准，请点击"推送至 GitHub"保存。'
             : '已取消「' + s.code + '」的热门标记，请点击"推送至 GitHub"保存。';
+    }
+
+    // ── 调整热门标准在首页的展示顺序（仅"首页热门"筛选视图下可见）──
+    // dir: -1 上移，1 下移。在当前按 hotOrder 排序好的热门列表中，与相邻项交换 hotOrder 值。
+    function moveHotOrder(index, dir) {
+        var s = DB.standards[index];
+        if (!s || !s.isHot) return;
+
+        // 取出当前所有热门标准，按 hotOrder 排序，找到 s 的相邻项
+        var hotList = DB.standards
+            .filter(function(x){ return x.isHot; })
+            .sort(function(a, b){ return (a.hotOrder||0) - (b.hotOrder||0); });
+        var pos = hotList.indexOf(s);
+        var swapPos = pos + dir;
+        if (swapPos < 0 || swapPos >= hotList.length) return; // 已在最顶/最底，不动
+
+        var neighbor = hotList[swapPos];
+        var tmp = s.hotOrder;
+        s.hotOrder = neighbor.hotOrder;
+        neighbor.hotOrder = tmp;
+
+        renderList();
+        document.getElementById('statusText').textContent =
+            '↕️ 已调整「' + s.code + '」的首页展示顺序，请点击"推送至 GitHub"保存。';
     }
 
     // ── 同步至 GitHub ──

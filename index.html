@@ -1568,8 +1568,13 @@ function renderHotCards(){
     return;
   }
   var items = DB.filter(function(s){ return s.isHot; });
-  // 按实施/发布日期倒序，最新的热门标准排在最前面
+  // 优先按后台手动设置的展示顺序（hotOrder，数字越小越靠前）排列；
+  // 若两者都没设置过顺序（老数据），退而按实施/发布日期倒序，最新的排前面
   items.sort(function(a,b){
+    var ao = a.hotOrder, bo = b.hotOrder;
+    if (ao != null && bo != null) return ao - bo;
+    if (ao != null) return -1; // 有序号的排在没序号的前面
+    if (bo != null) return 1;
     return (b.implementDate||b.issueDate||'').localeCompare(a.implementDate||a.issueDate||'');
   });
   items = items.slice(0, HOT_CARDS_LIMIT);
