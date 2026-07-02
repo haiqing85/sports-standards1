@@ -874,9 +874,12 @@
                 <input type="text" id="f_code" placeholder="如：GB/T 14833-2011" oninput="autoGenId(this.value)">
             </div>
             <div class="input-group" style="grid-column:1/-1">
-                <label>系统内部 ID（自动生成，与 PDF 文件名绑定）</label>
-                <input type="text" id="f_id" readonly>
-                <span class="hint">由标准编号自动生成，对应 downloads/{ID}.pdf</span>
+                <label>系统内部 ID（自动生成，与 PDF 文件名绑定）
+                    <button type="button" onclick="toggleIdEdit()" id="idEditBtn"
+                        style="margin-left:8px;font-size:11px;padding:2px 8px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#64748b;cursor:pointer">🔓 手动调整</button>
+                </label>
+                <input type="text" id="f_id" readonly oninput="sanitizeManualId(this)">
+                <span class="hint" id="idHint">由标准编号自动生成，对应 downloads/{ID}.pdf</span>
             </div>
             <div class="input-group" style="grid-column:1/-1">
                 <label>标准名称 <span style="color:#dc2626">*</span></label>
@@ -1297,9 +1300,69 @@
     }
 
     // ── 自动生成 ID ──
+    // ── 每次打开弹窗（新增/编辑）时重置ID锁定状态，避免上一条记录的解锁状态串场 ──
+    function resetIdLockState() {
+        var idField = document.getElementById('f_id');
+        var btn = document.getElementById('idEditBtn');
+        var hint = document.getElementById('idHint');
+        idField.dataset.manualLock = '0';
+        idField.readOnly = true;
+        btn.textContent = '🔓 手动调整';
+        btn.style.background = '#fff';
+        btn.style.color = '#64748b';
+        hint.textContent = '由标准编号自动生成，对应 downloads/{ID}.pdf';
+        hint.style.color = '';
+    }
+
     function autoGenId(code) {
         if (!code) return;
+        var idField = document.getElementById('f_id');
+        // 若管理员已手动解锁并调整过ID，输入编号时不再自动覆盖，避免手动修改被静默冲掉
+        if (idField.dataset.manualLock === '1') return;
+        idField.value = code.replace(/[\s\/\.\-]/g,'').toUpperCase();
+    }
+
+    // ── 手动调整系统ID：用于解决"不同标准编号清洗后生成相同ID"的边界情况 ──
+    // 场景举例：官方发布的 "T/HSCA 001-2017" 与 "T/HSCA 001.—2017" 是两份
+    // 真实存在、内容不同的标准（发布日期、行业分类均不同），不应为了避免ID
+    // 冲突去篡改官方编号本身。此时可解锁ID字段，手动加后缀区分，如
+    // THSCA0012017 → THSCA0012017B，编号字段保持官方原文不变。
+    function toggleIdEdit() {
+        var idField = document.getElementById('f_id');
+        var btn = document.getElementById('idEditBtn');
+        var hint = document.getElementById('idHint');
+        var locked = idField.dataset.manualLock === '1';
+        if (locked) {
+            // 重新锁定：恢复自动生成模式
+            idField.dataset.manualLock = '0';
+            idField.readOnly = true;
+            btn.textContent = '🔓 手动调整';
+            btn.style.background = '#fff';
+            btn.style.color = '#64748b';
+            hint.textContent = '由标准编号自动生成，对应 downloads/{ID}.pdf';
+            hint.style.color = '';
+            // 恢复锁定后，立即按当前编号重新生成一次，避免遗留手动值
+            autoGenId2Force(document.getElementById('f_code').value);
+        } else {
+            idField.dataset.manualLock = '1';
+            idField.readOnly = false;
+            idField.focus();
+            btn.textContent = '🔒 已解锁（点击恢复自动）';
+            btn.style.background = '#fef3c7';
+            btn.style.color = '#92400e';
+            hint.innerHTML = '⚠️ 已解锁手动编辑。仅在两个官方编号不同但清洗后ID冲突时使用，' +
+                '请手动加后缀区分（如 THSCA0012017B），<strong>不要修改上方"标准编号"字段本身</strong>。';
+            hint.style.color = '#d97706';
+        }
+    }
+    function autoGenId2Force(code) {
+        if (!code) return;
         document.getElementById('f_id').value = code.replace(/[\s\/\.\-]/g,'').toUpperCase();
+    }
+    // ── 手动模式下，对输入内容做文件名安全过滤（只允许字母数字下划线连字符）──
+    function sanitizeManualId(el) {
+        var cleaned = el.value.replace(/[^a-zA-Z0-9_\-]/g, '').toUpperCase();
+        if (cleaned !== el.value) el.value = cleaned;
     }
 
     // ── 下拉选择"手动输入"时显示/隐藏文本框 ──
@@ -1448,6 +1511,7 @@
         document.getElementById('pdfFileInput').value = '';
         setPdfStatus('none', '📭 暂未选择文件');
         document.getElementById('f_id').dataset.index = '-1';
+        resetIdLockState();
         document.getElementById('editModal').classList.add('open');
     }
 
@@ -1480,6 +1544,7 @@
             setPdfStatus('none', '📭 该标准暂无PDF，可上传文件');
         }
         document.getElementById('f_id').dataset.index = index;
+        resetIdLockState();
         document.getElementById('editModal').classList.add('open');
     }
 
@@ -1515,8 +1580,10 @@
                 '当前编号「' + code + '」清洗后生成的系统ID「' + id + '」，' +
                 '与已存在的另一条标准冲突：\n\n' +
                 '「' + conflictStd.code + '」' + (conflictStd.title || '') + '\n\n' +
-                '两条标准会共享同一个详情页地址，导致其中一条的信息丢失。\n' +
-                '请检查标准编号是否有重复，或手动修改编号中的符号使其生成不同的ID。'
+                '两条标准会共享同一个详情页地址，导致其中一条的信息丢失。\n\n' +
+                '💡 若两个编号确实是官方发布的不同标准（并非录入错误），' +
+                '请不要修改上方"标准编号"字段——点击"系统内部ID"旁的"🔓 手动调整"按钮，' +
+                '为其中一条手动加个后缀区分（如 ' + id + 'B），编号保持官方原文不变。'
             );
             return;
         }
