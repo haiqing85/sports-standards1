@@ -54,6 +54,58 @@ async function safeJson(resp) {
   catch { return { ok: false, data: null, raw: text.slice(0, 200) }; }
 }
 
+// ── 清理超过 CHUNK_EXPIRY 仍未完成 finalize 的孤儿上传分块 ──
+// ⚠️ 不使用 store.list()（未在官方文档中确认 Node SDK 的具体签名，
+//    盲目假设签名可能引入新的运行时错误）。改为维护一个固定 key
+//    "pdf-uploads-index" 存储所有进行中上传的 { uploadId: startedAt } 映射，
+//    只依赖已验证可用的 get/set/delete 三个基础方法。
+const UPLOAD_INDEX_KEY = "pdf-uploads-index";
+
+async function cleanupStaleUploads(store) {
+  let index;
+  try {
+    const raw = await store.get(UPLOAD_INDEX_KEY);
+    index = raw ? JSON.parse(raw) : {};
+  } catch { index = {}; }
+
+  const now = Date.now();
+  const staleIds = Object.keys(index).filter(id => now - index[id] > CHUNK_EXPIRY * 1000);
+  if (!staleIds.length) return;
+
+  for (const uploadId of staleIds) {
+    // 逐个探测该 uploadId 下的分块（连续3次不存在即视为已清空，停止探测）
+    let missCount = 0;
+    for (let i = 0; missCount < 3; i++) {
+      try {
+        const exists = await store.get(`pdf-chunks/${uploadId}/${i}`);
+        if (!exists) { missCount++; continue; }
+        missCount = 0;
+        await store.delete(`pdf-chunks/${uploadId}/${i}`).catch(() => {});
+      } catch { missCount++; }
+    }
+    delete index[uploadId];
+  }
+  await store.set(UPLOAD_INDEX_KEY, JSON.stringify(index)).catch(() => {});
+}
+
+async function registerUploadStart(store, uploadId) {
+  try {
+    const raw = await store.get(UPLOAD_INDEX_KEY);
+    const index = raw ? JSON.parse(raw) : {};
+    index[uploadId] = Date.now();
+    await store.set(UPLOAD_INDEX_KEY, JSON.stringify(index));
+  } catch { /* 索引更新失败不影响主流程，最坏情况只是该次上传不会被自动清理 */ }
+}
+
+async function unregisterUpload(store, uploadId) {
+  try {
+    const raw = await store.get(UPLOAD_INDEX_KEY);
+    const index = raw ? JSON.parse(raw) : {};
+    delete index[uploadId];
+    await store.set(UPLOAD_INDEX_KEY, JSON.stringify(index));
+  } catch { /* 索引清理失败不影响主流程 */ }
+}
+
 export default async function onRequest(context) {
   const { request, env } = context;
 
@@ -86,6 +138,20 @@ export default async function onRequest(context) {
     }
     const key = `pdf-chunks/${uploadId}/${chunkIndex}`;
     await store.set(key, data);   // data 是本块的 base64 字符串
+
+    // 记录本次上传的起始时间戳，供后续过期清理判断使用
+    if (chunkIndex === 0) {
+      await registerUploadStart(store, uploadId);
+    }
+
+    // ⚠️ 兜底清理：EdgeOne Blob 无内置定时任务能力，这里用"每次上传分块时顺手扫一眼"的
+    //    方式做兼职清理——概率性触发（约1/20次请求），扫描所有超过 CHUNK_EXPIRY 仍未
+    //    finalize 的"孤儿上传"（例如用户中途关闭浏览器留下的残留分块），删除干净。
+    //    概率触发是为了避免每次上传请求都承担扫描开销，同时保证长期运行下孤儿数据不会累积。
+    if (Math.random() < 0.05) {
+      cleanupStaleUploads(store).catch(() => {}); // 不阻塞当前请求响应
+    }
+
     return json({ ok: true, chunkIndex, uploadId });
   }
 
@@ -175,21 +241,21 @@ export default async function onRequest(context) {
       ));
       if (!updateR.ok) throw new Error("更新分支指针失败");
 
-      // 8. 清理 Blob 临时数据（异步，不阻塞响应）
+      // 8. 清理 Blob 临时数据（异步，不阻塞响应），含索引记录
       Promise.all(
         Array.from({ length: totalChunks }, (_, i) =>
           store.delete(`pdf-chunks/${uploadId}/${i}`).catch(() => {})
-        )
+        ).concat([unregisterUpload(store, uploadId)])
       );
 
       return json({ ok: true, path: `downloads/${stdId}.pdf` });
 
     } catch (e) {
-      // 上传失败时也清理 Blob（尽力）
+      // 上传失败时也清理 Blob（尽力），含索引记录
       Promise.all(
         Array.from({ length: totalChunks }, (_, i) =>
           store.delete(`pdf-chunks/${uploadId}/${i}`).catch(() => {})
-        )
+        ).concat([unregisterUpload(store, uploadId)])
       );
       return json({ error: "GitHub 推送失败: " + e.message }, 500);
     }
