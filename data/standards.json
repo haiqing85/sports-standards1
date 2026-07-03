@@ -1,6 +1,6 @@
 {
-  "version": "2026.07.02",
-  "updated": "2026-07-02",
+  "version": "2026.07.03",
+  "updated": "2026-07-03",
   "total": 1291,
   "standards": [
     {
@@ -229,7 +229,7 @@
       "localFile": "downloads/GBT435642023.pdf",
       "_origIndex": 10,
       "isHot": true,
-      "hotOrder": 5
+      "hotOrder": 3
     },
     {
       "id": "GBT435652023",
@@ -260,7 +260,7 @@
       "localFile": "downloads/GBT435652023.pdf",
       "_origIndex": 11,
       "isHot": true,
-      "hotOrder": 6
+      "hotOrder": 4
     },
     {
       "id": "GBT390592020",
@@ -421,7 +421,7 @@
       "localFile": null,
       "_origIndex": 17,
       "isHot": true,
-      "hotOrder": 3
+      "hotOrder": 7
     },
     {
       "id": "GBT1999522005",
@@ -832,7 +832,7 @@
       "localFile": "",
       "_origIndex": 34,
       "isHot": true,
-      "hotOrder": 7
+      "hotOrder": 5
     },
     {
       "id": "GBT2251752024",
@@ -859,7 +859,7 @@
       "localFile": null,
       "_origIndex": 35,
       "isHot": true,
-      "hotOrder": 4
+      "hotOrder": 6
     },
     {
       "id": "GBT2003332006",
