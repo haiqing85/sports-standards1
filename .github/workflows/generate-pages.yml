@@ -33,6 +33,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: 自动检测并修复系统ID冲突
+        run: node scripts/dedupe-ids.js
+
       - name: 生成静态详情页 + sitemap.xml + robots.txt
         run: node scripts/generate-static-pages.js
 
@@ -40,12 +43,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add s/ sitemap.xml robots.txt
+          git add s/ sitemap.xml robots.txt data/standards.json
           if git diff --staged --quiet; then
             echo "📭 没有需要提交的变更（静态页内容与上次一致）"
             exit 0
           fi
-          git commit -m "🤖 自动生成静态详情页与sitemap [skip ci]"
+          git commit -m "🤖 自动生成静态详情页与sitemap（如有ID冲突已自动修复）[skip ci]"
 
           # ⚠️ 推送前必须 pull --rebase：若期间 main 分支有其它提交（如后台并发推送数据），
           #    直接 push 会因 non-fast-forward 被拒绝且无重试，导致本次生成静默失败。
