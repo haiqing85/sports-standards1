@@ -984,6 +984,7 @@ function expandQuery(q) {
 //  主逻辑
 // ═══════════════════════════════════════════════════════════
 var DB=[], filtered=[], fuse, curPage=1, PAGE=20, activeType='', activeQ='', activeProvince='', activeStatus='';
+var SITE_DEFAULT_TITLE = document.title; // 页面加载时的原始标题，关闭详情弹窗时用于还原
 var currentDataVersion = ''; // 记录当前已渲染数据的版本号，避免轮询时误判"有变化"导致不必要的重渲染
 
 // ── 数据缓存 key（localStorage，首次访问后立即显示缓存，同时后台拉最新）──
@@ -1351,10 +1352,12 @@ function goPage(n){curPage=n;renderGrid();renderPager();document.querySelector('
 
 function openModal(id){
   // 点击查看详情不需要验证码，直接打开
-  _doOpenModal(id);
+  _doOpenModal(id, false);
 }
 
-function _doOpenModal(id){
+// skipHistory: 由 popstate（浏览器前进/后退）触发重开时传 true，
+// 避免在响应"后退"操作时又反过来 pushState，导致历史记录被搞乱
+function _doOpenModal(id, skipHistory){
   var s=DB.find(function(x){return x.id===id;}); if(!s)return;
   document.getElementById('mCode').textContent=s.code;
   document.getElementById('mTitle').textContent=s.title;
@@ -1409,6 +1412,16 @@ function _doOpenModal(id){
   // ── 独立详情页链接（静态页，可收藏/分享/被搜索引擎收录）──
   var detailLink = document.getElementById('mDetailLink');
   if (detailLink) detailLink.href = '/s/' + encodeURIComponent(s.id) + '.html';
+
+  // ── 同步地址栏为该标准的 ?id= 链接，方便用户直接复制/收藏当前查看的标准 ──
+  document.title = s.code + ' ' + s.title + ' - 体育建设标准查询平台';
+  if (!skipHistory) {
+    var newUrl = window.location.pathname + '?id=' + encodeURIComponent(s.id);
+    var curUrl = window.location.pathname + window.location.search;
+    if (curUrl !== newUrl) {
+      try { history.pushState({ stdId: s.id }, '', newUrl); } catch(e) {}
+    }
+  }
 }
 
 // ── 在线预览弹窗：稳定 iframe，不销毁重建，彻底消除闪烁 ──
@@ -1556,8 +1569,21 @@ function closeModalDirect(){
   if(!document.getElementById('previewOverlay').classList.contains('open')){
     document.body.style.overflow='';
   }
+  document.title = SITE_DEFAULT_TITLE; // 关闭弹窗时还原浏览器标签页标题
   cleanDeepLinkUrl(); // 关闭详情弹窗时一并清理 ?id= 参数，防止刷新后重新弹出
 }
+
+// ── 浏览器前进/后退按钮：同步弹窗开关状态与展示内容 ──
+// 支持在多个已打开过的标准之间用浏览器返回键来回切换，而不是直接关闭弹窗
+window.addEventListener('popstate', function(){
+  var params = new URLSearchParams(window.location.search);
+  var id = params.get('id');
+  if (id) {
+    var target = DB.find(function(s){ return s.id === id; });
+    if (target) { _doOpenModal(id, true); return; }
+  }
+  closeModalDirect();
+});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
     // 전체화면 중 Esc → 전체화면 해제만, 프리뷰는 유지
