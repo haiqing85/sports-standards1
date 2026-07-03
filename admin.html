@@ -42,12 +42,15 @@
 
         /* 列表 */
         .std-item { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid #f1f5f9; align-items: center; transition: background .15s; }
-        .std-item-draggable { display: flex; align-items: flex-start; }
+        .std-item-draggable { display: flex; align-items: center; }
         .std-item-draggable:hover { background: #f8fafc; }
         .std-item-draggable.dragging { opacity: .35; background: #eff6ff; }
         .std-item-draggable.drag-over-top { border-top: 3px solid #2563eb; }
         .std-item-draggable.drag-over-bottom { border-bottom: 3px solid #2563eb; }
         .drag-handle:active { cursor: grabbing !important; }
+        .std-item-compact { height: 56px; padding: 8px 16px; }
+        .hot-compact-info { flex: 1; min-width: 0; overflow: hidden; }
+        .hot-compact-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0; }
         .std-item:hover { background: #f8fafc; }
         .std-item:last-child { border-bottom: none; }
         .std-info-code { font-weight: 700; color: #0f172a; font-size: 15px; font-family: monospace; margin-bottom: 4px; }
@@ -1241,20 +1244,38 @@
         // 渲染当前页（只渲染 pageSize 条，速度飞快）
         listEl.innerHTML = paginated.map(function(s, renderPos) {
             var idx = s._origIndex;
+
+            if (hotMode) {
+                // ── 热门排序专用：精简紧凑格式，固定高度，方便对齐拖拽 ──
+                // 不展示类型/强制程度/分类等标签，减少因标签换行导致的行高差异
+                var dragAttrs = ' draggable="true" data-drag-idx="' + idx + '"'
+                    + ' ondragstart="handleHotDragStart(event,' + idx + ')"'
+                    + ' ondragover="handleHotDragOver(event)"'
+                    + ' ondrop="handleHotDrop(event,' + idx + ')"'
+                    + ' ondragend="handleHotDragEnd(event)"';
+                return '<div class="std-item std-item-draggable std-item-compact"' + dragAttrs + '>'
+                    + '<span class="drag-handle" title="按住拖拽调整顺序" style="cursor:grab;color:#cbd5e1;font-size:18px;padding:0 6px;user-select:none;flex-shrink:0">⠿</span>'
+                    + '<div class="hot-compact-info">'
+                    + '<div class="std-info-code" style="margin-bottom:2px">' + eh(s.code)
+                        + (!s.localFile ? ' <span class="badge-nopdf">📭 缺PDF</span>' : '')
+                        + '</div>'
+                    + '<div class="std-info-title hot-compact-title">' + eh(s.title) + '</div>'
+                    + '</div>'
+                    + '<div class="std-item-btns" style="flex-shrink:0">'
+                    + '<span style="display:flex;flex-direction:column;gap:2px;margin-right:2px">'
+                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',-1)" title="上移">▲</button>'
+                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',1)" title="下移">▼</button>'
+                    + '</span>'
+                    + '<button class="btn" style="padding:6px 12px;font-size:12px;background:#fef2f2;color:#dc2626;border:1px solid #fecaca" onclick="toggleHot('+idx+')" title="点击取消热门">🔥 取消热门</button>'
+                    + '<a class="btn" href="https://www.sportstd.cn/s/' + encodeURIComponent(s.id) + '.html" target="_blank" style="padding:6px 12px;font-size:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;text-decoration:none">🔗 详情页</a>'
+                    + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
+                    + '</div></div>';
+            }
+
+            // ── 普通模式：原有完整信息格式 ──
             var mandText  = s.isMandatory ? '强制性标准' : '推荐性标准';
             var statusCls = s.status === '废止' ? 'badge-abol' : 'badge-ok';
-            var dragAttrs = hotMode
-                ? ' draggable="true" data-drag-idx="' + idx + '"'
-                  + ' ondragstart="handleHotDragStart(event,' + idx + ')"'
-                  + ' ondragover="handleHotDragOver(event)"'
-                  + ' ondrop="handleHotDrop(event,' + idx + ')"'
-                  + ' ondragend="handleHotDragEnd(event)"'
-                : '';
-            var dragHandle = hotMode
-                ? '<span class="drag-handle" title="按住拖拽调整顺序" style="cursor:grab;color:#cbd5e1;font-size:18px;padding:0 6px;user-select:none">⠿</span>'
-                : '';
-            return '<div class="std-item' + (hotMode ? ' std-item-draggable' : '') + '"' + dragAttrs + '>'
-                + dragHandle
+            return '<div class="std-item">'
                 + '<div>'
                 + '<div class="std-info-code">' + eh(s.code) + (s.isHot ? ' <span class="badge-hot" title="首页热门标准">🔥 热门</span>' : '') + '</div>'
                 + '<div class="std-info-title">' + eh(s.title) + '</div>'
@@ -1268,12 +1289,6 @@
                 + (!s.localFile ? '<div class="upload-hint">⬆️ 点击编辑按钮为该标准上传PDF文件</div>' : '')
                 + '</div>'
                 + '<div class="std-item-btns">'
-                + (hotMode ? (
-                    '<span style="display:flex;flex-direction:column;gap:2px;margin-right:2px">'
-                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',-1)" title="上移">▲</button>'
-                    + '<button class="btn" style="padding:2px 8px;font-size:11px;line-height:1;background:#f8fafc;color:#475569;border:1px solid #e2e8f0" onclick="moveHotOrder('+idx+',1)" title="下移">▼</button>'
-                    + '</span>'
-                  ) : '')
                 + '<button class="btn" style="padding:6px 12px;font-size:12px;background:' + (s.isHot ? '#fef2f2;color:#dc2626;border:1px solid #fecaca' : '#f8fafc;color:#94a3b8;border:1px solid #e2e8f0') + '" onclick="toggleHot('+idx+')" title="' + (s.isHot ? '点击取消热门' : '点击设为热门') + '">' + (s.isHot ? '🔥 已设热门' : '🔥 设为热门') + '</button>'
                 + '<a class="btn" href="https://www.sportstd.cn/s/' + encodeURIComponent(s.id) + '.html" target="_blank" style="padding:6px 12px;font-size:12px;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;text-decoration:none" title="预览该标准的静态详情页（搜索引擎收录的独立页面）">🔗 详情页</a>'
                 + '<button class="btn btn-primary" style="padding:6px 14px;font-size:12px" onclick="editStd('+idx+')">✍️ 编辑</button>'
