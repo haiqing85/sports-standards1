@@ -42,6 +42,12 @@
 
         /* 列表 */
         .std-item { display: flex; justify-content: space-between; padding: 16px; border-bottom: 1px solid #f1f5f9; align-items: center; transition: background .15s; }
+        .std-item-draggable { display: flex; align-items: flex-start; }
+        .std-item-draggable:hover { background: #f8fafc; }
+        .std-item-draggable.dragging { opacity: .35; background: #eff6ff; }
+        .std-item-draggable.drag-over-top { border-top: 3px solid #2563eb; }
+        .std-item-draggable.drag-over-bottom { border-bottom: 3px solid #2563eb; }
+        .drag-handle:active { cursor: grabbing !important; }
         .std-item:hover { background: #f8fafc; }
         .std-item:last-child { border-bottom: none; }
         .std-info-code { font-weight: 700; color: #0f172a; font-size: 15px; font-family: monospace; margin-bottom: 4px; }
@@ -1224,20 +1230,31 @@
             return;
         }
 
-        // 分页计算
-        var pageSize   = LIST_PAGE_SIZE;
-        var totalPages = Math.ceil(list.length / pageSize);
+        // 分页计算：热门排序视图下不分页，全部显示在一屏，方便直接拖拽排序
+        var pageSize   = hotMode ? list.length : LIST_PAGE_SIZE;
+        var totalPages = hotMode ? 1 : Math.ceil(list.length / pageSize);
         if (listCurrentPage < 1) listCurrentPage = 1;
         if (listCurrentPage > totalPages) listCurrentPage = totalPages;
-        var startIdx   = (listCurrentPage - 1) * pageSize;
-        var paginated  = list.slice(startIdx, startIdx + pageSize);
+        var startIdx   = hotMode ? 0 : (listCurrentPage - 1) * pageSize;
+        var paginated  = hotMode ? list : list.slice(startIdx, startIdx + pageSize);
 
         // 渲染当前页（只渲染 pageSize 条，速度飞快）
-        listEl.innerHTML = paginated.map(function(s) {
+        listEl.innerHTML = paginated.map(function(s, renderPos) {
             var idx = s._origIndex;
             var mandText  = s.isMandatory ? '强制性标准' : '推荐性标准';
             var statusCls = s.status === '废止' ? 'badge-abol' : 'badge-ok';
-            return '<div class="std-item">'
+            var dragAttrs = hotMode
+                ? ' draggable="true" data-drag-idx="' + idx + '"'
+                  + ' ondragstart="handleHotDragStart(event,' + idx + ')"'
+                  + ' ondragover="handleHotDragOver(event)"'
+                  + ' ondrop="handleHotDrop(event,' + idx + ')"'
+                  + ' ondragend="handleHotDragEnd(event)"'
+                : '';
+            var dragHandle = hotMode
+                ? '<span class="drag-handle" title="按住拖拽调整顺序" style="cursor:grab;color:#cbd5e1;font-size:18px;padding:0 6px;user-select:none">⠿</span>'
+                : '';
+            return '<div class="std-item' + (hotMode ? ' std-item-draggable' : '') + '"' + dragAttrs + '>'
+                + dragHandle
                 + '<div>'
                 + '<div class="std-info-code">' + eh(s.code) + (s.isHot ? ' <span class="badge-hot" title="首页热门标准">🔥 热门</span>' : '') + '</div>'
                 + '<div class="std-info-title">' + eh(s.title) + '</div>'
@@ -1263,6 +1280,13 @@
                 + '<button class="btn btn-danger" style="padding:6px 14px;font-size:12px" onclick="deleteStd('+idx+')">🗑️ 删除</button>'
                 + '</div></div>';
         }).join('');
+
+        // 热门排序视图：在列表顶部加一条操作提示
+        if (hotMode && list.length > 1) {
+            listEl.innerHTML = '<div style="padding:10px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:12px;color:#1e40af;margin-bottom:10px">'
+                + '💡 按住 <span style="font-size:15px">⠿</span> 图标可直接拖拽调整顺序（桌面端）；手机上请用 ▲▼ 按钮。排序从上到下即首页从左到右/从前到后的展示顺序。'
+                + '</div>' + listEl.innerHTML;
+        }
 
         // 渲染分页栏
         if (pgEl) renderListPagination(list.length, totalPages, pageSize, startIdx);
@@ -2047,6 +2071,72 @@
         renderList();
         document.getElementById('statusText').textContent =
             '↕️ 已调整「' + s.code + '」的首页展示顺序，请点击"推送至 GitHub"保存。';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  热门标准拖拽排序（原生 HTML5 拖放，无需引入任何库）
+    //  仅桌面鼠标操作有效；触屏设备请用 ▲▼ 按钮作为兜底方案，
+    //  原生 HTML5 drag-and-drop 在大多数移动浏览器上不受支持。
+    // ══════════════════════════════════════════════════
+    var _dragSrcIdx = null;
+
+    function handleHotDragStart(ev, idx) {
+        _dragSrcIdx = idx;
+        ev.currentTarget.classList.add('dragging');
+        ev.dataTransfer.effectAllowed = 'move';
+        // Firefox 要求必须调用 setData 才会真正触发拖拽
+        try { ev.dataTransfer.setData('text/plain', String(idx)); } catch(e) {}
+    }
+
+    function handleHotDragOver(ev) {
+        ev.preventDefault(); // 必须阻止默认行为，否则不会触发 drop
+        ev.dataTransfer.dropEffect = 'move';
+        var target = ev.currentTarget;
+        // 根据鼠标在目标行的上半/下半区域，显示插入位置提示线
+        var rect = target.getBoundingClientRect();
+        var isTopHalf = (ev.clientY - rect.top) < rect.height / 2;
+        target.classList.remove('drag-over-top', 'drag-over-bottom');
+        target.classList.add(isTopHalf ? 'drag-over-top' : 'drag-over-bottom');
+    }
+
+    function handleHotDrop(ev, targetIdx) {
+        ev.preventDefault();
+        ev.currentTarget.classList.remove('drag-over-top', 'drag-over-bottom');
+        if (_dragSrcIdx == null || _dragSrcIdx === targetIdx) return;
+
+        var srcStd = DB.standards[_dragSrcIdx];
+        var targetStd = DB.standards[targetIdx];
+        if (!srcStd || !targetStd || !srcStd.isHot || !targetStd.isHot) return;
+
+        // 判断放在目标行的上方还是下方（与 dragover 时的视觉提示保持一致）
+        var rect = ev.currentTarget.getBoundingClientRect();
+        var insertBefore = (ev.clientY - rect.top) < rect.height / 2;
+
+        // 取当前完整热门顺序列表，把拖拽源从原位置移除，插入到目标位置
+        var hotList = DB.standards
+            .filter(function(x){ return x.isHot; })
+            .sort(function(a, b){ return (a.hotOrder||0) - (b.hotOrder||0); });
+
+        var fromPos = hotList.indexOf(srcStd);
+        hotList.splice(fromPos, 1); // 先移除
+        var toPos = hotList.indexOf(targetStd);
+        hotList.splice(insertBefore ? toPos : toPos + 1, 0, srcStd); // 插入新位置
+
+        // 按新顺序重新赋值 1..N，整批更新
+        hotList.forEach(function(s, i){ s.hotOrder = i + 1; });
+
+        _dragSrcIdx = null;
+        renderList();
+        document.getElementById('statusText').textContent =
+            '↕️ 已调整「' + srcStd.code + '」的首页展示顺序，请点击"推送至 GitHub"保存。';
+    }
+
+    function handleHotDragEnd(ev) {
+        ev.currentTarget.classList.remove('dragging');
+        document.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(function(el){
+            el.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+        _dragSrcIdx = null;
     }
 
     // ── 同步至 GitHub ──
