@@ -1092,7 +1092,18 @@ function goHome(){
   var hotPill = document.querySelector('.pill[data-type="__hot__"]');
   if(hotPill) hotPill.classList.add('active');
   setView('hot');
+  cleanDeepLinkUrl(); // 清理地址栏里的 ?id= 参数，避免刷新后又弹回详情弹窗
   window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ── 清理深链接URL参数（?id=xxx / ?code=xxx）──
+// 用于：点击logo回首页、关闭深链接打开的详情弹窗时。
+// 只做浏览器地址栏展示层面的清理（history.replaceState 不会触发页面刷新/跳转），
+// 避免用户之后刷新页面时，深链接逻辑重新触发又弹出同一个详情弹窗。
+function cleanDeepLinkUrl(){
+  if (window.location.search) {
+    try { history.replaceState(null, '', window.location.pathname); } catch(e) {}
+  }
 }
 
 function syncQ(v){ document.getElementById('heroSearch').value=v; activeQ=v; }
@@ -1275,10 +1286,20 @@ function applyAll(){
     });
   }
   var sort=document.getElementById('sortSel').value;
-  if(activeQ && typeof exactList !== 'undefined' && exactList.length){
-    // 有精确匹配时：exactList 固定置顶，只对其余部分排序
+  // ⚠️ 判断条件必须覆盖"精确/前缀/包含"三级匹配整体，不能只看 exactList。
+  //    之前只在有"完全精确匹配"时才触发置顶保护，导致像搜索"3701"这种
+  //    只有 containsList 命中（如 GB/T 43701-2024）、没有 exactList 命中的情况，
+  //    整个优先级保护被跳过，直接按发布日期整体重排，真正匹配的结果被
+  //    "更新但完全不相关"的模糊匹配项压到后面。
+  var hasPreciseMatch = activeQ && typeof exactList !== 'undefined' &&
+      (exactList.length || prefixList.length || containsList.length);
+  if(hasPreciseMatch){
+    // 有精确/前缀/包含匹配时：三者整体固定置顶（内部保持 精确>前缀>包含 的相关性顺序），
+    // 只对置顶范围之外的模糊匹配结果按用户选择的排序方式排序
     var pinIds = {};
     exactList.forEach(function(s){ pinIds[s.id]=true; });
+    prefixList.forEach(function(s){ pinIds[s.id]=true; });
+    containsList.forEach(function(s){ pinIds[s.id]=true; });
     var topList  = list.filter(function(s){ return  pinIds[s.id]; });
     var restList = list.filter(function(s){ return !pinIds[s.id]; });
     if(sort==='date-new') restList=restList.slice().sort(function(a,b){return (b.issueDate||'0').localeCompare(a.issueDate||'0');});
@@ -1535,6 +1556,7 @@ function closeModalDirect(){
   if(!document.getElementById('previewOverlay').classList.contains('open')){
     document.body.style.overflow='';
   }
+  cleanDeepLinkUrl(); // 关闭详情弹窗时一并清理 ?id= 参数，防止刷新后重新弹出
 }
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'){
@@ -1642,6 +1664,10 @@ var e,t;e=this,t=function(){"use strict";function e(e,t){var n=Object.keys(e);if
 </script>
 <script>
 // ── 第一步：立即从缓存渲染（先显示内容，再在后台悄悄拉最新数据）
+// 显式调用一次 setView('hot')，确保"找到 N 条标准"计数器等状态与实际展示的
+// 热门视图保持一致——若不主动调用，计数器会停留在 HTML 里写死的初始值 "0"，
+// 与正常渲染的热门卡片数量脱节，造成"卡片明明有、却显示0条"的错觉。
+setView('hot');
 loadData();
 
 // ── 第二步：页面完全加载后，再静默刷新一次数据，确保内容最新
