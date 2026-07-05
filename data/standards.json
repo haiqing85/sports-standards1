@@ -1,6 +1,6 @@
 {
-  "version": "2026.07.03",
-  "updated": "2026-07-03",
+  "version": "2026.07.05",
+  "updated": "2026-07-05",
   "total": 1291,
   "standards": [
     {
@@ -9851,7 +9851,7 @@
       "title": "体育场馆钢结构检测与鉴定规程",
       "english": "",
       "type": "团体标准",
-      "status": "废止",
+      "status": "现行",
       "issueDate": "2018-07-20",
       "implementDate": null,
       "abolishDate": null,
@@ -9862,11 +9862,12 @@
       "tags": [
         "体育"
       ],
-      "summary": "",
+      "summary": null,
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 433
+      "_origIndex": 433,
+      "isHot": false
     },
     {
       "id": "TCSSS0292025",
@@ -15098,7 +15099,7 @@
       "title": "学校合成材料面层运动场地建设标准",
       "english": "",
       "type": "团体标准",
-      "status": "废止",
+      "status": "现行",
       "issueDate": "2017-05-10",
       "implementDate": null,
       "abolishDate": null,
@@ -15109,11 +15110,12 @@
       "tags": [
         "运动"
       ],
-      "summary": "",
+      "summary": null,
       "isMandatory": false,
       "scope": "",
       "localFile": null,
-      "_origIndex": 663
+      "_origIndex": 663,
+      "isHot": false
     },
     {
       "id": "TSCSVA000432024",
