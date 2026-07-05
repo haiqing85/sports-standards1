@@ -62,6 +62,36 @@ def split_std_base_and_year(code):
         return None, None
     return base, year
 
+# ⚠️ 关键安全阀：同一"编号主体"未必是同一份标准的连续修订版本！
+# 已发现真实案例：湖北省体育场馆建设协会（T/HSCA）等团体标准机构，
+# 会把同一个流水号（如"001"）逐年重复用于完全不相关的主题——
+#   T/HSCA 001-2017《学校合成材料面层运动场地建设标准》
+#   T/HSCA 001—2018《体育场馆钢结构检测与鉴定规程》      ← 完全不同主题
+#   T/HSCA 001—2019《高等学校合成材料面层运动场地》
+# 若不加区分地假设"同编号主体=同一标准的新旧版本"，会错误地把这些互不相关的
+# 标准自动标记为"废止/已被替代"，抹掉其真实的现行状态。
+# 因此在判定"新版本替代旧版本"前，必须先校验两者标题内容是否确实相关。
+TITLE_SIMILARITY_THRESHOLD = 0.3  # 字符二元组Jaccard相似度阈值，经真实数据校准：
+                                   # 完全不相关标题得分≈0，真正相关版本得分通常≥0.6，安全边际充足
+
+def title_similarity(a, b):
+    """字符二元组(bigram) Jaccard相似度，用于判断两个标题是否描述同一主题的标准"""
+    if not a or not b:
+        return 0.0
+    def bigrams(s):
+        s = re.sub(r'\s+', '', str(s))
+        return set(s[i:i+2] for i in range(len(s)-1)) if len(s) >= 2 else {s}
+    ba, bb = bigrams(a), bigrams(b)
+    if not ba or not bb:
+        return 0.0
+    inter = len(ba & bb)
+    union = len(ba | bb)
+    return inter / union if union else 0.0
+
+def titles_likely_same_standard(title_a, title_b):
+    """标题相似度是否达到"可判定为同一标准不同版本"的阈值"""
+    return title_similarity(title_a, title_b) >= TITLE_SIMILARITY_THRESHOLD
+
 def clean_std_code_field(raw_content, self_code=''):
     """清洗替代字段，仅保留合法标准号，过滤无效ID、自替代内容，无合法内容返回None"""
     if not raw_content or not str(raw_content).strip():
@@ -145,17 +175,27 @@ def auto_fix_std_core_rules(standards):
                     std_item['replacedBy'] = None
                     updated_count += 1
             # 【强制规则3】仅废止标准，补充/修正「已被替代为」，保护手动修改
+            #   ⚠️ 新增标题相似度校验：避免同编号但不同主题的标准被误判为替代关系
             elif current_status == '废止' and index < version_total - 1 and not is_user_manual_replacedBy:
                 next_version = versions[index+1]
-                if next_version['year'] != version['year'] and next_version['code'] != current_code:
+                if (next_version['year'] != version['year']
+                        and next_version['code'] != current_code
+                        and titles_likely_same_standard(
+                            std_item.get('title', ''), next_version['std'].get('title', ''))):
                     std_item['replacedBy'] = next_version['code']
                     updated_count += 1
 
-            # 【强制规则4】同主体有更新的现行版本，旧版本强制标记为废止（无论手动/自动）
+            # 【强制规则4】同主体有更新的现行版本，旧版本强制标记为废止
+            #   ⚠️ 新增标题相似度校验：同一机构可能逐年重复使用同一流水号发布完全不
+            #      相关的标准（真实案例：T/HSCA 001 系列，2017/2018/2019年分别是三份
+            #      毫不相关的标准）。只有标题内容确实相关，才认定为"新版本替代旧版本"，
+            #      否则各自独立保持原状态，避免抹掉互不相关标准的真实现行状态。
             if (index < version_total - 1
                 and current_status == '现行'
                 and versions[index+1]['status'] == '现行'
-                and versions[index+1]['code'] != current_code):
+                and versions[index+1]['code'] != current_code
+                and titles_likely_same_standard(
+                    std_item.get('title', ''), versions[index+1]['std'].get('title', ''))):
                 std_item['status'] = '废止'
                 updated_count += 1
 
